@@ -38,16 +38,19 @@ export async function POST(req: Request) {
       time: answers["time"] || "",
     };
 
-    // Build the LLM prompt
-    let prompt = `Act as an expert nutritionist and health coach.\n`;
-    prompt += `Create a highly personalized, actionable version of our "${content.title}" for a client with the following profile:\n\n`;
-    prompt += `**Lead Profile:**\n`;
-    prompt += `- Age Range: ${leadData.age}\n`;
-    prompt += `- Primary Goal: ${leadData.goal}\n`;
-    prompt += `- Dietary Restrictions: ${leadData.diet}\n`;
-    prompt += `- Daily Prep Time: ${leadData.time}\n\n`;
+    const userName = session.user.name || "Friend";
 
-    prompt += `**Specific Pain Points:**\n`;
+    // Build the LLM prompt with Stwart Lucas brand voice
+    let prompt = `Act as **Stwart Lucas**, the expert culinary coach and nutritionist behind this platform. Your tone is warm, cinematic, encouraging, and deeply professional. You are writing to ${userName}.\n\n`;
+    prompt += `Create a **Premium Personalized Edition** of our "${content.title}" for ${userName}. They have shared the following profile with us:\n\n`;
+    prompt += `**Client Profile:**\n`;
+    prompt += `- **Name**: ${userName}\n`;
+    prompt += `- **Age Range**: ${leadData.age}\n`;
+    prompt += `- **Main Goal**: ${leadData.goal}\n`;
+    prompt += `- **Dietary Preference**: ${leadData.diet}\n`;
+    prompt += `- **Daily Prep Capacity**: ${leadData.time}\n\n`;
+
+    prompt += `**Personalized Insights:**\n`;
     // Add custom question answers
     Object.keys(answers).forEach((key) => {
       if (key.startsWith("custom_")) {
@@ -55,17 +58,19 @@ export async function POST(req: Request) {
           const index = parseInt(key.split("_")[1]);
           const customQuestions = JSON.parse(content.painPointQuestions || "[]");
           if (customQuestions[index]) {
-            prompt += `- Q: ${customQuestions[index].question}\n  A: ${answers[key]}\n`;
+            prompt += `- **${customQuestions[index].question}**: ${answers[key]}\n`;
           }
         } catch (e) {}
       }
     });
 
-    prompt += `\n**Instructions for Generation:**\n`;
-    prompt += `1. Acknowledge their specific pain points and explain briefly how this plan addresses them.\n`;
-    prompt += `2. Provide a structured plan (e.g., 7-day meal plan or cheat sheet rules) that strictly adheres to their dietary restrictions (${leadData.diet}) and time constraints (${leadData.time}).\n`;
-    prompt += `3. Use a supportive, encouraging, and expert tone.\n`;
-    prompt += `4. Format the output in clean Markdown.\n`;
+    prompt += `\n**Instructions for Stwart Lucas Voice:**\n`;
+    prompt += `1. **Personalization**: Address ${userName} directly. Use their name naturally in the introduction and conclusion.\n`;
+    prompt += `2. **Cinematic Aesthetic**: Use words like "vibrant," "cinematic," "artisanal," "honest cooking," and "nourished." Avoid bulky paragraphs. Use short, punchy, elegant sentences.\n`;
+    prompt += `3. **Structure**: Use clean Markdown. Use "###" for section headers. Use bold text for emphasis. Present the 7-day plan in a clear, easy-to-read format (e.g., using a table or highly structured lists).\n`;
+    prompt += `4. **Strict Adherence**: Ensure every suggestion fits the ${leadData.diet} diet and respects the ${leadData.time} prep time.\n`;
+    prompt += `5. **Visual Focus**: Describe the food in a way that feels visual and appetizing.\n`;
+    prompt += `6. **Tone**: Be an expert guide who simplifies the complex. Make them feel empowered, not overwhelmed.\n`;
 
     // 1. Update User Lead Data
     await prisma.user.update({
