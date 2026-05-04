@@ -67,10 +67,11 @@ export async function POST(req: Request) {
     prompt += `\n**Instructions for Stwart Lucas Voice:**\n`;
     prompt += `1. **Personalization**: Address ${userName} directly. Use their name naturally in the introduction and conclusion.\n`;
     prompt += `2. **Cinematic Aesthetic**: Use words like "vibrant," "cinematic," "artisanal," "honest cooking," and "nourished." Avoid bulky paragraphs. Use short, punchy, elegant sentences.\n`;
-    prompt += `3. **Structure**: Use clean Markdown. Use "###" for section headers. Use bold text for emphasis. Present the 7-day plan in a clear, easy-to-read format (e.g., using a table or highly structured lists).\n`;
-    prompt += `4. **Strict Adherence**: Ensure every suggestion fits the ${leadData.diet} diet and respects the ${leadData.time} prep time.\n`;
-    prompt += `5. **Visual Focus**: Describe the food in a way that feels visual and appetizing.\n`;
-    prompt += `6. **Tone**: Be an expert guide who simplifies the complex. Make them feel empowered, not overwhelmed.\n`;
+    prompt += `3. **Visual Spacing**: **CRITICAL**: Use double newlines between every section and every meal. Ensure the content is not a wall of text. Use a lot of white space.\n`;
+    prompt += `4. **Structure**: Use clean Markdown. Use "###" for section headers. Use bold text for emphasis. Present the 7-day plan in a clear, easy-to-read format (e.g., using a table or highly structured lists with bullet points).\n`;
+    prompt += `5. **Strict Adherence**: Ensure every suggestion fits the ${leadData.diet} diet and respects the ${leadData.time} prep time.\n`;
+    prompt += `6. **Visual Focus**: Describe the food in a way that feels visual and appetizing.\n`;
+    prompt += `7. **Tone**: Be an expert guide who simplifies the complex. Make them feel empowered, not overwhelmed.\n`;
 
     // 1. Update User Lead Data
     await prisma.user.update({
