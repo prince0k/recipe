@@ -86,7 +86,7 @@ export async function POST(req: Request) {
     while (attempts < maxAttempts) {
       try {
         const response = await ai.models.generateContent({
-          model: 'gemini-2.0-flash',
+          model: 'gemini-1.5-flash',
           contents: `${prompt}\n\nHere is the general plan to personalize:\n\n${strippedBody}`,
         });
         generatedContent = response.text || generatedContent;
@@ -97,8 +97,8 @@ export async function POST(req: Request) {
         generatedContent = `[AI Generation Failed] ${aiError.message}`;
         
         if (attempts < maxAttempts) {
-          // Wait 2 seconds before retrying
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          // Wait 5 seconds before retrying (increased for rate limits)
+          await new Promise(resolve => setTimeout(resolve, 5000));
         }
       }
     }
