@@ -1,4 +1,7 @@
 import { prisma } from "@/lib/db";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/Button";
 
 export default async function Home() {
   const featuredRecipes = await prisma.content.findMany({
