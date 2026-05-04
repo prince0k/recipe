@@ -1,59 +1,48 @@
 @import "tailwindcss";
 
-@theme inline {
-  /* Modern monochrome palette with warm accent */
-  --color-background: #ffffff;
-  --color-foreground: #0a0a0a;
-  --color-card: #ffffff;
-  --color-card-foreground: #0a0a0a;
-  --color-primary: #0a0a0a;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #f5f5f5;
-  --color-secondary-foreground: #0a0a0a;
-  --color-muted: #f5f5f5;
-  --color-muted-foreground: #737373;
-  --color-accent: #f5f5f5;
-  --color-accent-foreground: #0a0a0a;
-  --color-border: #e5e5e5;
-  --color-input: #e5e5e5;
-  --color-ring: #0a0a0a;
+@theme {
+  --color-primary: #8B0000; /* Deep Red */
+  --color-primary-dark: #660000;
+  --color-secondary: #D2691E; /* Burnt Orange */
+  --color-accent: #F4D03F; /* Soft Yellow */
+  --color-background: #FAF9F6; /* Warm White/Beige */
+  --color-surface: #F5F5DC; /* Beige */
+  --color-olive: #556B2F;
+  --color-text: #2C1E11; /* Earthy Dark Brown */
+  --color-text-muted: #5D4037;
+  --color-border: #E0D4C3;
 
-  /* Typography */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
-
-  /* Radius */
-  --radius: 0.5rem;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  
+  --radius-card: 1.5rem;
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
-  html {
-    @apply bg-background scroll-smooth;
-  }
-
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-[var(--color-background)] text-[var(--color-text)] font-sans antialiased selection:bg-primary/20;
   }
-
+  
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif tracking-tight text-foreground;
+    @apply font-serif text-[var(--color-text)] font-semibold tracking-tight;
   }
-
+  
   a {
-    @apply transition-colors duration-200;
+    @apply transition-all duration-300;
   }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .glass {
+    @apply bg-white/40 backdrop-blur-xl border border-white/20 shadow-xl;
   }
-
-  .text-pretty {
-    text-wrap: pretty;
+  .glass-dark {
+    @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+  .cinematic-shadow {
+    box-shadow: 0 20px 50px -12px rgba(44, 30, 17, 0.15);
+  }
+  .vignette {
+    background: radial-gradient(circle, transparent 50%, rgba(44, 30, 17, 0.2) 100%);
   }
 }
