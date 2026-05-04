@@ -60,7 +60,7 @@ export async function generateImage(prompt: string) {
     console.log(`Generating Imagen 4.0 image for: ${prompt}`);
 
     // Using the verified Imagen 4.0 Ultra model from user's quota
-    const model = ai.getGenerativeModel({ model: "imagen-4.0-ultra-generate-001" });
+    const model = (ai as any).getGenerativeModel({ model: "imagen-4.0-ultra-generate-001" });
 
     const result = await (model as any).generateImages({
       prompt: `Premium culinary photography, cinematic lighting, artisanal style, 8k resolution, professional food styling: ${prompt}`,
