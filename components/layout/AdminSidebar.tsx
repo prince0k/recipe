@@ -12,6 +12,7 @@ export function AdminSidebar() {
     { name: "AI Requests", href: "/admin/requests", icon: "✨" },
     { name: "Leads & Users", href: "/admin/leads", icon: "👥" },
     { name: "Content", href: "/admin/content", icon: "📝" },
+    { name: "AI Content Gen", href: "/admin/content/ai-generator", icon: "✨" },
     { name: "Analytics", href: "/admin/analytics", icon: "📈" },
   ];
 

@@ -10,5 +10,14 @@ export default async function DietPlanPage(props: { params: Promise<{ slug: stri
 
   if (!content || !content.published) notFound();
 
-  return <ContentDetailView content={content} />;
+  const relatedItems = await prisma.content.findMany({
+    where: { 
+      id: { not: content.id },
+      published: true 
+    },
+    take: 4,
+    orderBy: { createdAt: "desc" }
+  });
+
+  return <ContentDetailView content={content} relatedItems={relatedItems} />;
 }

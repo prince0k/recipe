@@ -2,8 +2,9 @@ import React from "react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/Badge";
 import { DownloadGate } from "./DownloadGate";
+import { RelatedContent } from "./RelatedContent";
 
-export function ContentDetailView({ content }: { content: any }) {
+export function ContentDetailView({ content, relatedItems }: { content: any, relatedItems?: any[] }) {
   if (!content) return null;
 
   let tags: string[] = [];
@@ -65,23 +66,28 @@ export function ContentDetailView({ content }: { content: any }) {
           {/* Main Content */}
           <div className="lg:col-span-2">
             <div
-              className="prose prose-neutral max-w-none prose-headings:font-serif prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 hover:prose-a:text-muted-foreground"
+              className="prose prose-neutral max-w-none prose-headings:font-serif prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 hover:prose-a:text-muted-foreground prose-p:leading-relaxed prose-p:text-gray-700"
+              style={{ fontSize: '1.125rem' }}
               dangerouslySetInnerHTML={{ __html: content.body }}
             />
           </div>
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 rounded-lg border border-border bg-secondary/50 p-6">
-              <h3 className="font-serif text-lg font-semibold text-foreground">
-                Get the full guide
-              </h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Download the complete PDF including grocery lists and meal prep instructions.
-              </p>
-              <div className="mt-6">
-                <DownloadGate content={content} />
+            <div className="sticky top-24 space-y-8">
+              <div className="rounded-lg border border-border bg-secondary/50 p-6">
+                <h3 className="font-serif text-lg font-semibold text-foreground">
+                  Get the full guide
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Download the complete PDF including grocery lists and meal prep instructions.
+                </p>
+                <div className="mt-6">
+                  <DownloadGate content={content} />
+                </div>
               </div>
+              
+              <RelatedContent items={relatedItems || []} />
             </div>
           </div>
         </div>

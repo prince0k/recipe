@@ -3,10 +3,12 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { RelatedContent } from "@/components/content/RelatedContent";
 
-export default async function RecipeDetailPage({ params }: { params: { slug: string } }) {
+export default async function RecipeDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const recipe = await prisma.content.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
   });
 
   if (!recipe || recipe.type !== "RECIPE") {
@@ -14,6 +16,15 @@ export default async function RecipeDetailPage({ params }: { params: { slug: str
   }
 
   const tags = JSON.parse(recipe.tags || "[]");
+
+  const relatedItems = await prisma.content.findMany({
+    where: { 
+      id: { not: recipe.id },
+      published: true 
+    },
+    take: 3,
+    orderBy: { createdAt: "desc" }
+  });
 
   return (
     <div className="bg-background min-h-screen">
@@ -154,6 +165,8 @@ export default async function RecipeDetailPage({ params }: { params: { slug: str
                 </p>
                 <Button className="w-full bg-secondary hover:bg-secondary-dark rounded-xl">Get Started</Button>
               </div>
+
+              <RelatedContent items={relatedItems} />
             </div>
           </aside>
         </div>
