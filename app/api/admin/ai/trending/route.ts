@@ -48,7 +48,7 @@ export async function GET() {
     const aiResponse = await getGeminiResponse(prompt, true);
     console.log("Gemini Trending Response:", aiResponse);
     
-    let data = { categories: [] };
+    let data: { categories: { name: string; topics: string[] }[] } = { categories: [] };
     try {
       data = JSON.parse(aiResponse || '{"categories": []}');
     } catch (parseError) {
