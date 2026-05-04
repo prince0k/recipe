@@ -30,7 +30,7 @@ export function RelatedContent({ items }: { items: any[] }) {
             )}
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <Badge variant="outline" className="text-[10px] uppercase px-1 py-0 h-4">
+                <Badge className="text-[10px] uppercase px-1 py-0 h-4 border border-border bg-transparent text-muted-foreground">
                   {item.type.replace('_', ' ')}
                 </Badge>
               </div>
