@@ -5,7 +5,7 @@ import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
-  apiVersion: 'v1',
+  apiVersion: 'v1beta',
 });
 
 export async function POST(req: Request) {
@@ -86,7 +86,7 @@ export async function POST(req: Request) {
     while (attempts < maxAttempts) {
       try {
         const response = await ai.models.generateContent({
-          model: 'gemini-1.5-flash',
+          model: 'gemini-2.5-flash',
           contents: `${prompt}\n\nHere is the general plan to personalize:\n\n${strippedBody}`,
         });
         generatedContent = response.text || generatedContent;
