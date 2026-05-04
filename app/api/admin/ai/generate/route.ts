@@ -64,7 +64,7 @@ export async function POST(req: Request) {
     // 2. Process Body Images
     let finalBody = data.body;
     let imageMatches = finalBody.match(/\[\[IMAGE_PROMPT: (.*?)\]\]/g);
-    
+
     // Fallback: If AI forgot to include placeholders, force-insert them
     if (!imageMatches) {
       console.log("AI forgot image placeholders, manually inserting...");

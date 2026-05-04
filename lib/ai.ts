@@ -22,10 +22,10 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
     while (attempts < maxAttempts) {
       try {
         const response = await ai.models.generateContent({
-          model: modelName, 
+          model: modelName,
           contents: prompt,
         });
-        
+
         let text = response.text || "";
         if (jsonMode) {
           text = text.replace(/```json\n?/, "").replace(/\n?```/, "").trim();
@@ -58,10 +58,10 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
 export async function generateImage(prompt: string) {
   try {
     console.log(`Generating Imagen 4.0 image for: ${prompt}`);
-    
+
     // Using the verified Imagen 4.0 Ultra model from user's quota
     const model = ai.getGenerativeModel({ model: "imagen-4.0-ultra-generate-001" });
-    
+
     const result = await (model as any).generateImages({
       prompt: `Premium culinary photography, cinematic lighting, artisanal style, 8k resolution, professional food styling: ${prompt}`,
       number_of_images: 1,
@@ -77,7 +77,7 @@ export async function generateImage(prompt: string) {
     throw new Error("Imagen returned no images");
   } catch (error: any) {
     console.error("Imagen 4.0 Error:", error.message || error);
-    
+
     // Professional Stock Fallback (Unsplash) - Free, no OpenAI, high quality
     const encodedPrompt = encodeURIComponent(prompt);
     return `https://source.unsplash.com/featured/1200x800/?culinary,food,${encodedPrompt}`;
