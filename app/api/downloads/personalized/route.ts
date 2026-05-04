@@ -77,17 +77,29 @@ export async function POST(req: Request) {
     // Strip HTML from the original body to save tokens
     const strippedBody = content.body.replace(/<[^>]*>?/gm, '');
 
-    // 2. Call Gemini to generate the personalized plan
+    // 2. Call Gemini to generate the personalized plan with retries
     let generatedContent = "Generation pending. (Error: AI service currently unavailable.)";
-    try {
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: `${prompt}\n\nHere is the general plan to personalize:\n\n${strippedBody}`,
-      });
-      generatedContent = response.text || generatedContent;
-    } catch (aiError: any) {
-      console.error("Gemini Error:", aiError.message);
-      generatedContent = `[AI Generation Failed] ${aiError.message}`;
+    let attempts = 0;
+    const maxAttempts = 3;
+
+    while (attempts < maxAttempts) {
+      try {
+        const response = await ai.models.generateContent({
+          model: 'gemini-1.5-flash',
+          contents: `${prompt}\n\nHere is the general plan to personalize:\n\n${strippedBody}`,
+        });
+        generatedContent = response.text || generatedContent;
+        break; // Success!
+      } catch (aiError: any) {
+        attempts++;
+        console.error(`Gemini Attempt ${attempts} Failed:`, aiError.message);
+        generatedContent = `[AI Generation Failed] ${aiError.message}`;
+        
+        if (attempts < maxAttempts) {
+          // Wait 2 seconds before retrying
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+      }
     }
 
     // 3. Create the Personalized Request with the output
