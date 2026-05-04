@@ -7,32 +7,60 @@ import { Button } from "@/components/ui/Button";
 interface PersonalisedWizardProps {
   isOpen: boolean;
   onClose: () => void;
-  content: any; // Full content object
+  content: any;
 }
 
-export function PersonalisedWizard({ isOpen, onClose, content }: PersonalisedWizardProps) {
+export function PersonalisedWizard({
+  isOpen,
+  onClose,
+  content,
+}: PersonalisedWizardProps) {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
-  let customQuestions = [];
+  let customQuestions: any[] = [];
   try {
-    customQuestions = content.painPointQuestions ? JSON.parse(content.painPointQuestions) : [];
-  } catch (e) {}
+    customQuestions = content.painPointQuestions
+      ? JSON.parse(content.painPointQuestions)
+      : [];
+  } catch (e) {
+    // ignore parse errors
+  }
 
   const totalSteps = 4 + customQuestions.length;
 
   const standardQuestions = [
-    { id: "goal", question: "What is your primary health goal right now?", options: ["Weight Loss", "Muscle Gain", "Hormone Balance", "General Health"] },
-    { id: "age", question: "What is your current age range?", options: ["18-25", "26-35", "36-50", "50+"] },
-    { id: "diet", question: "Do you have any strict dietary preferences?", options: ["None", "Vegan/Vegetarian", "Keto/Low-Carb", "Gluten-Free/Dairy-Free"] },
-    { id: "time", question: "How much time do you have for meal prep daily?", options: ["Under 15 mins", "15-30 mins", "30-60 mins", "Over an hour"] },
+    {
+      id: "goal",
+      question: "What is your primary health goal right now?",
+      options: ["Weight Loss", "Muscle Gain", "Hormone Balance", "General Health"],
+    },
+    {
+      id: "age",
+      question: "What is your current age range?",
+      options: ["18-25", "26-35", "36-50", "50+"],
+    },
+    {
+      id: "diet",
+      question: "Do you have any strict dietary preferences?",
+      options: ["None", "Vegan/Vegetarian", "Keto/Low-Carb", "Gluten-Free/Dairy-Free"],
+    },
+    {
+      id: "time",
+      question: "How much time do you have for meal prep daily?",
+      options: ["Under 15 mins", "15-30 mins", "30-60 mins", "Over an hour"],
+    },
   ];
 
   const allQuestions = [
     ...standardQuestions,
-    ...customQuestions.map((q: any, i: number) => ({ id: `custom_${i}`, question: q.question, options: q.options }))
+    ...customQuestions.map((q: any, i: number) => ({
+      id: `custom_${i}`,
+      question: q.question,
+      options: q.options,
+    })),
   ];
 
   const currentQuestion = allQuestions[step - 1];
@@ -45,7 +73,6 @@ export function PersonalisedWizard({ isOpen, onClose, content }: PersonalisedWiz
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      // Submit
       setIsSubmitting(true);
       try {
         const res = await fetch("/api/downloads/personalized", {
@@ -53,8 +80,8 @@ export function PersonalisedWizard({ isOpen, onClose, content }: PersonalisedWiz
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contentId: content.id,
-            answers
-          })
+            answers,
+          }),
         });
 
         if (res.ok) {
@@ -72,20 +99,41 @@ export function PersonalisedWizard({ isOpen, onClose, content }: PersonalisedWiz
 
   if (success) {
     return (
-      <Modal isOpen={isOpen} onClose={onClose} title="Request Received!">
-        <div className="py-8 text-center space-y-4">
-          <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto text-3xl mb-4">
-            ✓
+      <Modal isOpen={isOpen} onClose={onClose} title="Request Received">
+        <div className="space-y-4 py-6 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-secondary text-foreground">
+            <svg
+              className="h-8 w-8"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
           </div>
-          <h3 className="text-xl font-bold text-gray-900">Request Received!</h3>
-          <p className="text-gray-600">
-            We've saved your preferences and our AI is currently generating a custom version of <strong>{content.title}</strong> tailored perfectly for you.
+          <h3 className="text-xl font-semibold text-foreground">
+            Request Received
+          </h3>
+          <p className="text-muted-foreground">
+            We&apos;ve saved your preferences and are generating a custom version
+            of <strong className="text-foreground">{content.title}</strong>{" "}
+            tailored for you.
           </p>
-          <div className="bg-blue-50 text-blue-800 p-4 rounded-lg text-sm">
-            <p><strong>What happens next?</strong></p>
-            <p>Our team will quickly review the AI generation for quality, and then we will send the final PDF directly to your email address!</p>
+          <div className="rounded-lg border border-border bg-secondary/50 p-4 text-sm text-foreground">
+            <p className="font-medium">What happens next?</p>
+            <p className="mt-1 text-muted-foreground">
+              Our team will review the AI generation for quality, then send the
+              final PDF directly to your email.
+            </p>
           </div>
-          <Button onClick={onClose} className="mt-4 w-full">Done</Button>
+          <Button onClick={onClose} className="mt-4 w-full">
+            Done
+          </Button>
         </div>
       </Modal>
     );
@@ -94,17 +142,26 @@ export function PersonalisedWizard({ isOpen, onClose, content }: PersonalisedWiz
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Personalise Your Plan">
       <div className="space-y-6 pt-2">
-        <div className="flex justify-between items-center text-sm font-medium text-gray-500 mb-2">
-          <span>Step {step} of {totalSteps}</span>
+        {/* Progress */}
+        <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
+          <span>
+            Step {step} of {totalSteps}
+          </span>
           <span>{Math.round((step / totalSteps) * 100)}%</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2 mb-6">
-          <div className="bg-[#10b981] h-2 rounded-full transition-all duration-300" style={{ width: `${(step / totalSteps) * 100}%` }}></div>
+        <div className="mb-6 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+          <div
+            className="h-full bg-foreground transition-all duration-300"
+            style={{ width: `${(step / totalSteps) * 100}%` }}
+          />
         </div>
 
+        {/* Question */}
         {currentQuestion && (
           <div>
-            <h3 className="text-xl font-medium text-gray-900 mb-4">{currentQuestion.question}</h3>
+            <h3 className="mb-4 text-lg font-medium text-foreground">
+              {currentQuestion.question}
+            </h3>
             <div className="space-y-3">
               {currentQuestion.options.map((opt: string, i: number) => {
                 const isSelected = answers[currentQuestion.id] === opt;
@@ -112,8 +169,10 @@ export function PersonalisedWizard({ isOpen, onClose, content }: PersonalisedWiz
                   <button
                     key={i}
                     onClick={() => handleSelect(opt)}
-                    className={`w-full text-left px-4 py-3 rounded-lg border-2 transition-colors ${
-                      isSelected ? "border-[#10b981] bg-green-50" : "border-gray-200 hover:border-green-200 hover:bg-gray-50"
+                    className={`w-full rounded-lg border px-4 py-3 text-left transition-colors ${
+                      isSelected
+                        ? "border-foreground bg-secondary text-foreground"
+                        : "border-border text-foreground hover:border-foreground/30 hover:bg-secondary/50"
                     }`}
                   >
                     {opt}
@@ -124,13 +183,18 @@ export function PersonalisedWizard({ isOpen, onClose, content }: PersonalisedWiz
           </div>
         )}
 
-        <div className="flex justify-between pt-6">
+        {/* Navigation */}
+        <div className="flex justify-between pt-4">
           {step > 1 ? (
-            <Button variant="ghost" onClick={() => setStep(step - 1)}>Back</Button>
-          ) : <div></div>}
-          
-          <Button 
-            onClick={nextStep} 
+            <Button variant="ghost" onClick={() => setStep(step - 1)}>
+              Back
+            </Button>
+          ) : (
+            <div />
+          )}
+
+          <Button
+            onClick={nextStep}
             disabled={!answers[currentQuestion?.id] || isSubmitting}
             isLoading={isSubmitting}
           >

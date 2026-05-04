@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Newsreader } from "next/font/google";
 import SessionProvider from "@/components/auth/SessionProvider";
 import "./globals.css";
@@ -17,9 +17,20 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
-  title: "NutriGuide by Stewart Lucas - Free Diet Plans & Recipes",
-  description: "Download free diet plans, cheat sheets, and recipes to reach your health goals.",
-  keywords: "diet plan, healthy recipes, weight loss, PCOS diet, diabetes diet",
+  title: "NutriGuide - Science-Backed Diet Plans & Recipes",
+  description: "Transform your health with free, science-backed diet plans, cheat sheets, and recipes designed for real results.",
+  keywords: "diet plan, healthy recipes, weight loss, PCOS diet, diabetes diet, meal planning",
+  openGraph: {
+    title: "NutriGuide - Science-Backed Diet Plans & Recipes",
+    description: "Transform your health with free, science-backed diet plans and recipes.",
+    type: "website",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a0a",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -28,8 +39,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${newsreader.variable}`}>
-      <body className="min-h-screen flex flex-col bg-background text-text">
+    <html lang="en" className={`${inter.variable} ${newsreader.variable} bg-background`}>
+      <body className="min-h-screen flex flex-col">
         <SessionProvider>
           {children}
         </SessionProvider>

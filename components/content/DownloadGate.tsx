@@ -62,60 +62,94 @@ export function DownloadGate({ content }: DownloadGateProps) {
 
   return (
     <>
-      <Button 
-        onClick={() => setShowOptionsModal(true)} 
-        size="lg" 
-        className="w-full bg-[#10b981] hover:bg-[#059669] text-white shadow-lg"
+      <Button
+        onClick={() => setShowOptionsModal(true)}
+        size="lg"
+        className="w-full"
       >
         Download Free PDF
       </Button>
 
       {/* Options Modal */}
-      <Modal isOpen={showOptionsModal} onClose={() => setShowOptionsModal(false)} title="Choose Download Option">
+      <Modal
+        isOpen={showOptionsModal}
+        onClose={() => setShowOptionsModal(false)}
+        title="Choose Download Option"
+      >
         <div className="space-y-4 pt-2">
-          <button 
+          <button
             onClick={handleGeneralDownload}
             disabled={isLoading}
-            className="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-[#10b981] hover:shadow-md transition-all group"
+            className="w-full rounded-lg border border-border p-4 text-left transition-all hover:border-foreground/30 hover:bg-secondary/50"
           >
-            <h4 className="text-lg font-bold text-gray-900 group-hover:text-[#10b981]">General PDF (Instant)</h4>
-            <p className="text-sm text-gray-500 mt-1">Download the standard version immediately.</p>
+            <h4 className="font-semibold text-foreground">
+              General PDF (Instant)
+            </h4>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Download the standard version immediately.
+            </p>
           </button>
-          
-          <button 
+
+          <button
             onClick={handlePersonalisedRequest}
-            className="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-[#10b981] hover:shadow-md transition-all group bg-green-50/50"
+            className="w-full rounded-lg border border-border bg-secondary/50 p-4 text-left transition-all hover:border-foreground/30"
           >
-            <div className="flex justify-between items-center">
-              <h4 className="text-lg font-bold text-[#10b981]">Personalised Plan 🌟</h4>
-              <span className="text-xs font-bold uppercase tracking-wider text-green-700 bg-green-100 px-2 py-1 rounded">Recommended</span>
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-foreground">
+                Personalised Plan
+              </h4>
+              <span className="rounded-full bg-foreground px-2 py-0.5 text-xs font-medium text-background">
+                Recommended
+              </span>
             </div>
-            <p className="text-sm text-gray-600 mt-1">Answer 7 quick questions and we'll generate a custom version just for your body type and goals.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Answer 7 quick questions and we&apos;ll generate a custom version
+              just for your body type and goals.
+            </p>
           </button>
         </div>
       </Modal>
 
       {/* Wizard Modal */}
       {showWizard && (
-        <PersonalisedWizard 
-          isOpen={showWizard} 
-          onClose={() => setShowWizard(false)} 
-          content={content} 
+        <PersonalisedWizard
+          isOpen={showWizard}
+          onClose={() => setShowWizard(false)}
+          content={content}
         />
       )}
 
       {/* Auth Modal */}
-      <Modal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} title="Sign up to continue">
+      <Modal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        title="Sign up to continue"
+      >
         <div className="space-y-6 pt-2">
-          <p className="text-gray-600">
-            You need a free account to access personalised plans and unlimited downloads!
+          <p className="text-muted-foreground">
+            You need a free account to access personalised plans and unlimited
+            downloads.
           </p>
           <div className="flex flex-col gap-4">
-            <Button onClick={() => router.push(`/signup?redirect=/${content.id}`)} className="w-full">
+            <Button
+              onClick={() => router.push(`/signup?redirect=/${content.id}`)}
+              className="w-full"
+            >
               Create Free Account
             </Button>
-            <div className="text-center text-sm text-gray-500 my-2">Or</div>
-            <Button variant="outline" onClick={() => router.push(`/login?redirect=/${content.id}`)} className="w-full">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-card px-2 text-muted-foreground">Or</span>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => router.push(`/login?redirect=/${content.id}`)}
+              className="w-full"
+            >
               Log in to existing account
             </Button>
           </div>
