@@ -6,68 +6,83 @@ import { DownloadGate } from "./DownloadGate";
 export function ContentDetailView({ content }: { content: any }) {
   if (!content) return null;
 
-  let tags = [];
+  let tags: string[] = [];
   try {
-    if (typeof content.tags === 'string') {
+    if (typeof content.tags === "string") {
       tags = JSON.parse(content.tags);
     } else if (Array.isArray(content.tags)) {
       tags = content.tags;
     }
-  } catch (e) {}
+  } catch (e) {
+    // ignore parse errors
+  }
 
   return (
-    <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="mb-8 text-center">
-        {tags.length > 0 && (
-          <div className="flex justify-center gap-2 mb-4">
-            {tags.map((t: string) => (
-              <Badge key={t} variant="success">{t}</Badge>
-            ))}
+    <article className="py-12 lg:py-20">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-10 text-center">
+          {tags.length > 0 && (
+            <div className="mb-4 flex flex-wrap justify-center gap-2">
+              {tags.map((t: string) => (
+                <Badge key={t}>{t}</Badge>
+              ))}
+            </div>
+          )}
+          <h1 className="font-serif text-4xl font-bold tracking-tight text-foreground sm:text-5xl text-balance">
+            {content.title}
+          </h1>
+          <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+            {content.excerpt}
+          </p>
+        </div>
+
+        {/* Cover Media */}
+        {content.coverVideo ? (
+          <div className="relative mb-12 aspect-[2/1] overflow-hidden rounded-lg border border-border bg-foreground">
+            <video
+              src={content.coverVideo}
+              poster={content.coverImage || undefined}
+              controls
+              className="h-full w-full object-cover"
+            />
           </div>
-        )}
-        <h1 className="text-4xl sm:text-5xl font-extrabold font-serif text-gray-900 mb-6">
-          {content.title}
-        </h1>
-        <p className="text-xl text-gray-500 max-w-2xl mx-auto">
-          {content.excerpt}
-        </p>
-      </div>
+        ) : content.coverImage ? (
+          <div className="relative mb-12 aspect-[2/1] overflow-hidden rounded-lg border border-border">
+            <Image
+              src={content.coverImage}
+              alt={content.title}
+              fill
+              sizes="(max-width: 1024px) 100vw, 1024px"
+              className="object-cover"
+              priority
+            />
+          </div>
+        ) : null}
 
-      {content.coverVideo ? (
-        <div className="relative w-full aspect-[2/1] rounded-2xl overflow-hidden mb-12 shadow-lg bg-gray-900">
-          <video
-            src={content.coverVideo}
-            poster={content.coverImage || undefined}
-            controls
-            className="w-full h-full object-cover"
-          />
-        </div>
-      ) : content.coverImage ? (
-        <div className="relative w-full aspect-[2/1] rounded-2xl overflow-hidden mb-12 shadow-lg">
-          <Image
-            src={content.coverImage}
-            alt={content.title}
-            fill
-            sizes="(max-width: 1024px) 100vw, 1024px"
-            className="object-cover"
-            priority
-          />
-        </div>
-      ) : null}
+        {/* Content Grid */}
+        <div className="grid gap-12 lg:grid-cols-3">
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            <div
+              className="prose prose-neutral max-w-none prose-headings:font-serif prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 hover:prose-a:text-muted-foreground"
+              dangerouslySetInnerHTML={{ __html: content.body }}
+            />
+          </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2 prose prose-lg prose-green max-w-none">
-          {/* In a real app with Tiptap, this is HTML string */}
-          <div dangerouslySetInnerHTML={{ __html: content.body }} />
-        </div>
-
-        <div className="lg:col-span-1">
-          <div className="sticky top-24 bg-gray-50 p-6 rounded-2xl border border-gray-100">
-            <h3 className="text-lg font-bold font-serif mb-4">Get the full guide</h3>
-            <p className="text-gray-600 mb-6 text-sm">
-              Download the complete PDF including grocery lists and meal prep instructions.
-            </p>
-            <DownloadGate content={content} />
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-24 rounded-lg border border-border bg-secondary/50 p-6">
+              <h3 className="font-serif text-lg font-semibold text-foreground">
+                Get the full guide
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Download the complete PDF including grocery lists and meal prep instructions.
+              </p>
+              <div className="mt-6">
+                <DownloadGate content={content} />
+              </div>
+            </div>
           </div>
         </div>
       </div>

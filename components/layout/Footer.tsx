@@ -1,59 +1,75 @@
 import React from "react";
 import Link from "next/link";
 
+const footerLinks = {
+  resources: [
+    { name: "Recipes", href: "/recipes" },
+    { name: "Diet Plans", href: "/diet-plan" },
+    { name: "Cheat Sheets", href: "/cheat-sheets" },
+  ],
+  company: [
+    { name: "About", href: "/about" },
+    { name: "Blog", href: "/blog" },
+  ],
+};
+
 export function Footer() {
   return (
-    <footer className="bg-gray-50 border-t border-gray-200 mt-auto">
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
-        <div className="xl:grid xl:grid-cols-3 xl:gap-8">
-          <div className="space-y-8 xl:col-span-1">
-            <span className="font-serif text-2xl font-bold text-[#10b981]">NutriGuide</span>
-            <p className="text-gray-500 text-base">
-              Free diet plans, cheat sheets, and recipes to reach your health goals, backed by nutritional science.
+    <footer className="border-t border-border bg-background mt-auto">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div className="grid gap-8 lg:grid-cols-3">
+          {/* Brand */}
+          <div className="space-y-4">
+            <Link href="/" className="inline-block">
+              <span className="font-serif text-xl font-bold text-foreground">NutriGuide</span>
+            </Link>
+            <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
+              Science-backed nutrition guidance. Free diet plans, cheat sheets, and recipes to help you reach your health goals.
             </p>
           </div>
-          <div className="mt-12 grid grid-cols-2 gap-8 xl:mt-0 xl:col-span-2">
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">Resources</h3>
-                <ul className="mt-4 space-y-4">
-                  <li>
-                    <Link href="/recipes" className="text-base text-gray-500 hover:text-gray-900">
-                      Recipes
+
+          {/* Links */}
+          <div className="grid grid-cols-2 gap-8 lg:col-span-2 lg:justify-end lg:flex lg:gap-16">
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                Resources
+              </h3>
+              <ul className="mt-4 space-y-3">
+                {footerLinks.resources.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-foreground hover:text-muted-foreground transition-colors"
+                    >
+                      {link.name}
                     </Link>
                   </li>
-                  <li>
-                    <Link href="/diet-plan" className="text-base text-gray-500 hover:text-gray-900">
-                      Diet Plans
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                Company
+              </h3>
+              <ul className="mt-4 space-y-3">
+                {footerLinks.company.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-foreground hover:text-muted-foreground transition-colors"
+                    >
+                      {link.name}
                     </Link>
                   </li>
-                  <li>
-                    <Link href="/cheat-sheets" className="text-base text-gray-500 hover:text-gray-900">
-                      Cheat Sheets
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-              <div className="mt-12 md:mt-0">
-                <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">Company</h3>
-                <ul className="mt-4 space-y-4">
-                  <li>
-                    <Link href="/about" className="text-base text-gray-500 hover:text-gray-900">
-                      About
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/blog" className="text-base text-gray-500 hover:text-gray-900">
-                      Blog
-                    </Link>
-                  </li>
-                </ul>
-              </div>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
-        <div className="mt-12 border-t border-gray-200 pt-8">
-          <p className="text-base text-gray-400 xl:text-center">
+
+        {/* Bottom */}
+        <div className="mt-12 border-t border-border pt-8">
+          <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} NutriGuide by Stewart Lucas. All rights reserved.
           </p>
         </div>
