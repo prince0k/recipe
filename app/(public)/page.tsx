@@ -1,9 +1,15 @@
-import Link from "next/link";
-import Image from "next/image";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { prisma } from "@/lib/db";
 
-export default function Home() {
+export default async function Home() {
+  const featuredRecipes = await prisma.content.findMany({
+    where: { 
+      type: "RECIPE",
+      published: true 
+    },
+    take: 3,
+    orderBy: { createdAt: "desc" }
+  });
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -62,10 +68,10 @@ export default function Home() {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { title: "Quick Recipes", img: "/assets/quick.png", count: "120+ Recipes", color: "bg-orange-500/20" },
-              { title: "Healthy Eating", img: "/assets/healthy.png", count: "85+ Recipes", color: "bg-olive/20" },
-              { title: "Budget Friendly", img: "/assets/budget.png", count: "60+ Recipes", color: "bg-yellow-500/20" },
-              { title: "Dinner Ideas", img: "/assets/dinner.png", count: "95+ Recipes", color: "bg-red-500/20" },
+              { title: "Quick Recipes", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=1000", count: "120+ Recipes", color: "bg-orange-500/20" },
+              { title: "Healthy Eating", img: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&q=80&w=1000", count: "85+ Recipes", color: "bg-olive/20" },
+              { title: "Budget Friendly", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=1000", count: "60+ Recipes", color: "bg-yellow-500/20" },
+              { title: "Dinner Ideas", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=1000", count: "95+ Recipes", color: "bg-red-500/20" },
             ].map((cat) => (
               <Link key={cat.title} href={`/recipes?category=${cat.title.toLowerCase().replace(' ', '-')}`} className="group">
                 <div className="relative h-96 rounded-[2.5rem] overflow-hidden cinematic-shadow transition-all duration-500 group-hover:-translate-y-2">
@@ -99,28 +105,15 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {/* We'll use a placeholder for now, but in reality we'd map over actual data */}
-            <PlaceholderCard 
-              title="Slow-Roasted Tuscan Garlic Chicken" 
-              time="1h 45m" 
-              difficulty="Medium" 
-              img="/assets/dinner.png"
-              tags={["Dinner", "High Protein"]}
-            />
-            <PlaceholderCard 
-              title="15-Minute Mediterranean Pasta" 
-              time="15m" 
-              difficulty="Easy" 
-              img="/assets/quick.png"
-              tags={["Lunch", "Quick"]}
-            />
-            <PlaceholderCard 
-              title="Fresh Avocado & Quinoa Buddha Bowl" 
-              time="20m" 
-              difficulty="Easy" 
-              img="/assets/healthy.png"
-              tags={["Healthy", "Vegan"]}
-            />
+            {featuredRecipes.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} />
+            ))}
+            
+            {featuredRecipes.length === 0 && (
+              <div className="col-span-full text-center py-20 text-text-muted italic">
+                Our culinary team is currently preparing new masterpieces. Check back soon!
+              </div>
+            )}
           </div>
           
           <div className="mt-16 text-center">
@@ -167,13 +160,19 @@ export default function Home() {
   );
 }
 
-function PlaceholderCard({ title, time, difficulty, img, tags }: any) {
+function RecipeCard({ recipe }: { recipe: any }) {
+  const tags = JSON.parse(recipe.tags || "[]");
   return (
     <div className="group bg-white rounded-[2.5rem] p-4 cinematic-shadow transition-all duration-500 hover:-translate-y-2">
       <div className="relative h-64 rounded-[2rem] overflow-hidden mb-6">
-        <Image src={img} alt={title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+        <Image 
+          src={recipe.coverImage || "https://images.unsplash.com/photo-1495195129352-aec325b55b65?auto=format&fit=crop&q=80&w=1000"} 
+          alt={recipe.title} 
+          fill 
+          className="object-cover transition-transform duration-700 group-hover:scale-110" 
+        />
         <div className="absolute top-4 right-4 flex gap-2">
-          {tags.map((tag: string) => (
+          {tags.slice(0, 2).map((tag: string) => (
             <span key={tag} className="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-text">
               {tag}
             </span>
@@ -184,15 +183,15 @@ function PlaceholderCard({ title, time, difficulty, img, tags }: any) {
         <div className="flex items-center gap-4 mb-3">
           <span className="text-olive text-xs font-bold flex items-center">
             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            {time}
+            {recipe.cookingTime || '45m'}
           </span>
           <span className="text-secondary text-xs font-bold flex items-center">
             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-            {difficulty}
+            {recipe.difficulty || 'Medium'}
           </span>
         </div>
-        <h3 className="text-2xl font-bold text-text mb-4 group-hover:text-primary transition-colors leading-tight">{title}</h3>
-        <Link href={`/recipes/${title.toLowerCase().replace(/ /g, '-')}`} className="text-sm font-bold text-primary flex items-center group-hover:translate-x-2 transition-transform">
+        <h3 className="text-2xl font-bold text-text mb-4 group-hover:text-primary transition-colors leading-tight line-clamp-2">{recipe.title}</h3>
+        <Link href={`/recipes/${recipe.slug}`} className="text-sm font-bold text-primary flex items-center group-hover:translate-x-2 transition-transform">
           View Recipe <span className="ml-1">→</span>
         </Link>
       </div>
