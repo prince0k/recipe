@@ -60,7 +60,7 @@ export async function generateImage(prompt: string) {
     console.log(`Generating Imagen image for: ${prompt}`);
 
     const response = await ai.models.generateImages({
-      model: "imagen-3.0-generate-002",
+      model: "imagen-3.0-generate-001",
       prompt: `Premium culinary photography, cinematic lighting, artisanal style, 8k resolution, professional food styling: ${prompt}`,
       config: {
         numberOfImages: 1,
