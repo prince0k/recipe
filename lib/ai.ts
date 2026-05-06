@@ -15,6 +15,8 @@ const imageAi = new GoogleGenAI({
 const MODELS = [
   'gemini-2.5-flash',
   'gemini-2.0-flash',
+  'gemini-1.5-pro',
+  'gemini-1.5-flash'
 ];
 
 export async function getGeminiResponse(prompt: string, jsonMode = false) {
@@ -23,7 +25,7 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
 
   for (const modelName of MODELS) {
     let attempts = 0;
-    const maxAttempts = 2;
+    const maxAttempts = 3; // Try each model up to 3 times
 
     while (attempts < maxAttempts) {
       try {
@@ -40,9 +42,24 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
       } catch (error: any) {
         attempts++;
         lastError = error;
-        const msg = error.message.toLowerCase();
+        const msg = (error.message || "").toLowerCase();
+        
+        console.warn(`[AI Attempt ${attempts}/${maxAttempts}] ${modelName} failed: ${msg.substring(0, 100)}...`);
+
+        // If the model literally doesn't exist on this API key, don't waste time retrying it
         if (msg.includes("404") || msg.includes("not found")) break;
-        if (msg.includes("429") || msg.includes("quota") || msg.includes("resource_exhausted")) break;
+
+        // If rate limited, wait 5 seconds before trying the SAME model again
+        if (msg.includes("429") || msg.includes("quota") || msg.includes("resource_exhausted")) {
+          if (attempts < maxAttempts) {
+             console.log(`Cooling down for 5 seconds before retrying...`);
+             await delay(5000);
+             continue;
+          }
+          break; // Move to next model if we exhausted our 3 attempts
+        }
+
+        // Server overload errors
         if (msg.includes("503") || msg.includes("high demand") || msg.includes("unavailable")) {
           if (attempts < maxAttempts) {
             await delay(2000);
@@ -50,11 +67,13 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
           }
           break;
         }
-        throw error;
+        
+        // Unhandled error
+        break; 
       }
     }
   }
-  throw lastError || new Error("All AI models failed.");
+  throw lastError || new Error("All AI models failed due to rate limits or API errors.");
 }
 
 /**
