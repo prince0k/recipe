@@ -6,6 +6,7 @@ const ai = new GoogleGenAI({
 
 const imageAi = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
+  apiVersion: "v1", // Imagen must strictly use v1, otherwise it throws 404
 });
 
 // Reliable text models list
@@ -86,9 +87,9 @@ export async function generateImage(prompt: string) {
   try {
     console.log(`Generating Imagen image for: ${prompt}`);
 
-    // Uses imageAi client (no v1beta) — Imagen requires the default API version
+    // Uses imageAi client with v1 API
     const response = await imageAi.models.generateImages({
-      model: "gemini-3.1-flash-image-preview",
+      model: "imagen-3.0-generate-001",
       prompt: `Premium culinary photography, cinematic lighting, artisanal style, 8k resolution, professional food styling: ${prompt}`,
       config: {
         numberOfImages: 1,
