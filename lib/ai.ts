@@ -12,7 +12,8 @@ const imageAi = new GoogleGenAI({
 
 // Reliable text models list
 const MODELS = [
-  'gemini-3.1-flash-lite'
+  'gemini-1.5-flash',
+  'gemini-1.5-pro'
 ];
 
 export async function getGeminiResponse(prompt: string, jsonMode = false) {
