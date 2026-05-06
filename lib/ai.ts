@@ -2,17 +2,16 @@ import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
-  apiVersion: "v1alpha",
 });
 
 const imageAi = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
-  apiVersion: "v1", 
 });
 
 // Reliable text models list
 const MODELS = [
-  'gemini-3.1-flash-lite'
+  'gemini-1.5-flash',
+  'gemini-1.5-pro'
 ];
 
 export async function getGeminiResponse(prompt: string, jsonMode = false) {
