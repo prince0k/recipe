@@ -89,7 +89,7 @@ export async function generateImage(prompt: string) {
 
     // Uses imageAi client with v1 API
     const response = await imageAi.models.generateImages({
-      model: "imagen-3.0-generate-001",
+      model: "gemini-3.1-flash-image-preview",
       prompt: `Premium culinary photography, cinematic lighting, artisanal style, 8k resolution, professional food styling: ${prompt}`,
       config: {
         numberOfImages: 1,
