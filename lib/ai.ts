@@ -51,11 +51,19 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
         // If the model literally doesn't exist on this API key, don't waste time retrying it
         if (msg.includes("404") || msg.includes("not found")) break;
 
-        // If rate limited, wait 5 seconds before trying the SAME model again
+        // Smart Rate Limit Handling
         if (msg.includes("429") || msg.includes("quota") || msg.includes("resource_exhausted")) {
           if (attempts < maxAttempts) {
-             console.log(`Cooling down for 5 seconds before retrying...`);
-             await delay(5000);
+             // Look for "retry in 16.27s" in Google's error
+             const retryMatch = msg.match(/retry in (\d+(?:\.\d+)?)s/);
+             let waitMs = 10000; // Default 10s
+             
+             if (retryMatch && retryMatch[1]) {
+               waitMs = (Math.ceil(parseFloat(retryMatch[1])) + 1) * 1000; // requested wait + 1 buffer second
+             }
+             
+             console.log(`Rate limit hit. Google requested cool down. Waiting ${waitMs / 1000} seconds before retrying...`);
+             await delay(waitMs);
              continue;
           }
           break; // Move to next model if we exhausted our 3 attempts
@@ -64,7 +72,7 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
         // Server overload errors
         if (msg.includes("503") || msg.includes("high demand") || msg.includes("unavailable")) {
           if (attempts < maxAttempts) {
-            await delay(2000);
+            await delay(5000);
             continue;
           }
           break;
