@@ -1,14 +1,20 @@
 import { GoogleGenAI } from "@google/genai";
 
+// Text client: v1beta needed for Gemini 2.5 flash access
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
   apiVersion: 'v1beta',
 });
 
-// Reliable models list in order of priority (based on user quota)
+// Image client: Imagen is NOT available on v1beta, must use default version
+const imageAi = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY || "",
+});
+
+// Reliable text models list in order of priority
 const MODELS = [
-  'gemini-3.1-flash-lite-preview',
-  'gemini-2.5-flash'
+  'gemini-2.5-flash',
+  'gemini-2.0-flash',
 ];
 
 export async function getGeminiResponse(prompt: string, jsonMode = false) {
@@ -59,7 +65,8 @@ export async function generateImage(prompt: string) {
   try {
     console.log(`Generating Imagen image for: ${prompt}`);
 
-    const response = await ai.models.generateImages({
+    // Uses imageAi client (no v1beta) — Imagen requires the default API version
+    const response = await imageAi.models.generateImages({
       model: "imagen-3.0-generate-001",
       prompt: `Premium culinary photography, cinematic lighting, artisanal style, 8k resolution, professional food styling: ${prompt}`,
       config: {
@@ -76,7 +83,7 @@ export async function generateImage(prompt: string) {
   } catch (error: any) {
     console.error("Imagen Error:", error.message || error);
 
-    // source.unsplash.com is dead. Using a working static culinary fallback to prevent broken images.
+    // Reliable Unsplash fallback — source.unsplash.com is dead, this URL works
     return `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&q=80`;
   }
 }
