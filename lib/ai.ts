@@ -2,12 +2,15 @@ import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
-  apiVersion: "v1", // Must explicitly force v1, otherwise the SDK defaults to v1beta under the hood
+  apiVersion: "v1alpha",
 });
 
-const imageAi = ai; // Use the same default client for both text and images
+const imageAi = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY || "",
+  apiVersion: "v1", 
+});
 
-// Reliable text models list based on user quota limits
+// Reliable text models list
 const MODELS = [
   'gemini-3.1-flash-lite'
 ];
@@ -36,7 +39,7 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
         attempts++;
         lastError = error;
         const msg = (error.message || "").toLowerCase();
-        
+
         console.warn(`[AI Attempt ${attempts}/${maxAttempts}] ${modelName} failed: ${msg.substring(0, 100)}...`);
 
         // If the model literally doesn't exist on this API key, don't waste time retrying it
@@ -45,17 +48,17 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
         // Smart Rate Limit Handling
         if (msg.includes("429") || msg.includes("quota") || msg.includes("resource_exhausted")) {
           if (attempts < maxAttempts) {
-             // Look for "retry in 16.27s" in Google's error
-             const retryMatch = msg.match(/retry in (\d+(?:\.\d+)?)s/);
-             let waitMs = 10000; // Default 10s
-             
-             if (retryMatch && retryMatch[1]) {
-               waitMs = (Math.ceil(parseFloat(retryMatch[1])) + 1) * 1000; // requested wait + 1 buffer second
-             }
-             
-             console.log(`Rate limit hit. Google requested cool down. Waiting ${waitMs / 1000} seconds before retrying...`);
-             await delay(waitMs);
-             continue;
+            // Look for "retry in 16.27s" in Google's error
+            const retryMatch = msg.match(/retry in (\d+(?:\.\d+)?)s/);
+            let waitMs = 10000; // Default 10s
+
+            if (retryMatch && retryMatch[1]) {
+              waitMs = (Math.ceil(parseFloat(retryMatch[1])) + 1) * 1000; // requested wait + 1 buffer second
+            }
+
+            console.log(`Rate limit hit. Google requested cool down. Waiting ${waitMs / 1000} seconds before retrying...`);
+            await delay(waitMs);
+            continue;
           }
           break; // Move to next model if we exhausted our 3 attempts
         }
@@ -68,9 +71,9 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
           }
           break;
         }
-        
+
         // Unhandled error
-        break; 
+        break;
       }
     }
   }
