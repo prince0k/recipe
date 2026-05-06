@@ -2,6 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
+  apiVersion: "v1", // Must explicitly force v1, otherwise the SDK defaults to v1beta under the hood
 });
 
 const imageAi = ai; // Use the same default client for both text and images
