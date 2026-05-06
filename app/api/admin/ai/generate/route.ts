@@ -114,6 +114,10 @@ export async function POST(req: Request) {
       }
     });
 
+    // Instantly clear the cache for the entire application so new content shows up
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath("/", "layout");
+
     return NextResponse.json({ success: true, id: content.id, title: content.title });
   } catch (error: any) {
     console.error("Content Generation Error:", error);

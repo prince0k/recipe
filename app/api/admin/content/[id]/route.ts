@@ -24,6 +24,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   }
 }
 
+import { revalidatePath } from "next/cache";
+
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
@@ -50,6 +52,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       }
     });
 
+    // Forcibly clear the Next.js cache across the entire site instantly
+    revalidatePath("/", "layout");
+
     return NextResponse.json({ success: true, id: content.id });
   } catch (error) {
     console.error("Update error:", error);
@@ -68,6 +73,8 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     await prisma.content.delete({
       where: { id }
     });
+
+    revalidatePath("/", "layout");
 
     return NextResponse.json({ success: true });
   } catch (error) {
