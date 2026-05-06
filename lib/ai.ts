@@ -57,30 +57,27 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
  */
 export async function generateImage(prompt: string) {
   try {
-    console.log(`Generating Imagen 4.0 image for: ${prompt}`);
+    console.log(`Generating Imagen image for: ${prompt}`);
 
-    // Using the verified Imagen 4.0 Ultra model from user's quota
-    const model = (ai as any).getGenerativeModel({ model: "imagen-4.0-ultra-generate-001" });
-
-    const result = await (model as any).generateImages({
+    const response = await ai.models.generateImages({
+      model: "imagen-3.0-generate-002",
       prompt: `Premium culinary photography, cinematic lighting, artisanal style, 8k resolution, professional food styling: ${prompt}`,
-      number_of_images: 1,
+      config: {
+        numberOfImages: 1,
+        outputMimeType: "image/jpeg",
+      }
     });
 
-    // The SDK returns base64 or a URI depending on config.
-    // For now, if Imagen fails or is tricky with the SDK version, 
-    // we use a professional stock fallback to ensure the site stays beautiful.
-    if (result.images && result.images[0]) {
-      return result.images[0].url || `data:image/png;base64,${result.images[0].base64Data}`;
+    if (response.generatedImages && response.generatedImages[0] && response.generatedImages[0].image) {
+      return `data:image/jpeg;base64,${response.generatedImages[0].image.imageBytes}`;
     }
 
     throw new Error("Imagen returned no images");
   } catch (error: any) {
-    console.error("Imagen 4.0 Error:", error.message || error);
+    console.error("Imagen Error:", error.message || error);
 
-    // Professional Stock Fallback (Unsplash) - Free, no OpenAI, high quality
-    const encodedPrompt = encodeURIComponent(prompt);
-    return `https://source.unsplash.com/featured/1200x800/?culinary,food,${encodedPrompt}`;
+    // source.unsplash.com is dead. Using a working static culinary fallback to prevent broken images.
+    return `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&q=80`;
   }
 }
 
