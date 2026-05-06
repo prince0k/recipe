@@ -1,15 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 
-// Text client: v1beta needed for Gemini 2.5 flash access
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
-  apiVersion: 'v1beta',
 });
 
-// Image client: Imagen is NOT available on v1beta, must use default version
-const imageAi = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || "",
-});
+const imageAi = ai; // Use the same default client for both text and images
 
 // Reliable text models list based on user quota limits
 const MODELS = [
