@@ -105,8 +105,10 @@ export async function generateImage(prompt: string) {
   } catch (error: any) {
     console.error("Imagen Error:", error.message || error);
 
-    // Reliable Unsplash fallback — source.unsplash.com is dead, this URL works
-    return `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&q=80`;
+    // Google's Image API is inaccessible on this API key. 
+    // Fallback to pollinations.ai to generate a unique image based directly on the prompt!
+    const fallbackPrompt = prompt.replace(/[^a-zA-Z0-9 ]/g, "").slice(0, 150);
+    return `https://image.pollinations.ai/prompt/${encodeURIComponent(fallbackPrompt)}?width=1200&height=800&nologo=true`;
   }
 }
 
