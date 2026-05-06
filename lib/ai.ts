@@ -9,12 +9,7 @@ const imageAi = ai; // Use the same default client for both text and images
 
 // Reliable text models list based on user quota limits
 const MODELS = [
-  'gemini-3.0-flash-live',
-  'gemini-3.0-flash',
-  'gemini-3.1-flash-lite',
-  'gemini-3.1-flash-lite-preview',
-  'gemini-1.5-flash',
-  'gemini-1.5-pro'
+  'gemini-3.1-flash-lite'
 ];
 
 export async function getGeminiResponse(prompt: string, jsonMode = false) {
