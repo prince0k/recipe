@@ -109,7 +109,7 @@ export async function POST(req: Request) {
         tags: JSON.stringify(data.tags || []),
         seoTitle: data.seoTitle,
         seoDesc: data.seoDesc,
-        schema: data.schema,
+        schema: typeof data.schema === 'object' ? JSON.stringify(data.schema) : (data.schema || null),
         published: false,
       }
     });
