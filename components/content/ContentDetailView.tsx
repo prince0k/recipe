@@ -57,6 +57,7 @@ export function ContentDetailView({ content, relatedItems }: { content: any, rel
               sizes="(max-width: 1024px) 100vw, 1024px"
               className="object-cover"
               priority
+              unoptimized={content.coverImage?.startsWith('/uploads')}
             />
           </div>
         ) : null}

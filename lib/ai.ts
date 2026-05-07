@@ -27,16 +27,14 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
   let lastError: any = null;
   const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-  // 1. Duplicate Detection (Rule 10)
+  // 1. Duplicate Detection (Disabled for text until result storage is added to AILog)
+  /*
   const existing = await prisma.aILog.findFirst({
     where: { prompt, type: "TEXT", status: "SUCCESS" },
     orderBy: { createdAt: 'desc' }
   });
-  if (existing && existing.createdAt > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) {
-    console.log("♻️ Reusing existing text generation from cache");
-    return existing.failureReason; // We reuse the text stored in failureReason column for simplicity if needed, or better, return result.
-    // For now, let's just log and continue or implement real caching.
-  }
+  ...
+  */
 
   for (const modelName of STABLE_MODELS) {
     let attempts = 0;

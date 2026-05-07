@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    unoptimized: true, // Disable internal optimization since we use Sharp locally
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
@@ -16,6 +15,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "http",
         hostname: "localhost", // For local uploads
+      },
+      {
+        protocol: "http",
+        hostname: "192.168.29.228", // Local network access
       },
       {
         protocol: "https",
