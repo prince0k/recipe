@@ -115,3 +115,63 @@ export const getAdminDashboardStats = unstable_cache(
   ["admin-dashboard-stats"],
   { revalidate: 60, tags: ["admin", "users", "content", "downloads"] }
 );
+
+export const getAllBlogPosts = unstable_cache(
+  async () => {
+    return prisma.content.findMany({
+      where: { type: "BLOG", published: true },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        coverImage: true,
+        tags: true,
+        type: true,
+      }
+    });
+  },
+  ["all-blog-posts"],
+  { revalidate: 3600, tags: ["content", "blog"] }
+);
+
+export const getAllCheatSheets = unstable_cache(
+  async () => {
+    return prisma.content.findMany({
+      where: { type: "CHEAT_SHEET", published: true },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        coverImage: true,
+        tags: true,
+        type: true,
+      }
+    });
+  },
+  ["all-cheat-sheets"],
+  { revalidate: 3600, tags: ["content", "cheat-sheets"] }
+);
+
+export const getAllDietPlans = unstable_cache(
+  async () => {
+    return prisma.content.findMany({
+      where: { type: "DIET_PLAN", published: true },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        coverImage: true,
+        tags: true,
+        type: true,
+      }
+    });
+  },
+  ["all-diet-plans"],
+  { revalidate: 3600, tags: ["content", "diet-plans"] }
+);

@@ -1,6 +1,8 @@
-import { prisma } from "@/lib/db";
 import { ContentCard } from "@/components/content/ContentCard";
 import { Metadata } from "next";
+import { getAllBlogPosts } from "@/lib/queries";
+
+export const revalidate = 3600; // Revalidate every hour
 
 export const metadata: Metadata = {
   title: "Kitchen Stories | Stwart Lucas",
@@ -8,13 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  const posts = await prisma.content.findMany({
-    where: { 
-      type: "BLOG",
-      published: true
-    },
-    orderBy: { createdAt: "desc" }
-  });
+  const posts = await getAllBlogPosts();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

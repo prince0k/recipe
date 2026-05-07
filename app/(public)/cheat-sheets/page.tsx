@@ -1,6 +1,8 @@
-import { prisma } from "@/lib/db";
 import { ContentCard } from "@/components/content/ContentCard";
 import { Metadata } from "next";
+import { getAllCheatSheets } from "@/lib/queries";
+
+export const revalidate = 3600; // Revalidate every hour
 
 export const metadata: Metadata = {
   title: "Cheat Sheets | Stwart Lucas",
@@ -8,13 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function CheatSheetsPage() {
-  const sheets = await prisma.content.findMany({
-    where: { 
-      type: "CHEAT_SHEET",
-      published: true
-    },
-    orderBy: { createdAt: "desc" }
-  });
+  const sheets = await getAllCheatSheets();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
