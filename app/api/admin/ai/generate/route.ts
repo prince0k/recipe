@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     const aiResponse = await getGeminiResponse(prompt, true);
     const data = JSON.parse(aiResponse || "{}");
 
-    // 1. Generate Cover Image and save it locally (compressed WebP)
+    // 1. Generate Cover Image and save it locally (compressed JPEG)
     const rawCoverImage = await generateImage(data.coverImagePrompt || `Professional food photography of ${topic}`);
     const coverImageUrl = await saveAndCompressImage(rawCoverImage, data.title || topic);
 
@@ -120,9 +120,13 @@ export async function POST(req: Request) {
       }
     });
 
-    // Instantly clear the cache for the entire application so new content shows up
+    // Instantly clear the cache for the specific lists where this content will appear
     const { revalidatePath } = await import("next/cache");
-    revalidatePath("/", "layout");
+    revalidatePath("/admin/content");
+    revalidatePath("/");
+    revalidatePath("/recipes");
+    revalidatePath("/blog");
+    revalidatePath("/cheetsheets");
 
     return NextResponse.json({ success: true, id: content.id, title: content.title });
   } catch (error: any) {

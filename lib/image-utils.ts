@@ -22,7 +22,7 @@ export async function saveAndCompressImage(
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "")
     .slice(0, 40);
-  const fileName = `${Date.now()}-${slug}.webp`;
+  const fileName = `${Date.now()}-${slug}.jpg`;
   const filePath = path.join(uploadDir, fileName);
   const publicUrl = `/uploads/images/${fileName}`;
 
@@ -42,10 +42,10 @@ export async function saveAndCompressImage(
       buffer = Buffer.from(await response.arrayBuffer());
     }
 
-    // Compress and resize to max 1200px wide, WebP quality 82
+    // Compress and resize to max 1200px wide, JPEG quality 85
     await sharp(buffer)
       .resize({ width: 1200, withoutEnlargement: true })
-      .webp({ quality: 82, effort: 4 })
+      .jpeg({ quality: 85 })
       .toFile(filePath);
 
     const stats = fs.statSync(filePath);

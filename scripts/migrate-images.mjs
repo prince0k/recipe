@@ -86,13 +86,13 @@ async function saveBase64(source, label, suffix) {
       .replace(/(^-|-$)/g, "")
       .slice(0, 50);
     
-    const fileName = `${Date.now()}-${slug}-${suffix}.webp`;
+    const fileName = `${Date.now()}-${slug}-${suffix}.jpg`;
     const filePath = path.join(process.cwd(), "public", "uploads", "images", fileName);
     const publicUrl = `/uploads/images/${fileName}`;
 
     await sharp(buffer)
       .resize({ width: 1200, withoutEnlargement: true })
-      .webp({ quality: 82 })
+      .jpeg({ quality: 85 })
       .toFile(filePath);
 
     return publicUrl;
