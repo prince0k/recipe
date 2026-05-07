@@ -8,7 +8,7 @@ set -e
 
 echo "▶ Pulling latest code..."
 git fetch origin main
-git checkout prisma/schema.prisma   # discard any local schema changes first
+git checkout prisma/schema.prisma package-lock.json   # discard local changes first
 git pull origin main
 
 echo "▶ Patching schema for PostgreSQL (production)..."
