@@ -78,8 +78,12 @@ export default function AboutPage() {
               type="email" 
               placeholder="Your email address" 
               className="px-8 py-4 rounded-2xl bg-white text-text w-full sm:w-80 focus:outline-none"
+              suppressHydrationWarning
             />
-            <button className="px-10 py-4 rounded-2xl bg-accent text-text font-bold shadow-xl hover:scale-105 transition-transform">
+            <button 
+              className="px-10 py-4 rounded-2xl bg-accent text-text font-bold shadow-xl hover:scale-105 transition-transform"
+              suppressHydrationWarning
+            >
               Subscribe
             </button>
           </div>

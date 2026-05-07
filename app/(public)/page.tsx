@@ -45,8 +45,12 @@ export default async function Home() {
                 type="text" 
                 placeholder="Search recipes, ingredients..." 
                 className="w-full h-16 pl-6 pr-16 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-primary transition-all group-hover:bg-white/20"
+                suppressHydrationWarning
               />
-              <button className="absolute right-3 top-3 bottom-3 px-6 rounded-xl bg-primary text-white font-bold shadow-lg hover:bg-primary-dark transition-all">
+              <button 
+                className="absolute right-3 top-3 bottom-3 px-6 rounded-xl bg-primary text-white font-bold shadow-lg hover:bg-primary-dark transition-all"
+                suppressHydrationWarning
+              >
                 Explore
               </button>
             </div>

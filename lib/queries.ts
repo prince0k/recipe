@@ -50,6 +50,7 @@ export const getAllRecipes = unstable_cache(
         tags: true,
         cookingTime: true,
         difficulty: true,
+        type: true,
       }
     });
   },
@@ -86,7 +87,7 @@ export const getSubscriberStats = unstable_cache(
     return {
       total,
       today,
-      topCountries: topCountries.map(c => ({
+      topCountries: topCountries.map((c: any) => ({
         country: c.country || 'Unknown',
         count: c._count.id
       }))

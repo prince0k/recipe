@@ -45,7 +45,7 @@ export async function GET(req: Request) {
         "Referrer", "Page URL", "Subscribed At"
       ];
 
-      const rows = subscribers.map(s => [
+      const rows = subscribers.map((s: any) => [
         s.name || "",
         s.email,
         s.country || "",
