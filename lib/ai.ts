@@ -28,7 +28,7 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
   const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
   // 1. Duplicate Detection (Rule 10)
-  const existing = await prisma.aiLog.findFirst({
+  const existing = await prisma.aILog.findFirst({
     where: { prompt, type: "TEXT", status: "SUCCESS" },
     orderBy: { createdAt: 'desc' }
   });
@@ -55,7 +55,7 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
         }
 
         // Log successful generation
-        await prisma.aiLog.create({
+        await prisma.aILog.create({
           data: {
             prompt,
             model: modelName,
@@ -84,7 +84,7 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
     }
   }
 
-  await prisma.aiLog.create({
+  await prisma.aILog.create({
     data: {
       prompt,
       model: "FAILOVER",
@@ -108,11 +108,11 @@ export async function generateImage(prompt: string, quality: 'preview' | 'produc
   todayStart.setHours(0, 0, 0, 0);
 
   const [todaysSpend, todaysImageCount] = await Promise.all([
-    prisma.aiLog.aggregate({
+    prisma.aILog.aggregate({
       where: { createdAt: { gte: todayStart } },
       _sum: { estimatedCost: true }
     }),
-    prisma.aiLog.count({
+    prisma.aILog.count({
       where: { 
         createdAt: { gte: todayStart },
         type: "IMAGE",
@@ -130,7 +130,7 @@ export async function generateImage(prompt: string, quality: 'preview' | 'produc
 
   // 2. Duplicate Detection (Rule 10)
   // Check if an image with exactly the same prompt was generated successfully in the last 30 days
-  const existing = await prisma.aiLog.findFirst({
+  const existing = await prisma.aILog.findFirst({
     where: { prompt, type: "IMAGE", status: "SUCCESS" },
     orderBy: { createdAt: 'desc' }
   });
@@ -164,7 +164,7 @@ export async function generateImage(prompt: string, quality: 'preview' | 'produc
         const data = `data:${mimeType};base64,${imagePart.inlineData.data}`;
         
         // Log Success
-        await prisma.aiLog.create({
+        await prisma.aILog.create({
           data: {
             prompt,
             model,
@@ -203,7 +203,7 @@ async function handleImageFallback(prompt: string, reason: string, startTime: nu
   const seed = Math.floor(Math.random() * 999999);
   const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=1200&height=800&seed=${seed}&nologo=true`;
 
-  await prisma.aiLog.create({
+  await prisma.aILog.create({
     data: {
       prompt,
       model: "POLLINATIONS",
