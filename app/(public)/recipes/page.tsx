@@ -2,13 +2,14 @@ import { prisma } from "@/lib/db";
 import { ContentCard } from "@/components/content/ContentCard";
 import { Metadata } from "next";
 import { Pagination } from "@/components/ui/Pagination";
+import { RecipeFilters, RecipeSort } from "@/components/content/RecipeFilters";
+import { getCachedRecipes } from "@/lib/queries";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Explore Recipes | Stwart Lucas",
   description: "Browse our collection of cinematic, moody, and budget-friendly home-cooked recipes.",
 };
-
-import { getAllRecipes } from "@/lib/queries";
 
 export default async function RecipesPage({
   searchParams,
@@ -18,10 +19,11 @@ export default async function RecipesPage({
   const sParams = await searchParams;
   const category = typeof sParams.category === 'string' ? sParams.category : undefined;
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
+  const sort = typeof sParams.sort === 'string' ? sParams.sort : 'newest';
   const pageSize = 12;
   
-  // Use cached query
-  const { data: recipes, totalPages } = await getAllRecipes(category, page, pageSize);
+  // Use updated cached query with dynamic key
+  const { data: recipes, totalPages } = await getCachedRecipes(category, page, pageSize);
 
   return (
     <div className="bg-background min-h-screen">
@@ -38,59 +40,20 @@ export default async function RecipesPage({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Sticky Sidebar Filters */}
+          {/* Interactive Filters Sidebar */}
           <aside className="w-full lg:w-64 flex-shrink-0">
-            <div className="sticky top-28 space-y-10">
-              <div>
-                <h3 className="text-sm font-bold uppercase tracking-widest text-text mb-6 border-b border-border pb-2">Categories</h3>
-                <div className="space-y-3">
-                  {["Quick Recipes", "Healthy Eating", "Budget Friendly", "Breakfast", "Lunch", "Dinner"].map((cat) => (
-                    <label key={cat} className="flex items-center group cursor-pointer">
-                      <input type="checkbox" className="w-4 h-4 rounded border-border text-primary focus:ring-primary mr-3" />
-                      <span className="text-text-muted group-hover:text-primary transition-colors">{cat}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-sm font-bold uppercase tracking-widest text-text mb-6 border-b border-border pb-2">Cooking Time</h3>
-                <div className="space-y-3">
-                  {["Under 15 mins", "15-30 mins", "30-60 mins", "1 hour+"].map((t) => (
-                    <label key={t} className="flex items-center group cursor-pointer">
-                      <input type="radio" name="time" className="w-4 h-4 border-border text-primary focus:ring-primary mr-3" />
-                      <span className="text-text-muted group-hover:text-primary transition-colors">{t}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-sm font-bold uppercase tracking-widest text-text mb-6 border-b border-border pb-2">Dietary</h3>
-                <div className="space-y-3">
-                  {["Vegetarian", "Vegan", "Gluten Free", "Dairy Free"].map((diet) => (
-                    <label key={diet} className="flex items-center group cursor-pointer">
-                      <input type="checkbox" className="w-4 h-4 rounded border-border text-primary focus:ring-primary mr-3" />
-                      <span className="text-text-muted group-hover:text-primary transition-colors">{diet}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <Suspense fallback={<div className="animate-pulse h-96 bg-surface rounded-xl" />}>
+              <RecipeFilters />
+            </Suspense>
           </aside>
 
           {/* Recipe Grid */}
           <main className="flex-grow">
             <div className="flex items-center justify-between mb-10 pb-6 border-b border-border">
               <p className="text-text-muted font-serif italic">{recipes.length} recipes found</p>
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-bold text-text-muted uppercase tracking-wider">Sort by:</span>
-                <select className="bg-transparent border-none text-text font-bold focus:ring-0 cursor-pointer">
-                  <option>Most Recent</option>
-                  <option>Most Liked</option>
-                  <option>Quickest</option>
-                </select>
-              </div>
+              <Suspense fallback={<div className="w-32 h-8 bg-surface animate-pulse" />}>
+                <RecipeSort />
+              </Suspense>
             </div>
 
             {recipes.length === 0 ? (
@@ -99,7 +62,7 @@ export default async function RecipesPage({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
                 <p className="text-text-muted text-xl font-serif italic">No recipes match your filters yet.</p>
-                <button className="mt-8 text-primary font-bold underline">Reset all filters</button>
+                <a href="/recipes" className="mt-8 text-primary font-bold underline block">Reset all filters</a>
               </div>
             ) : (
               <>
@@ -124,11 +87,13 @@ export default async function RecipesPage({
                   ))}
                 </div>
 
-                <Pagination 
-                  currentPage={page} 
-                  totalPages={totalPages} 
-                  baseUrl="/recipes"
-                />
+                <div className="mt-16">
+                  <Pagination 
+                    currentPage={page} 
+                    totalPages={totalPages} 
+                    baseUrl="/recipes"
+                  />
+                </div>
               </>
             )}
           </main>

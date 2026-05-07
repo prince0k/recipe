@@ -77,6 +77,50 @@ export const getAllRecipes = unstable_cache(
   { revalidate: 3600, tags: ["content", "recipes"] }
 );
 
+// Updated function with dynamic key
+export async function getCachedRecipes(category?: string, page: number = 1, pageSize: number = 12) {
+  const fetcher = unstable_cache(
+    async (cat?: string, p: number = 1, ps: number = 12) => {
+      const skip = (p - 1) * ps;
+      const [data, totalCount] = await Promise.all([
+        prisma.content.findMany({
+          where: { 
+            type: "RECIPE",
+            published: true,
+            ...(cat ? { tags: { contains: cat } } : {}),
+          },
+          orderBy: { createdAt: "desc" },
+          take: ps,
+          skip: skip,
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            excerpt: true,
+            coverImage: true,
+            tags: true,
+            cookingTime: true,
+            difficulty: true,
+            type: true,
+          }
+        }),
+        prisma.content.count({
+          where: { 
+            type: "RECIPE",
+            published: true,
+            ...(cat ? { tags: { contains: cat } } : {}),
+          }
+        })
+      ]);
+
+      return { data, totalCount, totalPages: Math.ceil(totalCount / ps) };
+    },
+    [`all-recipes-${category}-${page}-${pageSize}`],
+    { revalidate: 3600, tags: ["content", "recipes"] }
+  );
+  return fetcher(category, page, pageSize);
+}
+
 export const getSubscriberStats = unstable_cache(
   async () => {
     const [total, today] = await Promise.all([
@@ -170,6 +214,38 @@ export const getAllBlogPosts = unstable_cache(
   { revalidate: 3600, tags: ["content", "blog"] }
 );
 
+export async function getCachedBlogPosts(page: number = 1, pageSize: number = 9) {
+  const fetcher = unstable_cache(
+    async (p: number = 1, ps: number = 9) => {
+      const skip = (p - 1) * ps;
+      const [data, totalCount] = await Promise.all([
+        prisma.content.findMany({
+          where: { type: "BLOG", published: true },
+          orderBy: { createdAt: "desc" },
+          take: ps,
+          skip: skip,
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            excerpt: true,
+            coverImage: true,
+            tags: true,
+            type: true,
+          }
+        }),
+        prisma.content.count({
+          where: { type: "BLOG", published: true }
+        })
+      ]);
+      return { data, totalCount, totalPages: Math.ceil(totalCount / ps) };
+    },
+    [`all-blog-posts-${page}-${pageSize}`],
+    { revalidate: 3600, tags: ["content", "blog"] }
+  );
+  return fetcher(page, pageSize);
+}
+
 export const getAllCheatSheets = unstable_cache(
   async (page: number = 1, pageSize: number = 9) => {
     const skip = (page - 1) * pageSize;
@@ -204,6 +280,38 @@ export const getAllCheatSheets = unstable_cache(
   ["all-cheat-sheets"],
   { revalidate: 3600, tags: ["content", "cheat-sheets"] }
 );
+
+export async function getCachedCheatSheets(page: number = 1, pageSize: number = 9) {
+  const fetcher = unstable_cache(
+    async (p: number = 1, ps: number = 9) => {
+      const skip = (p - 1) * ps;
+      const [data, totalCount] = await Promise.all([
+        prisma.content.findMany({
+          where: { type: "CHEAT_SHEET", published: true },
+          orderBy: { createdAt: "desc" },
+          take: ps,
+          skip: skip,
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            excerpt: true,
+            coverImage: true,
+            tags: true,
+            type: true,
+          }
+        }),
+        prisma.content.count({
+          where: { type: "CHEAT_SHEET", published: true }
+        })
+      ]);
+      return { data, totalCount, totalPages: Math.ceil(totalCount / ps) };
+    },
+    [`all-cheat-sheets-${page}-${pageSize}`],
+    { revalidate: 3600, tags: ["content", "cheat-sheets"] }
+  );
+  return fetcher(page, pageSize);
+}
 
 export const getAllDietPlans = unstable_cache(
   async () => {

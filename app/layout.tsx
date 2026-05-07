@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Newsreader } from "next/font/google";
 import SessionProvider from "@/components/auth/SessionProvider";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -46,6 +47,12 @@ export default function RootLayout({
         <link rel="preload" as="image" href="/assets/hero.png" />
       </head>
       <body className="min-h-screen flex flex-col" suppressHydrationWarning>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6909933688780427"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <SessionProvider>
           <SignupTracker />
           {children}
