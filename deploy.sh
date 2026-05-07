@@ -23,6 +23,9 @@ npx prisma generate
 echo "▶ Pushing schema to database..."
 npx prisma db push
 
+echo "▶ Migrating Base64 images to local files..."
+node scripts/migrate-images.mjs || echo "⚠️ Migration skipped or failed, continuing..."
+
 echo "▶ Building..."
 npm run build
 

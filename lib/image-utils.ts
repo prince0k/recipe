@@ -56,7 +56,13 @@ export async function saveAndCompressImage(
     return publicUrl;
   } catch (error: any) {
     console.error(`[ImageUtil] ❌ Failed to save image: ${error.message}`);
-    // Return the original source as a fallback rather than crashing
-    return source;
+    
+    // If it was an external URL, we can return it as is (it's not base64)
+    if (!source.startsWith("data:")) {
+      return source;
+    }
+
+    // If it was base64 and failed to save, return a placeholder instead of the massive string
+    return "/assets/placeholder-image.jpg"; 
   }
 }
