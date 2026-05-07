@@ -27,6 +27,8 @@ model User {
   personalizedRequests PersonalizedRequest[]
   sessions             Session[]
   subscribers          Subscriber[]
+
+  @@index([createdAt])
 }
 
 model Content {
@@ -58,6 +60,8 @@ model Content {
   downloads            Download[]
   favorites            Favorite[]
   personalizedRequests PersonalizedRequest[]
+
+  @@index([createdAt])
 }
 
 model Download {

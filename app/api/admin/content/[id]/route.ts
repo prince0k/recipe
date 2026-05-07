@@ -52,8 +52,12 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       }
     });
 
-    // Forcibly clear the Next.js cache across the entire site instantly
-    revalidatePath("/", "layout");
+    // Targeted revalidation for performance
+    revalidatePath("/admin/content");
+    revalidatePath("/recipes");
+    revalidatePath("/blog");
+    revalidatePath("/cheat-sheets");
+    revalidatePath(`/(public)/${content.type.toLowerCase().replace("_", "-")}s/${content.slug}`, "page");
 
     return NextResponse.json({ success: true, id: content.id });
   } catch (error) {
@@ -70,14 +74,19 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await prisma.content.delete({
+    const content = await prisma.content.delete({
       where: { id }
     });
 
-    revalidatePath("/", "layout");
+    // Targeted revalidation
+    revalidatePath("/admin/content");
+    revalidatePath("/recipes");
+    revalidatePath("/blog");
+    revalidatePath("/cheat-sheets");
 
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+

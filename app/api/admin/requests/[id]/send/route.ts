@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
+import { revalidatePath } from "next/cache";
+
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
@@ -19,8 +21,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       data: { status: "SENT" }
     });
 
+    revalidatePath("/admin/requests");
+
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
+
