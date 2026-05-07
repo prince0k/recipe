@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 
 interface UploadedMedia {
@@ -11,6 +11,25 @@ interface UploadedMedia {
 export function MediaLibrary() {
   const [uploads, setUploads] = useState<UploadedMedia[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchMedia = async () => {
+    try {
+      const res = await fetch("/api/admin/media");
+      if (res.ok) {
+        const data = await res.json();
+        setUploads(data);
+      }
+    } catch (e) {
+      console.error("Failed to fetch media");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMedia();
+  }, []);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -31,8 +50,8 @@ export function MediaLibrary() {
 
       if (!res.ok) throw new Error("Upload failed");
 
-      const data = await res.json();
-      setUploads([{ url: data.url, type: isVideo ? "video" : "image" }, ...uploads]);
+      // Refresh the list
+      await fetchMedia();
     } catch (error) {
       console.error(error);
       alert("Failed to upload media");
