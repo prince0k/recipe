@@ -12,7 +12,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { topic, type } = await req.json();
+    const { topic, type, imageMode = "image" } = await req.json();
 
     if (!topic || !type) {
       return NextResponse.json({ error: "Missing topic or type" }, { status: 400 });
@@ -24,15 +24,8 @@ export async function POST(req: Request) {
 
       Task: Generate a premium, cinematic ${type} about: "${topic}".
       
-      **CRITICAL INSTRUCTION - IMAGES**: 
-      You MUST insert exactly 2 image placeholders in the body text at appropriate transition points. 
-      Format: [[IMAGE_PROMPT: description]]
-      Example: [[IMAGE_PROMPT: A vibrant overhead shot of a Mediterranean salad with feta and olives]]
-      The description should be detailed for DALL-E.
-
       **Layout Requirements**:
       - Use attractive HTML with better use of inline CSS for spacing and typography.
-      - **NO Concentrated Center**: Ensure text uses a comfortable reading width but sections feel expansive. Use <section> tags with padding.
       - Use <h2> and <h3> for hierarchy.
       - Add a "Pro Tip" or "Stwart's Secret" box with a light background and border.
 
@@ -43,6 +36,7 @@ export async function POST(req: Request) {
       - **SEO**: Meta title and Meta description.
       - **Tags**: 3-5 relevant tags.
       - **Schema**: A JSON-LD string.
+      - **coverImagePrompt**: A detailed, descriptive AI image generation prompt for a high-quality cinematic cover image (1200x800). Focus on mood, lighting, and composition.
 
       Return the response in Strict JSON format:
       {
@@ -53,19 +47,24 @@ export async function POST(req: Request) {
         "seoDesc": "...",
         "tags": ["...", "..."],
         "schema": "...",
-        "coverImagePrompt": "Description for the main cover image"
+        "coverImagePrompt": "..."
       }
     `;
 
     const aiResponse = await getGeminiResponse(prompt, true);
     const data = JSON.parse(aiResponse || "{}");
 
-    // 1. Generate Cover Image (PREVIEW Quality for draft)
-    const rawCoverImage = await generateImage(data.coverImagePrompt || `Professional food photography of ${topic}`, 'preview');
-    const coverImageUrl = await saveAndCompressImage(rawCoverImage, data.title || topic);
-
-    // 2. Clean up body (remove any [[IMAGE_PROMPT]] tags since we only want one image per content)
-    let finalBody = data.body.replace(/\[\[IMAGE_PROMPT: (.*?)\]\]/g, "");
+    // 1. Handle Image Generation Mode
+    let coverImageUrl = null;
+    if (imageMode === "image") {
+      try {
+        const rawCoverImage = await generateImage(data.coverImagePrompt || `Professional food photography of ${topic}`, 'preview');
+        coverImageUrl = await saveAndCompressImage(rawCoverImage, data.title || topic);
+      } catch (e) {
+        console.error("Image generation failed:", e);
+        // Fallback to null or let it be prompt-only
+      }
+    }
 
     // Save to database as DRAFT
     const slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "") + "-" + Math.random().toString(36).substring(2, 7);
@@ -76,8 +75,9 @@ export async function POST(req: Request) {
         slug: slug,
         type: type,
         excerpt: data.excerpt,
-        body: finalBody,
+        body: data.body,
         coverImage: coverImageUrl,
+        coverImagePrompt: data.coverImagePrompt,
         tags: JSON.stringify(data.tags || []),
         seoTitle: data.seoTitle,
         seoDesc: data.seoDesc,

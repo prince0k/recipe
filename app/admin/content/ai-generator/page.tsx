@@ -12,7 +12,8 @@ export default function AIGeneratorPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [categories, setCategories] = useState<{name: string, topics: string[]}[]>([]);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-  const [progress, setProgress] = useState({ current: 0, total: 0, currentTitle: "" });
+  const [imageMode, setImageMode] = useState<"image" | "prompt">("image");
+  const [ progress, setProgress] = useState({ current: 0, total: 0, currentTitle: "" });
   const [counts, setCounts] = useState({
     BLOG: 3,
     RECIPE: 3,
@@ -66,7 +67,7 @@ export default function AIGeneratorPage() {
             const res = await fetch("/api/admin/ai/generate", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ topic, type })
+              body: JSON.stringify({ topic, type, imageMode })
             });
             
             if (!res.ok) throw new Error("Generation failed");
@@ -160,6 +161,37 @@ export default function AIGeneratorPage() {
             </div>
             <CardContent className="pt-6 space-y-6">
               <div className="space-y-4">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100 mb-6">
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 block">Image Generation Mode</label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setImageMode("image")}
+                      className={`flex-1 py-2 px-3 rounded-md text-xs font-bold transition-all ${
+                        imageMode === "image" 
+                          ? "bg-[#10b981] text-white shadow-md shadow-[#10b981]/20" 
+                          : "bg-white text-gray-600 border border-gray-200 hover:border-[#10b981]/50"
+                      }`}
+                    >
+                      🖼️ Full Image
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageMode("prompt")}
+                      className={`flex-1 py-2 px-3 rounded-md text-xs font-bold transition-all ${
+                        imageMode === "prompt" 
+                          ? "bg-amber-500 text-white shadow-md shadow-amber-500/20" 
+                          : "bg-white text-gray-600 border border-gray-200 hover:border-amber-500/50"
+                      }`}
+                    >
+                      📜 Prompt Only
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-2 italic">
+                    {imageMode === "image" ? "Best for hands-off automation." : "Generate prompts to copy-paste into DALL-E later."}
+                  </p>
+                </div>
+
                 {(Object.keys(counts) as Array<keyof typeof counts>).map(type => (
                   <div key={type} className="flex items-center justify-between">
                     <label className="text-sm font-medium text-gray-600 capitalize">

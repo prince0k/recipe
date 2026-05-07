@@ -225,6 +225,26 @@ export function ContentEditForm({ id, initialData }: ContentEditFormProps) {
                     <input type="file" className="hidden" accept="image/*" onChange={(e) => handleCoverUpload(e, "coverImage")} disabled={isUploadingImage} />
                   </label>
                 </div>
+                {initialData.coverImagePrompt && !formData.coverImage && (
+                  <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <p className="text-[10px] font-bold text-amber-700 uppercase mb-1 flex justify-between">
+                      AI Image Prompt 
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          navigator.clipboard.writeText(initialData.coverImagePrompt);
+                          alert("Prompt copied to clipboard!");
+                        }}
+                        className="underline"
+                      >
+                        Copy
+                      </button>
+                    </p>
+                    <p className="text-xs text-amber-800 italic leading-relaxed">
+                      {initialData.coverImagePrompt}
+                    </p>
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Cover Video (Optional)</label>
