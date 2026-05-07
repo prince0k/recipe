@@ -1,7 +1,10 @@
 import { getAdminDashboardStats } from "@/lib/queries";
 import { Card, CardContent } from "@/components/ui/Card";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboard() {
+
   const { totalUsers, recentDownloads, publishedContent, latestUsers } = await getAdminDashboardStats();
 
   return (
