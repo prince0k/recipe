@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    unoptimized: true, // Disable internal optimization since we use Sharp locally
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
