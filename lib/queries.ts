@@ -33,26 +33,45 @@ export const getFeaturedRecipes = unstable_cache(
 );
 
 export const getAllRecipes = unstable_cache(
-  async (category?: string) => {
-    return prisma.content.findMany({
-      where: { 
-        type: "RECIPE",
-        published: true,
-        ...(category ? { tags: { contains: category } } : {}),
-      },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        excerpt: true,
-        coverImage: true,
-        tags: true,
-        cookingTime: true,
-        difficulty: true,
-        type: true,
-      }
-    });
+  async (category?: string, page: number = 1, pageSize: number = 12) => {
+    const skip = (page - 1) * pageSize;
+    
+    const [data, totalCount] = await Promise.all([
+      prisma.content.findMany({
+        where: { 
+          type: "RECIPE",
+          published: true,
+          ...(category ? { tags: { contains: category } } : {}),
+        },
+        orderBy: { createdAt: "desc" },
+        take: pageSize,
+        skip: skip,
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          excerpt: true,
+          coverImage: true,
+          tags: true,
+          cookingTime: true,
+          difficulty: true,
+          type: true,
+        }
+      }),
+      prisma.content.count({
+        where: { 
+          type: "RECIPE",
+          published: true,
+          ...(category ? { tags: { contains: category } } : {}),
+        }
+      })
+    ]);
+
+    return {
+      data,
+      totalCount,
+      totalPages: Math.ceil(totalCount / pageSize)
+    };
   },
   ["all-recipes"],
   { revalidate: 3600, tags: ["content", "recipes"] }
@@ -117,40 +136,70 @@ export const getAdminDashboardStats = unstable_cache(
 );
 
 export const getAllBlogPosts = unstable_cache(
-  async () => {
-    return prisma.content.findMany({
-      where: { type: "BLOG", published: true },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        excerpt: true,
-        coverImage: true,
-        tags: true,
-        type: true,
-      }
-    });
+  async (page: number = 1, pageSize: number = 9) => {
+    const skip = (page - 1) * pageSize;
+
+    const [data, totalCount] = await Promise.all([
+      prisma.content.findMany({
+        where: { type: "BLOG", published: true },
+        orderBy: { createdAt: "desc" },
+        take: pageSize,
+        skip: skip,
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          excerpt: true,
+          coverImage: true,
+          tags: true,
+          type: true,
+        }
+      }),
+      prisma.content.count({
+        where: { type: "BLOG", published: true }
+      })
+    ]);
+
+    return {
+      data,
+      totalCount,
+      totalPages: Math.ceil(totalCount / pageSize)
+    };
   },
   ["all-blog-posts"],
   { revalidate: 3600, tags: ["content", "blog"] }
 );
 
 export const getAllCheatSheets = unstable_cache(
-  async () => {
-    return prisma.content.findMany({
-      where: { type: "CHEAT_SHEET", published: true },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        excerpt: true,
-        coverImage: true,
-        tags: true,
-        type: true,
-      }
-    });
+  async (page: number = 1, pageSize: number = 9) => {
+    const skip = (page - 1) * pageSize;
+
+    const [data, totalCount] = await Promise.all([
+      prisma.content.findMany({
+        where: { type: "CHEAT_SHEET", published: true },
+        orderBy: { createdAt: "desc" },
+        take: pageSize,
+        skip: skip,
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          excerpt: true,
+          coverImage: true,
+          tags: true,
+          type: true,
+        }
+      }),
+      prisma.content.count({
+        where: { type: "CHEAT_SHEET", published: true }
+      })
+    ]);
+
+    return {
+      data,
+      totalCount,
+      totalPages: Math.ceil(totalCount / pageSize)
+    };
   },
   ["all-cheat-sheets"],
   { revalidate: 3600, tags: ["content", "cheat-sheets"] }
@@ -175,3 +224,4 @@ export const getAllDietPlans = unstable_cache(
   ["all-diet-plans"],
   { revalidate: 3600, tags: ["content", "diet-plans"] }
 );
+

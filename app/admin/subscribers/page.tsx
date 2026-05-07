@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { Pagination } from "@/components/ui/Pagination";
 
 interface Subscriber {
   id: string;
@@ -47,6 +48,8 @@ export default function AdminSubscribersPage() {
   const [countryFilter, setCountryFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedSub, setSelectedSub] = useState<Subscriber | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -54,23 +57,32 @@ export default function AdminSubscribersPage() {
       const params = new URLSearchParams();
       if (search) params.set("search", search);
       if (countryFilter) params.set("country", countryFilter);
+      params.set("page", page.toString());
+      params.set("limit", "25");
+      
       const res = await fetch(`/api/admin/subscribers?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
         setSubscribers(data.subscribers);
         setStats(data.stats);
+        setTotalPages(data.pagination.totalPages);
       }
     } catch (err) {
       console.error("Failed to fetch subscribers:", err);
     } finally {
       setLoading(false);
     }
-  }, [search, countryFilter]);
+  }, [search, countryFilter, page]);
 
   useEffect(() => {
     const timeout = setTimeout(fetchData, 300);
     return () => clearTimeout(timeout);
   }, [fetchData]);
+
+  // Reset to page 1 when search or filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [search, countryFilter]);
 
   const handleExportCSV = () => {
     const params = new URLSearchParams();
@@ -190,8 +202,14 @@ export default function AdminSubscribersPage() {
         )}
       </div>
 
+      <Pagination 
+        currentPage={page} 
+        totalPages={totalPages} 
+        onPageChange={(p) => setPage(p)}
+      />
+
       <div className="mt-4 text-sm text-gray-400 text-right">
-        Showing {subscribers.length} of {stats.total} subscribers
+        Showing {subscribers.length} subscribers on page {page}
       </div>
 
       {/* Detail Modal */}
@@ -251,3 +269,4 @@ export default function AdminSubscribersPage() {
     </div>
   );
 }
+

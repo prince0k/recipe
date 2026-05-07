@@ -3,20 +3,36 @@ import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
+import { Pagination } from "@/components/ui/Pagination";
 
 export const dynamic = "force-dynamic";
 
-export default async function RequestsPage() {
+export default async function RequestsPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const session = await auth();
   if (session?.user?.role !== "ADMIN") redirect("/");
 
-  const requests = await prisma.personalizedRequest.findMany({
-    include: {
-      user: true,
-      content: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1;
+  const pageSize = 15;
+  const skip = (page - 1) * pageSize;
+
+  const [requests, totalCount] = await Promise.all([
+    prisma.personalizedRequest.findMany({
+      include: {
+        user: true,
+        content: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take: pageSize,
+      skip: skip,
+    }),
+    prisma.personalizedRequest.count()
+  ]);
+
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
     <div>
@@ -76,6 +92,13 @@ export default async function RequestsPage() {
           </tbody>
         </table>
       </div>
+
+      <Pagination 
+        currentPage={page} 
+        totalPages={totalPages} 
+        baseUrl="/admin/requests"
+      />
     </div>
   );
 }
+

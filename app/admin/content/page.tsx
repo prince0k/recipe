@@ -3,19 +3,35 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { DeleteContentButton } from "@/components/admin/DeleteContentButton";
+import { Pagination } from "@/components/ui/Pagination";
 
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminContentPage() {
-  const contentItems = await prisma.content.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      _count: {
-        select: { downloads: true }
+export default async function AdminContentPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1;
+  const pageSize = 20;
+  const skip = (page - 1) * pageSize;
+
+  const [contentItems, totalCount] = await Promise.all([
+    prisma.content.findMany({
+      orderBy: { createdAt: "desc" },
+      take: pageSize,
+      skip: skip,
+      include: {
+        _count: {
+          select: { downloads: true }
+        }
       }
-    }
-  });
+    }),
+    prisma.content.count()
+  ]);
+
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
     <div>
@@ -73,6 +89,13 @@ export default async function AdminContentPage() {
           </div>
         )}
       </div>
+
+      <Pagination 
+        currentPage={page} 
+        totalPages={totalPages} 
+        baseUrl="/admin/content"
+      />
     </div>
   );
 }
+

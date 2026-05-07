@@ -1,16 +1,22 @@
 import { ContentCard } from "@/components/content/ContentCard";
 import { Metadata } from "next";
 import { getAllBlogPosts } from "@/lib/queries";
-
-export const revalidate = 3600; // Revalidate every hour
+import { Pagination } from "@/components/ui/Pagination";
 
 export const metadata: Metadata = {
   title: "Kitchen Stories | Stwart Lucas",
   description: "Articles on home cooking, kitchen techniques, and the cinematic life around the table.",
 };
 
-export default async function BlogPage() {
-  const posts = await getAllBlogPosts();
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1;
+  const pageSize = 9;
+  
+  const { data: posts, totalPages } = await getAllBlogPosts(page, pageSize);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -26,21 +32,30 @@ export default async function BlogPage() {
           <p className="text-text-muted text-lg font-serif italic">No articles found. Check back soon!</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map((post) => (
-            <ContentCard
-              key={post.id}
-              type={post.type as any}
-              title={post.title}
-              slug={post.slug}
-              excerpt={post.excerpt}
-              coverImage={post.coverImage}
-              tags={JSON.parse(post.tags)}
-              hrefPrefix="blog"
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {posts.map((post) => (
+              <ContentCard
+                key={post.id}
+                type={post.type as any}
+                title={post.title}
+                slug={post.slug}
+                excerpt={post.excerpt}
+                coverImage={post.coverImage}
+                tags={JSON.parse(post.tags)}
+                hrefPrefix="blog"
+              />
+            ))}
+          </div>
+
+          <Pagination 
+            currentPage={page} 
+            totalPages={totalPages} 
+            baseUrl="/blog"
+          />
+        </>
       )}
     </div>
   );
 }
+

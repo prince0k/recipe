@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { ContentCard } from "@/components/content/ContentCard";
 import { Metadata } from "next";
+import { Pagination } from "@/components/ui/Pagination";
 
 export const metadata: Metadata = {
   title: "Explore Recipes | Stwart Lucas",
@@ -15,9 +16,11 @@ export default async function RecipesPage({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const category = typeof searchParams.category === 'string' ? searchParams.category : undefined;
+  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1;
+  const pageSize = 12;
   
   // Use cached query
-  const recipes = await getAllRecipes(category);
+  const { data: recipes, totalPages } = await getAllRecipes(category, page, pageSize);
 
   return (
     <div className="bg-background min-h-screen">
@@ -98,26 +101,34 @@ export default async function RecipesPage({
                 <button className="mt-8 text-primary font-bold underline">Reset all filters</button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-10">
-                {recipes.map((recipe) => (
-                  <ContentCard
-                    key={recipe.id}
-                    type={recipe.type as any}
-                    title={recipe.title}
-                    slug={recipe.slug}
-                    excerpt={recipe.excerpt}
-                    coverImage={recipe.coverImage}
-                    tags={(() => {
-                      try {
-                        return typeof recipe.tags === 'string' ? JSON.parse(recipe.tags) : recipe.tags;
-                      } catch (e) {
-                        return [];
-                      }
-                    })()}
-                    hrefPrefix="recipes"
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-10">
+                  {recipes.map((recipe) => (
+                    <ContentCard
+                      key={recipe.id}
+                      type={recipe.type as any}
+                      title={recipe.title}
+                      slug={recipe.slug}
+                      excerpt={recipe.excerpt}
+                      coverImage={recipe.coverImage}
+                      tags={(() => {
+                        try {
+                          return typeof recipe.tags === 'string' ? JSON.parse(recipe.tags) : recipe.tags;
+                        } catch (e) {
+                          return [];
+                        }
+                      })()}
+                      hrefPrefix="recipes"
+                    />
+                  ))}
+                </div>
+
+                <Pagination 
+                  currentPage={page} 
+                  totalPages={totalPages} 
+                  baseUrl="/recipes"
+                />
+              </>
             )}
           </main>
         </div>
@@ -125,3 +136,4 @@ export default async function RecipesPage({
     </div>
   );
 }
+
