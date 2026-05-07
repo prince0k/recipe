@@ -3,17 +3,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 
-export const dynamic = "force-dynamic";
+import { getFeaturedRecipes } from "@/lib/queries";
+
+export const revalidate = 3600; // Revalidate every hour
 
 export default async function Home() {
-  const featuredRecipes = await prisma.content.findMany({
-    where: { 
-      type: "RECIPE",
-      published: true 
-    },
-    take: 3,
-    orderBy: { createdAt: "desc" }
-  });
+  const featuredRecipes = await getFeaturedRecipes();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -26,6 +21,7 @@ export default async function Home() {
             fill
             className="object-cover scale-105"
             priority
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
           <div className="absolute inset-0 vignette opacity-60" />
@@ -85,6 +81,7 @@ export default async function Home() {
                     alt={cat.title}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute bottom-8 left-8">
@@ -139,6 +136,7 @@ export default async function Home() {
                 alt="Stwart Lucas Kitchen" 
                 fill 
                 className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
               <div className="absolute inset-0 bg-black/20" />
             </div>
@@ -175,13 +173,21 @@ function RecipeCard({ recipe }: { recipe: any }) {
           alt={recipe.title} 
           fill 
           className="object-cover transition-transform duration-700 group-hover:scale-110" 
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         <div className="absolute top-4 right-4 flex gap-2">
-          {tags.slice(0, 2).map((tag: string) => (
-            <span key={tag} className="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-text">
-              {tag}
-            </span>
-          ))}
+          {(() => {
+            try {
+              const tags = typeof recipe.tags === 'string' ? JSON.parse(recipe.tags) : recipe.tags;
+              return (Array.isArray(tags) ? tags : []).slice(0, 2).map((tag: string) => (
+                <span key={tag} className="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-text">
+                  {tag}
+                </span>
+              ));
+            } catch (e) {
+              return null;
+            }
+          })()}
         </div>
       </div>
       <div className="px-4 pb-4">

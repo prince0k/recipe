@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { getSubscriberStats } from "@/lib/queries";
 
 export async function GET(req: Request) {
   try {
@@ -74,33 +75,11 @@ export async function GET(req: Request) {
     }
 
     // Get aggregate stats
-    const [total, todayCount, countryStats] = await Promise.all([
-      prisma.subscriber.count(),
-      prisma.subscriber.count({
-        where: {
-          createdAt: {
-            gte: new Date(new Date().setHours(0, 0, 0, 0)),
-          },
-        },
-      }),
-      prisma.subscriber.groupBy({
-        by: ["country"],
-        _count: { country: true },
-        orderBy: { _count: { country: "desc" } },
-        take: 10,
-      }),
-    ]);
+    const stats = await getSubscriberStats();
 
     return NextResponse.json({
       subscribers,
-      stats: {
-        total,
-        today: todayCount,
-        topCountries: countryStats.map(c => ({
-          country: c.country || "Unknown",
-          count: c._count.country,
-        })),
-      },
+      stats,
     });
   } catch (error) {
     console.error("Subscribers API error:", error);

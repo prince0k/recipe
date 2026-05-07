@@ -7,23 +7,17 @@ export const metadata: Metadata = {
   description: "Browse our collection of cinematic, moody, and budget-friendly home-cooked recipes.",
 };
 
+import { getAllRecipes } from "@/lib/queries";
+
 export default async function RecipesPage({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const category = typeof searchParams.category === 'string' ? searchParams.category : undefined;
-  const time = typeof searchParams.time === 'string' ? searchParams.time : undefined;
   
-  // Basic filtering logic
-  const recipes = await prisma.content.findMany({
-    where: { 
-      type: "RECIPE",
-      published: true,
-      ...(category ? { tags: { contains: category } } : {}),
-    },
-    orderBy: { createdAt: "desc" }
-  });
+  // Use cached query
+  const recipes = await getAllRecipes(category);
 
   return (
     <div className="bg-background min-h-screen">
@@ -113,7 +107,13 @@ export default async function RecipesPage({
                     slug={recipe.slug}
                     excerpt={recipe.excerpt}
                     coverImage={recipe.coverImage}
-                    tags={JSON.parse(recipe.tags)}
+                    tags={(() => {
+                      try {
+                        return typeof recipe.tags === 'string' ? JSON.parse(recipe.tags) : recipe.tags;
+                      } catch (e) {
+                        return [];
+                      }
+                    })()}
                     hrefPrefix="recipes"
                   />
                 ))}

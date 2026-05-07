@@ -1,17 +1,8 @@
-import { prisma } from "@/lib/db";
+import { getAdminDashboardStats } from "@/lib/queries";
 import { Card, CardContent } from "@/components/ui/Card";
 
 export default async function AdminDashboard() {
-  const [totalUsers, recentDownloads, publishedContent, latestUsers] = await Promise.all([
-    prisma.user.count(),
-    prisma.download.count(),
-    prisma.content.count({ where: { published: true } }),
-    prisma.user.findMany({
-      take: 5,
-      orderBy: { createdAt: "desc" },
-      select: { id: true, name: true, email: true, createdAt: true }
-    })
-  ]);
+  const { totalUsers, recentDownloads, publishedContent, latestUsers } = await getAdminDashboardStats();
 
   return (
     <div>

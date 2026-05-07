@@ -30,6 +30,7 @@ export default function AboutPage() {
               alt="Stwart Lucas Kitchen" 
               fill 
               className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 50vw"
             />
             <div className="absolute inset-0 bg-black/10" />
           </div>
@@ -65,7 +66,7 @@ export default function AboutPage() {
 
       <section className="py-24 bg-primary text-white rounded-[4rem] mx-4 lg:mx-8 mb-24 overflow-hidden relative">
         <div className="absolute inset-0 opacity-10">
-          <Image src="/assets/hero.png" alt="Background" fill className="object-cover" />
+          <Image src="/assets/hero.png" alt="Background" fill className="object-cover" sizes="100vw" />
         </div>
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <h2 className="text-4xl md:text-5xl font-bold mb-8">Join Our Community</h2>
