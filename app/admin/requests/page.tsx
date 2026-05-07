@@ -21,9 +21,21 @@ export default async function RequestsPage({
 
   const [requests, totalCount] = await Promise.all([
     prisma.personalizedRequest.findMany({
-      include: {
-        user: true,
-        content: true,
+      select: {
+        id: true,
+        status: true,
+        createdAt: true,
+        user: {
+          select: {
+            name: true,
+            email: true
+          }
+        },
+        content: {
+          select: {
+            title: true
+          }
+        }
       },
       orderBy: { createdAt: "desc" },
       take: pageSize,

@@ -22,7 +22,13 @@ export default async function AdminContentPage({
       orderBy: { createdAt: "desc" },
       take: pageSize,
       skip: skip,
-      include: {
+      select: {
+        id: true,
+        title: true,
+        type: true,
+        slug: true,
+        published: true,
+        createdAt: true,
         _count: {
           select: { downloads: true }
         }
