@@ -1,28 +1,30 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { ContentEditForm } from "./ContentEditForm";
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function EditContentPage({ 
   params 
 }: { 
-  params: Promise<{ id: string }> 
+  params: { id: string }
 }) {
-  const session = await auth();
-  if (session?.user?.role !== "ADMIN") redirect("/");
+  const { id } = params;
+  console.log("Loading EditContentPage for ID:", id);
 
-  const { id } = await params;
+  try {
+    const content = await prisma.content.findUnique({
+      where: { id }
+    });
 
-  const content = await prisma.content.findUnique({
-    where: { id }
-  });
+    if (!content) {
+      console.log("Content not found for ID:", id);
+      notFound();
+    }
 
-  if (!content) {
-    notFound();
+    return <ContentEditForm id={id} initialData={content} />;
+  } catch (error) {
+    console.error("Error loading content:", error);
+    throw error;
   }
-
-  return <ContentEditForm id={id} initialData={content} />;
 }

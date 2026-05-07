@@ -9,24 +9,28 @@ export const dynamic = "force-dynamic";
 export default async function RequestDetailPage({ 
   params 
 }: { 
-  params: Promise<{ id: string }> 
+  params: { id: string }
 }) {
-  const session = await auth();
-  if (session?.user?.role !== "ADMIN") redirect("/");
+  const { id } = params;
+  console.log("Loading RequestDetailPage for ID:", id);
 
-  const { id } = await params;
+  try {
+    const request = await prisma.personalizedRequest.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        content: true,
+      }
+    });
 
-  const request = await prisma.personalizedRequest.findUnique({
-    where: { id },
-    include: {
-      user: true,
-      content: true,
+    if (!request) {
+      console.log("Request not found for ID:", id);
+      notFound();
     }
-  });
 
-  if (!request) {
-    notFound();
+    return <RequestDetail id={id} request={request} />;
+  } catch (error) {
+    console.error("Error loading request:", error);
+    throw error;
   }
-
-  return <RequestDetail id={id} request={request} />;
 }
