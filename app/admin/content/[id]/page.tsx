@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { MediaLibrary } from "@/components/admin/MediaLibrary";
 import { ContentDetailView } from "@/components/content/ContentDetailView";
 import { Modal } from "@/components/ui/Modal";
+import { DeleteContentButton } from "@/components/admin/DeleteContentButton";
+
 
 export default function EditContentPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -387,7 +389,10 @@ export default function EditContentPage({ params }: { params: Promise<{ id: stri
         </Card>
 
         <div className="flex justify-between mt-8 border-t pt-6">
-          <Button type="button" variant="outline" onClick={() => setIsPreviewOpen(true)}>👀 Live Preview</Button>
+          <div className="flex gap-4">
+            <Button type="button" variant="outline" onClick={() => setIsPreviewOpen(true)}>👀 Live Preview</Button>
+            <DeleteContentButton id={id} title={formData.title} redirectAfterDelete="/admin/content" />
+          </div>
           <div className="flex gap-4">
             <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
             <Button type="submit" isLoading={isLoading}>Save Changes</Button>

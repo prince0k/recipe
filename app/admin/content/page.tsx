@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import { DeleteContentButton } from "@/components/admin/DeleteContentButton";
+
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +61,7 @@ export default async function AdminContentPage() {
                   <Link href={`/admin/content/${item.id}`} className="text-[#10b981] hover:text-[#059669]">
                     Edit
                   </Link>
+                  <DeleteContentButton id={item.id} title={item.title} />
                 </td>
               </tr>
             ))}

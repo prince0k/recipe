@@ -21,6 +21,7 @@ export function Button({
   const variants = {
     primary: "bg-primary text-primary-foreground hover:bg-primary/90",
     secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+    destructive: "bg-red-600 text-white hover:bg-red-700",
     outline: "border border-border bg-background text-foreground hover:bg-secondary",
     ghost: "text-foreground hover:bg-secondary",
   };
