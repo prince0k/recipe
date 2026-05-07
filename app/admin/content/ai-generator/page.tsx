@@ -11,7 +11,8 @@ export default function AIGeneratorPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [categories, setCategories] = useState<{name: string, topics: string[]}[]>([]);
-  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [topicMode, setTopicMode] = useState<"trends" | "manual">("trends");
+  const [pastedTopics, setPastedTopics] = useState("");
   const [imageMode, setImageMode] = useState<"image" | "prompt">("image");
   const [ progress, setProgress] = useState({ current: 0, total: 0, currentTitle: "" });
   const [counts, setCounts] = useState({
@@ -48,17 +49,29 @@ export default function AIGeneratorPage() {
   };
 
   const handleGenerate = async () => {
-    if (selectedTopics.length === 0) return;
+    let topicsToUse = selectedTopics;
+    
+    if (topicMode === "manual") {
+      topicsToUse = pastedTopics
+        .split("\n")
+        .map(t => t.trim())
+        .filter(t => t.length > 0);
+    }
+
+    if (topicsToUse.length === 0) {
+      alert("Please select or enter at least one topic.");
+      return;
+    }
     
     const types = (Object.keys(counts) as Array<keyof typeof counts>).filter(type => counts[type] > 0);
-    const totalItems = selectedTopics.length * types.reduce((acc, type) => acc + counts[type], 0);
+    const totalItems = topicsToUse.length * types.reduce((acc, type) => acc + counts[type], 0);
     
     setIsGenerating(true);
     setProgress({ current: 0, total: totalItems, currentTitle: "Initializing..." });
 
     let completed = 0;
 
-    for (const topic of selectedTopics) {
+    for (const topic of topicsToUse) {
       for (const type of types) {
         for (let i = 0; i < counts[type]; i++) {
           setProgress(prev => ({ ...prev, currentTitle: `Generating ${type}: ${topic} (${i+1}/${counts[type]})` }));
@@ -108,11 +121,42 @@ export default function AIGeneratorPage() {
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <div className="px-5 py-4 border-b border-gray-200 bg-gray-50/50 flex justify-between items-center">
-              <h3 className="font-semibold text-gray-900">1. Select Trending Topics</h3>
-              <span className="text-xs text-gray-500">{selectedTopics.length} selected</span>
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => setTopicMode("trends")}
+                  className={`text-sm font-bold pb-1 transition-all ${topicMode === "trends" ? "text-[#10b981] border-b-2 border-[#10b981]" : "text-gray-400 hover:text-gray-600"}`}
+                >
+                  📈 Trending Topics
+                </button>
+                <button 
+                  onClick={() => setTopicMode("manual")}
+                  className={`text-sm font-bold pb-1 transition-all ${topicMode === "manual" ? "text-[#10b981] border-b-2 border-[#10b981]" : "text-gray-400 hover:text-gray-600"}`}
+                >
+                  📝 Manual Paste
+                </button>
+              </div>
+              <span className="text-xs text-gray-500">
+                {topicMode === "trends" ? `${selectedTopics.length} selected` : `${pastedTopics.split("\n").filter(t => t.trim()).length} topics`}
+              </span>
             </div>
             <CardContent className="pt-6">
-              {categories.length === 0 ? (
+              {topicMode === "manual" ? (
+                <div className="space-y-4">
+                  <label className="text-sm font-medium text-gray-700 block italic">
+                    Paste your topics below, one per line:
+                  </label>
+                  <textarea
+                    className="w-full h-[400px] p-4 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#10b981]/50 font-serif text-lg leading-relaxed shadow-inner"
+                    placeholder="e.g.&#10;How to lose weight fast&#10;Intermittent fasting guide&#10;Keto diet recipes"
+                    value={pastedTopics}
+                    onChange={(e) => setPastedTopics(e.target.value)}
+                    disabled={isGenerating}
+                  />
+                  <p className="text-xs text-gray-400">
+                    💡 Every new line will trigger a separate content generation request.
+                  </p>
+                </div>
+              ) : categories.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 border-2 border-dashed border-gray-100 rounded-lg">
                   Click "Search Trending Topics" to fetch latest data from Serper.
                 </div>
@@ -218,10 +262,14 @@ export default function AIGeneratorPage() {
                 <Button 
                   className="w-full py-6 text-lg shadow-lg shadow-[#10b981]/20"
                   onClick={handleGenerate}
-                  disabled={selectedTopics.length === 0 || isGenerating}
+                  disabled={
+                    isGenerating || 
+                    (topicMode === "trends" && selectedTopics.length === 0) || 
+                    (topicMode === "manual" && !pastedTopics.trim())
+                  }
                   isLoading={isGenerating}
                 >
-                  ✨ Generate {selectedTopics.length * Object.values(counts).reduce((a,b)=>a+b, 0)} Items
+                  ✨ Generate {(topicMode === "trends" ? selectedTopics.length : pastedTopics.split("\n").filter(t => t.trim()).length) * Object.values(counts).reduce((a,b)=>a+b, 0)} Items
                 </Button>
               </div>
 
