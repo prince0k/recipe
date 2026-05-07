@@ -2,8 +2,9 @@ import { prisma } from "@/lib/db";
 import { Card, CardContent } from "@/components/ui/Card";
 
 export default async function AdminDashboard() {
-  const [totalUsers, recentDownloads, publishedContent, latestUsers] = await Promise.all([
+  const [totalUsers, totalSubscribers, recentDownloads, publishedContent, latestUsers] = await Promise.all([
     prisma.user.count(),
+    prisma.subscriber.count(),
     prisma.download.count(),
     prisma.content.count({ where: { published: true } }),
     prisma.user.findMany({
@@ -17,11 +18,17 @@ export default async function AdminDashboard() {
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-8 font-serif">Dashboard</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardContent>
             <h3 className="text-sm font-medium text-gray-500">Total Leads (Users)</h3>
             <p className="text-3xl font-bold text-gray-900 mt-2">{totalUsers}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <h3 className="text-sm font-medium text-gray-500">Total Subscribers</h3>
+            <p className="text-3xl font-bold text-[#10b981] mt-2">{totalSubscribers}</p>
           </CardContent>
         </Card>
         <Card>
