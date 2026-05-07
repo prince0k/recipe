@@ -11,6 +11,7 @@ export default function AIGeneratorPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [categories, setCategories] = useState<{name: string, topics: string[]}[]>([]);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [topicMode, setTopicMode] = useState<"trends" | "manual">("trends");
   const [pastedTopics, setPastedTopics] = useState("");
   const [imageMode, setImageMode] = useState<"image" | "prompt">("image");
