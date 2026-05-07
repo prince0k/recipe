@@ -26,6 +26,9 @@ export const metadata: Metadata = {
     description: "Transform your health with free, science-backed diet plans and recipes.",
     type: "website",
   },
+  other: {
+    "google-adsense-account": "ca-pub-6909933688780427",
+  },
 };
 
 export const viewport: Viewport = {
