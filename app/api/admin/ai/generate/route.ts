@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getGeminiResponse, generateImage, STWART_LUCAS_VOICE, AI_SEO_GUIDELINES } from "@/lib/ai";
+import { saveAndCompressImage } from "@/lib/image-utils";
+
 
 export async function POST(req: Request) {
   try {
@@ -58,8 +60,10 @@ export async function POST(req: Request) {
     const aiResponse = await getGeminiResponse(prompt, true);
     const data = JSON.parse(aiResponse || "{}");
 
-    // 1. Generate Cover Image
-    const coverImageUrl = await generateImage(data.coverImagePrompt || `Professional food photography of ${topic}`);
+    // 1. Generate Cover Image and save it locally (compressed WebP)
+    const rawCoverImage = await generateImage(data.coverImagePrompt || `Professional food photography of ${topic}`);
+    const coverImageUrl = await saveAndCompressImage(rawCoverImage, data.title || topic);
+
 
     // 2. Process Body Images
     let finalBody = data.body;
@@ -80,7 +84,9 @@ export async function POST(req: Request) {
     if (imageMatches) {
       for (const match of imageMatches) {
         const promptText = match.replace("[[IMAGE_PROMPT: ", "").replace("]]", "");
-        const url = await generateImage(promptText);
+        const rawUrl = await generateImage(promptText);
+        const url = await saveAndCompressImage(rawUrl, promptText);
+
         if (url) {
           const imgHtml = `
             <div style="margin: 4rem 0; text-align: center; width: 100%;">
