@@ -10,12 +10,13 @@ export const dynamic = "force-dynamic";
 export default async function RequestsPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const sParams = await searchParams;
   const session = await auth();
   if (session?.user?.role !== "ADMIN") redirect("/");
 
-  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1;
+  const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
   const pageSize = 15;
   const skip = (page - 1) * pageSize;
 

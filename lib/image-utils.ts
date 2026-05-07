@@ -22,7 +22,7 @@ export async function saveAndCompressImage(
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "")
     .slice(0, 40);
-  const fileName = `${Date.now()}-${slug}.jpg`;
+  const fileName = `${Date.now()}-${slug}.webp`;
   const filePath = path.join(uploadDir, fileName);
   const publicUrl = `/uploads/images/${fileName}`;
 
@@ -42,27 +42,34 @@ export async function saveAndCompressImage(
       buffer = Buffer.from(await response.arrayBuffer());
     }
 
-    // Compress and resize to max 1200px wide, JPEG quality 85
+    // 1. Master Image (1200px)
     await sharp(buffer)
       .resize({ width: 1200, withoutEnlargement: true })
-      .jpeg({ quality: 85 })
+      .webp({ quality: 82, effort: 4 })
       .toFile(filePath);
 
+    // 2. Responsive Variants (Rule 13)
+    const variants = [
+      { name: "tablet", width: 800 },
+      { name: "mobile", width: 480 },
+      { name: "thumb", width: 200 }
+    ];
+
+    for (const v of variants) {
+      const vPath = filePath.replace(".webp", `-${v.name}.webp`);
+      await sharp(buffer)
+        .resize({ width: v.width, withoutEnlargement: true })
+        .webp({ quality: 75 })
+        .toFile(vPath);
+    }
+
     const stats = fs.statSync(filePath);
-    console.log(
-      `[ImageUtil] ✅ Saved ${publicUrl} (${(stats.size / 1024).toFixed(0)} KB)`
-    );
+    console.log(`[ImageUtil] ✅ Saved ${publicUrl} and ${variants.length} variants (${(stats.size / 1024).toFixed(0)} KB master)`);
 
     return publicUrl;
   } catch (error: any) {
     console.error(`[ImageUtil] ❌ Failed to save image: ${error.message}`);
-    
-    // If it was an external URL, we can return it as is (it's not base64)
-    if (!source.startsWith("data:")) {
-      return source;
-    }
-
-    // If it was base64 and failed to save, return a placeholder instead of the massive string
+    if (!source.startsWith("data:")) return source;
     return "/assets/placeholder-image.jpg"; 
   }
 }

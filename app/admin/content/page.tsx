@@ -11,9 +11,10 @@ export const dynamic = "force-dynamic";
 export default async function AdminContentPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1;
+  const sParams = await searchParams;
+  const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
   const pageSize = 20;
   const skip = (page - 1) * pageSize;
 

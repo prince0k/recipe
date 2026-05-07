@@ -60,46 +60,12 @@ export async function POST(req: Request) {
     const aiResponse = await getGeminiResponse(prompt, true);
     const data = JSON.parse(aiResponse || "{}");
 
-    // 1. Generate Cover Image and save it locally (compressed JPEG)
-    const rawCoverImage = await generateImage(data.coverImagePrompt || `Professional food photography of ${topic}`);
+    // 1. Generate Cover Image (PREVIEW Quality for draft)
+    const rawCoverImage = await generateImage(data.coverImagePrompt || `Professional food photography of ${topic}`, 'preview');
     const coverImageUrl = await saveAndCompressImage(rawCoverImage, data.title || topic);
 
-
-    // 2. Process Body Images
-    let finalBody = data.body;
-    let imageMatches = finalBody.match(/\[\[IMAGE_PROMPT: (.*?)\]\]/g);
-
-    // Fallback: If AI forgot to include placeholders, force-insert them
-    if (!imageMatches) {
-      console.log("AI forgot image placeholders, manually inserting...");
-      const sections = finalBody.split('</section>');
-      if (sections.length > 2) {
-        sections[0] += `\n[[IMAGE_PROMPT: Cinematic food photography related to ${topic}]]\n</section>`;
-        sections[1] += `\n[[IMAGE_PROMPT: Artisanal culinary detail shot for ${topic}]]\n</section>`;
-        finalBody = sections.join('');
-        imageMatches = finalBody.match(/\[\[IMAGE_PROMPT: (.*?)\]\]/g);
-      }
-    }
-
-    if (imageMatches) {
-      for (const match of imageMatches) {
-        const promptText = match.replace("[[IMAGE_PROMPT: ", "").replace("]]", "");
-        const rawUrl = await generateImage(promptText);
-        const url = await saveAndCompressImage(rawUrl, promptText);
-
-        if (url) {
-          const imgHtml = `
-            <div style="margin: 4rem 0; text-align: center; width: 100%;">
-              <img src="${url}" alt="${topic}" style="width: 100%; max-height: 600px; object-fit: cover; border-radius: 2rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);" />
-              <p style="margin-top: 1rem; font-style: italic; color: #666; font-size: 0.9rem;">${promptText}</p>
-            </div>
-          `;
-          finalBody = finalBody.replace(match, imgHtml);
-        } else {
-          finalBody = finalBody.replace(match, ""); // Remove if fails
-        }
-      }
-    }
+    // 2. Clean up body (remove any [[IMAGE_PROMPT]] tags since we only want one image per content)
+    let finalBody = data.body.replace(/\[\[IMAGE_PROMPT: (.*?)\]\]/g, "");
 
     // Save to database as DRAFT
     const slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "") + "-" + Math.random().toString(36).substring(2, 7);

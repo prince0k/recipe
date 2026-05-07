@@ -1,8 +1,8 @@
+import "dotenv/config";
 import { generateImage } from "../lib/ai";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
-import "dotenv/config";
 
 async function testImageGen() {
   console.log("🎨 Testing AI Image Generation...");

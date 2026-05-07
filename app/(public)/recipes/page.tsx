@@ -13,10 +13,11 @@ import { getAllRecipes } from "@/lib/queries";
 export default async function RecipesPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const category = typeof searchParams.category === 'string' ? searchParams.category : undefined;
-  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1;
+  const sParams = await searchParams;
+  const category = typeof sParams.category === 'string' ? sParams.category : undefined;
+  const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
   const pageSize = 12;
   
   // Use cached query

@@ -11,9 +11,10 @@ export const metadata: Metadata = {
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1;
+  const sParams = await searchParams;
+  const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
   const pageSize = 9;
   
   const { data: posts, totalPages } = await getAllBlogPosts(page, pageSize);

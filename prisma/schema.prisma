@@ -185,3 +185,21 @@ model Subscriber {
   @@index([country])
   @@index([createdAt])
 }
+
+model AILog {
+  id               String   @id @default(cuid())
+  prompt           String
+  model            String
+  provider         String
+  type             String   // "IMAGE" or "TEXT"
+  outputSize       Int?     // bytes
+  dimensions       String?  // e.g. "1200x800"
+  duration         Int?     // ms
+  estimatedCost    Float?   // numeric cost
+  status           String   // "SUCCESS", "FAILURE", "FALLBACK"
+  failureReason    String?
+  createdAt        DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([type])
+}
