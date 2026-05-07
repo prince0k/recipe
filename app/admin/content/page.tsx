@@ -74,9 +74,9 @@ export default async function AdminContentPage({
                   {item._count.downloads}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <Link href={`/admin/content/${item.id}`} className="text-[#10b981] hover:text-[#059669]">
+                  <a href={`/admin/content/${item.id}`} className="text-[#10b981] hover:text-[#059669]">
                     Edit
-                  </Link>
+                  </a>
                   <DeleteContentButton id={item.id} title={item.title} />
                 </td>
               </tr>

@@ -73,12 +73,12 @@ export default async function RequestsPage({
                   </Badge>
                 </td>
                 <td className="py-3 px-4 text-right">
-                  <Link 
+                  <a 
                     href={`/admin/requests/${req.id}`}
                     className="text-sm font-medium text-[#10b981] hover:underline"
                   >
                     Review
-                  </Link>
+                  </a>
                 </td>
               </tr>
             ))}
