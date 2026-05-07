@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "localhost", // For local uploads
       },
+      {
+        protocol: "https",
+        hostname: "image.pollinations.ai",
+      },
     ],
   },
 };

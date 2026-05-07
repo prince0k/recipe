@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminLeadsPage() {
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },

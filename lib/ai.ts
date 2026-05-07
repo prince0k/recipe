@@ -4,11 +4,6 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
 });
 
-const imageAi = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || "",
-  apiVersion: "v1", // Must be v1 to generate images properly
-});
-
 // Reliable text models list
 const MODELS = [
   'gemini-3.1-flash-lite-preview'
@@ -80,36 +75,84 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
 }
 
 /**
- * Generates cinematic images using Google Imagen 4.0 Ultra
- * (Completely removes OpenAI dependency)
+ * Generates unique, content-specific images using Gemini native image generation.
+ * 
+ * 3-Tier Cascade:
+ *   1. gemini-3-pro-image-preview    — Best quality, highest fidelity
+ *   2. gemini-3.1-flash-image-preview — Fast fallback
+ *   3. pollinations.ai               — Last resort (free, no API key needed)
  */
-export async function generateImage(prompt: string) {
-  try {
-    console.log(`Generating Imagen image for: ${prompt}`);
+const IMAGE_MODELS = [
+  "gemini-3-pro-image-preview",
+  "gemini-3.1-flash-image-preview",
+];
 
-    // Uses imageAi client with v1 API
-    const response = await imageAi.models.generateImages({
-      model: "imagen-3.0-generate-001",
-      prompt: `Premium culinary photography, cinematic lighting, artisanal style, 8k resolution, professional food styling: ${prompt}`,
-      config: {
-        numberOfImages: 1,
-        outputMimeType: "image/jpeg",
+export async function generateImage(prompt: string): Promise<string> {
+  const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+  // --- Tier 1 & 2: Gemini Native Image Generation ---
+  for (const model of IMAGE_MODELS) {
+    try {
+      console.log(`[Image Gen] Trying ${model} for: "${prompt.substring(0, 80)}..."`);
+
+      const response = await ai.models.generateContent({
+        model,
+        contents: prompt,
+        config: {
+          responseModalities: ["image", "text"],
+        },
+      });
+
+      const parts = response.candidates?.[0]?.content?.parts || [];
+      const imagePart = parts.find((p: any) => p.inlineData);
+
+      if (imagePart?.inlineData?.data) {
+        const mimeType = imagePart.inlineData.mimeType || "image/jpeg";
+        console.log(`[Image Gen] ✅ ${model} succeeded (${(imagePart.inlineData.data.length / 1024).toFixed(0)}KB)`);
+        return `data:${mimeType};base64,${imagePart.inlineData.data}`;
       }
-    });
 
-    if (response.generatedImages && response.generatedImages[0] && response.generatedImages[0].image) {
-      return `data:image/jpeg;base64,${response.generatedImages[0].image.imageBytes}`;
+      console.warn(`[Image Gen] ${model} returned no image data, trying next model...`);
+    } catch (error: any) {
+      const msg = (error.message || "").toLowerCase();
+      console.warn(`[Image Gen] ${model} failed: ${msg.substring(0, 150)}`);
+
+      // If rate limited, wait and try same model once more
+      if (msg.includes("429") || msg.includes("quota") || msg.includes("resource_exhausted")) {
+        const retryMatch = msg.match(/retry in (\d+(?:\.\d+)?)s/);
+        const waitMs = retryMatch?.[1] ? (Math.ceil(parseFloat(retryMatch[1])) + 1) * 1000 : 10000;
+        console.log(`[Image Gen] Rate limited on ${model}. Waiting ${waitMs / 1000}s...`);
+        await delay(waitMs);
+
+        // One retry after waiting
+        try {
+          const retryResponse = await ai.models.generateContent({
+            model,
+            contents: prompt,
+            config: { responseModalities: ["image", "text"] },
+          });
+          const retryParts = retryResponse.candidates?.[0]?.content?.parts || [];
+          const retryImage = retryParts.find((p: any) => p.inlineData);
+          if (retryImage?.inlineData?.data) {
+            const mimeType = retryImage.inlineData.mimeType || "image/jpeg";
+            console.log(`[Image Gen] ✅ ${model} succeeded on retry`);
+            return `data:${mimeType};base64,${retryImage.inlineData.data}`;
+          }
+        } catch {
+          // Continue to next model
+        }
+      }
+
+      // 404 = model doesn't exist, skip immediately
+      if (msg.includes("404") || msg.includes("not found")) continue;
     }
-
-    throw new Error("Imagen returned no images");
-  } catch (error: any) {
-    console.error("Imagen Error:", error.message || error);
-
-    // Google's Image API is inaccessible on this API key. 
-    // Fallback to pollinations.ai to generate a unique image based directly on the prompt!
-    const fallbackPrompt = prompt.replace(/[^a-zA-Z0-9 ]/g, "").slice(0, 150);
-    return `https://image.pollinations.ai/prompt/${encodeURIComponent(fallbackPrompt)}?width=1200&height=800&nologo=true`;
   }
+
+  // --- Tier 3: Pollinations.ai (Last Resort) ---
+  console.warn(`[Image Gen] ⚠️ All Gemini models failed. Falling back to Pollinations.ai`);
+  const cleanPrompt = prompt.replace(/[^a-zA-Z0-9 ,.\-']/g, "").slice(0, 300);
+  const seed = Math.floor(Math.random() * 999999);
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=1200&height=800&seed=${seed}&nologo=true`;
 }
 
 export async function searchSerper(query: string) {

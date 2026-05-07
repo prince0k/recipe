@@ -33,6 +33,8 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+import { SignupTracker } from "@/components/ui/SignupTracker";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -42,6 +44,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${newsreader.variable} bg-background`} suppressHydrationWarning>
       <body className="min-h-screen flex flex-col" suppressHydrationWarning>
         <SessionProvider>
+          <SignupTracker />
           {children}
         </SessionProvider>
       </body>

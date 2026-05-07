@@ -3,6 +3,8 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminContentPage() {
   const contentItems = await prisma.content.findMany({
     orderBy: { createdAt: "desc" },

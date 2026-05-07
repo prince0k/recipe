@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 
+export const dynamic = "force-dynamic";
+
 export default async function RequestsPage() {
   const session = await auth();
   if (session?.user?.role !== "ADMIN") redirect("/");
