@@ -3,7 +3,7 @@
 @theme {
   --color-primary: #8B0000; /* Deep Red */
   --color-primary-dark: #660000;
-  --color-secondary: #D2691E; /* Burnt Orange */
+  --color-secondary: #B35412; /* Burnt Orange - Darkened for A11y */
   --color-accent: #F4D03F; /* Soft Yellow */
   --color-background: #FAF9F6; /* Warm White/Beige */
   --color-surface: #F5F5DC; /* Beige */

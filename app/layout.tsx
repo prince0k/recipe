@@ -42,6 +42,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${newsreader.variable} bg-background`} suppressHydrationWarning>
+      <head>
+        <link rel="preload" as="image" href="/assets/hero.png" />
+      </head>
       <body className="min-h-screen flex flex-col" suppressHydrationWarning>
         <SessionProvider>
           <SignupTracker />

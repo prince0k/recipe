@@ -8,74 +8,68 @@ datasource db {
 }
 
 model User {
-  id               String    @id @default(cuid())
-  email            String    @unique
-  name             String?
-  passwordHash     String?
-  googleId         String?   @unique
-  emailVerified    DateTime?
-  marketingConsent Boolean   @default(false)
-  role             String    @default("USER") // USER or ADMIN
-  tags             String    @default("[]") // JSON string array e.g. '["weight-loss", "diabetes"]'
-  leadData         String?   @default("{}") // JSON string storing the 4 general survey answers
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  downloads            Download[]
-  pageViews            PageView[]
+  id                   String                @id @default(cuid())
+  email                String                @unique
+  name                 String?
+  passwordHash         String?
+  googleId             String?               @unique
+  emailVerified        DateTime?
+  marketingConsent     Boolean               @default(false)
+  role                 String                @default("USER")
+  tags                 String                @default("[]")
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  leadData             String?               @default("{}")
   accounts             Account[]
-  sessions             Session[]
-  personalizedRequests PersonalizedRequest[]
+  downloads            Download[]
   favorites            Favorite[]
+  pageViews            PageView[]
+  personalizedRequests PersonalizedRequest[]
+  sessions             Session[]
   subscribers          Subscriber[]
 }
 
 model Content {
-  id          String  @id @default(cuid())
-  type        String // RECIPE | DIET_PLAN | CHEAT_SHEET | BLOG
-  title       String
-  slug        String  @unique
-  excerpt     String
-  body        String // Rich text JSON (Tiptap)
-  coverImage  String? // URL
-  coverVideo  String? // URL
-  downloadUrl String? // PDF URL (for cheat sheets/diet plans)
-
-  // Recipe Metadata
-  cookingTime String?
-  prepTime    String?
-  difficulty  String? // Easy | Medium | Hard
-  calories    Int?
-  rating      Float   @default(0)
-  servings    Int?
-
-  seoTitle           String?
-  seoDesc            String?
-  keywords           String   @default("[]") // JSON string array
-  schema             String? // JSON-LD schema object as string
-  tags               String   @default("[]") // JSON string array
-  painPointQuestions String?  @default("[]") // JSON string array of custom questions
-  published          Boolean  @default(false)
-  featured           Boolean  @default(false)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
+  id                   String                @id @default(cuid())
+  type                 String
+  title                String
+  slug                 String                @unique
+  excerpt              String
+  body                 String
+  coverImage           String?
+  coverVideo           String?
+  downloadUrl          String?
+  cookingTime          String?
+  prepTime             String?
+  difficulty           String?
+  calories             Int?
+  rating               Float                 @default(0)
+  servings             Int?
+  seoTitle             String?
+  seoDesc              String?
+  keywords             String                @default("[]")
+  schema               String?
+  tags                 String                @default("[]")
+  painPointQuestions   String?               @default("[]")
+  published            Boolean               @default(false)
+  featured             Boolean               @default(false)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
   downloads            Download[]
-  personalizedRequests PersonalizedRequest[]
   favorites            Favorite[]
+  personalizedRequests PersonalizedRequest[]
 }
 
 model Download {
   id        String   @id @default(cuid())
-  userId    String? // null = anonymous (first free download)
+  userId    String?
   contentId String
   ipAddress String
   userAgent String?
   isAnon    Boolean  @default(true)
   createdAt DateTime @default(now())
-
-  user    User?   @relation(fields: [userId], references: [id])
-  content Content @relation(fields: [contentId], references: [id])
+  content   Content  @relation(fields: [contentId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
 }
 
 model PageView {
@@ -85,15 +79,14 @@ model PageView {
   referrer  String?
   country   String?
   createdAt DateTime @default(now())
-
-  user User? @relation(fields: [userId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
 }
 
 model EmailLog {
   id        String   @id @default(cuid())
   to        String
   subject   String
-  type      String // WELCOME | FOLLOW_UP | VERIFY | MARKETING
+  type      String
   status    String
   createdAt DateTime @default(now())
 }
@@ -108,17 +101,15 @@ model PersonalizedRequest {
   id               String   @id @default(cuid())
   userId           String
   contentId        String
-  answers          String // JSON string of all 7 answers
-  generatedPrompt  String // The compiled text prompt for LLM
-  generatedContent String? // The actual output generated by the AI
-  status           String   @default("PENDING") // PENDING | PROCESSED | SENT
+  answers          String
+  generatedPrompt  String
+  status           String   @default("PENDING")
   createdAt        DateTime @default(now())
-
-  user    User    @relation(fields: [userId], references: [id])
-  content Content @relation(fields: [contentId], references: [id])
+  generatedContent String?
+  content          Content  @relation(fields: [contentId], references: [id])
+  user             User     @relation(fields: [userId], references: [id])
 }
 
-// NextAuth required tables
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -132,8 +123,7 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -159,42 +149,33 @@ model Favorite {
   userId    String
   contentId String
   createdAt DateTime @default(now())
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, contentId])
 }
 
 model Subscriber {
-  id     String  @id @default(cuid())
-  email  String
-  name   String?
-  userId String?
-
-  // Network & Geolocation
-  ipAddress String?
-  country   String?
-  city      String?
-  region    String?
-  timezone  String?
-
-  // Device / Browser (parsed from User-Agent)
+  id             String   @id @default(cuid())
+  email          String
+  name           String?
+  userId         String?
+  ipAddress      String?
+  country        String?
+  city           String?
+  region         String?
+  timezone       String?
   browser        String?
   browserVersion String?
   os             String?
-  deviceType     String? // "Desktop" | "Mobile" | "Tablet"
+  deviceType     String?
   userAgent      String?
-  screenRes      String? // "1920x1080"
-  language       String? // "en-US"
-
-  // Source / Attribution
-  referrer String? // Where they came from
-  pageUrl  String? // Which page they were on when subscribing
-
-  createdAt DateTime @default(now())
-
-  user User? @relation(fields: [userId], references: [id])
+  screenRes      String?
+  language       String?
+  referrer       String?
+  pageUrl        String?
+  createdAt      DateTime @default(now())
+  user           User?    @relation(fields: [userId], references: [id])
 
   @@index([email])
   @@index([country])
