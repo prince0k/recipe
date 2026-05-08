@@ -13,14 +13,14 @@ interface Message {
 export function ChatWidget() {
   const { status } = useSession();
   const [isOpen, setIsOpen] = useState(false);
-  
-  if (status !== "authenticated") return null;
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: "Hello! I'm Stwart. How can I help you in the kitchen today?" }
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  if (status !== "authenticated") return null;
 
   useEffect(() => {
     if (scrollRef.current) {

@@ -49,14 +49,13 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${newsreader.variable} bg-background`} suppressHydrationWarning>
       <head>
         <link rel="preload" as="image" href="/assets/hero.png" />
-      </head>
-      <body className="min-h-screen flex flex-col" suppressHydrationWarning>
-        <Script
+        <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6909933688780427"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
+        ></script>
+      </head>
+      <body className="min-h-screen flex flex-col" suppressHydrationWarning>
         <SessionProvider>
           <SignupTracker />
           <ChatWidget />
