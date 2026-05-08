@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 interface FavoriteButtonProps {
   contentId: string;
   initialFavorited?: boolean;
-  variant?: "default" | "outline" | "ghost";
+  variant?: "primary" | "secondary" | "outline" | "ghost";
   className?: string;
   showText?: boolean;
 }
@@ -16,7 +16,7 @@ interface FavoriteButtonProps {
 export function FavoriteButton({ 
   contentId, 
   initialFavorited = false, 
-  variant = "default",
+  variant = "primary",
   className = "",
   showText = true 
 }: FavoriteButtonProps) {
