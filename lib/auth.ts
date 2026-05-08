@@ -22,6 +22,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       wellKnown:
         "https://api.login.yahoo.com/.well-known/openid-configuration",
 
+      issuer: "https://api.login.yahoo.com",
+
       clientId: process.env.AUTH_YAHOO_ID,
       clientSecret: process.env.AUTH_YAHOO_SECRET,
 
