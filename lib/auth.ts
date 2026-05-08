@@ -31,8 +31,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         },
       },
 
-      idToken: true,
-
       checks: ["pkce", "state"],
 
       profile(profile: any) {
