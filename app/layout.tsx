@@ -38,6 +38,7 @@ export const viewport: Viewport = {
 };
 
 import { SignupTracker } from "@/components/ui/SignupTracker";
+import { ChatWidget } from "@/components/ui/ChatWidget";
 
 export default function RootLayout({
   children,
@@ -58,6 +59,7 @@ export default function RootLayout({
         />
         <SessionProvider>
           <SignupTracker />
+          <ChatWidget />
           {children}
         </SessionProvider>
       </body>
