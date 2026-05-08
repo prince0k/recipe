@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
@@ -10,7 +11,10 @@ interface Message {
 }
 
 export function ChatWidget() {
+  const { status } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  
+  if (status !== "authenticated") return null;
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: "Hello! I'm Stwart. How can I help you in the kitchen today?" }
   ]);
