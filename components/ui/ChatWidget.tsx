@@ -20,13 +20,13 @@ export function ChatWidget() {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  if (status !== "authenticated") return null;
-
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  if (status !== "authenticated") return null;
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
