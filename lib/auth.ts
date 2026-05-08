@@ -2,7 +2,6 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { cookies } from "next/headers";
 import { prisma } from "./db";
 import bcrypt from "bcryptjs";
 
@@ -14,18 +13,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
       allowDangerousEmailAccountLinking: true,
-      async profile(profile) {
-        const cookieStore = await cookies();
-        const marketingConsent = cookieStore.get("marketing_consent")?.value === "true";
-        return {
-          id: profile.sub,
-          name: profile.name,
-          email: profile.email,
-          image: profile.picture,
-          role: profile.role ?? "USER",
-          marketingConsent,
-        };
-      },
     }),
     {
       id: "yahoo",
@@ -43,16 +30,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       client: {
         token_endpoint_auth_method: "client_secret_post",
       },
-      async profile(profile: any) {
-        const cookieStore = await cookies();
-        const marketingConsent = cookieStore.get("marketing_consent")?.value === "true";
+      profile(profile: any) {
         return {
           id: profile.sub,
           name: profile.name,
           email: profile.email,
           image: profile.picture,
           role: "USER",
-          marketingConsent,
         };
       },
       allowDangerousEmailAccountLinking: true,
@@ -82,6 +66,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     })
   ],
+
   callbacks: {
     jwt({ token, user }) {
       if (user) {
