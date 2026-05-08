@@ -22,11 +22,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.AUTH_YAHOO_SECRET,
       authorization: {
         url: "https://api.login.yahoo.com/oauth2/request_auth",
-        params: { scope: "openid email profile" },
+        params: { scope: "sdps-r" },
       },
       token: "https://api.login.yahoo.com/oauth2/get_token",
       userinfo: "https://api.login.yahoo.com/openid/v1/userinfo",
-      idToken: false,
       checks: ["state"],
       client: {
         token_endpoint_auth_method: "client_secret_post",
