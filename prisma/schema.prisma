@@ -13,6 +13,7 @@ model User {
   name                 String?
   passwordHash         String?
   googleId             String?               @unique
+  image                String?
   emailVerified        DateTime?
   marketingConsent     Boolean               @default(false)
   role                 String                @default("USER")
