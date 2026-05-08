@@ -9,7 +9,9 @@ const ai = new GoogleGenAI({
 // Stage 1: Cost-optimized prompt/text generation
 const STABLE_MODELS = [
   'gemini-3.1-flash-lite',
-  'gemini-3.1-flash-preview',
+  'gemini-3.1-flash',
+  'gemini-3.1-pro',
+  'gemini-3-flash',
   'gemini-2.5-flash',
 ];
 
