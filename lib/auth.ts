@@ -36,6 +36,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       checks: ["pkce", "state"],
 
+      client: {
+        id_token_signed_response_alg: "ES256",
+        token_endpoint_auth_method: "client_secret_post",
+      },
+
       profile(profile: any) {
         return {
           id: profile.sub,
