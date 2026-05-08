@@ -34,7 +34,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       issuer: "https://api.login.yahoo.com",
       clientId: process.env.AUTH_YAHOO_ID,
       clientSecret: process.env.AUTH_YAHOO_SECRET,
-      checks: ["state"], // Yahoo returns empty nonce and has issues with PKCE in some environments, simplified to state only
+      checks: ["pkce", "state"], 
+      client: {
+        token_endpoint_auth_method: "client_secret_post",
+      },
       async profile(profile) {
         const cookieStore = await cookies();
         const marketingConsent = cookieStore.get("marketing_consent")?.value === "true";
