@@ -38,7 +38,7 @@ export const viewport: Viewport = {
 };
 
 import { SignupTracker } from "@/components/ui/SignupTracker";
-import { ChatWidget } from "@/components/ui/ChatWidget";
+import { BotpressChat } from "@/components/ui/BotpressChat";
 
 export default function RootLayout({
   children,
@@ -57,7 +57,7 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col" suppressHydrationWarning>
         <SessionProvider>
           <SignupTracker />
-          <ChatWidget />
+          <BotpressChat />
           {children}
         </SessionProvider>
       </body>
