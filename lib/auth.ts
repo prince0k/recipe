@@ -20,6 +20,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       issuer: "https://api.login.yahoo.com",
       clientId: process.env.AUTH_YAHOO_ID,
       clientSecret: process.env.AUTH_YAHOO_SECRET,
+      checks: ["pkce", "state"], // Yahoo returns empty nonce, so we skip it
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+        };
+      },
     },
     Credentials({
       credentials: {
