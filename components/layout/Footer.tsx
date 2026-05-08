@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { PartnerFooter } from "./PartnerFooter";
 
 export function Footer() {
   return (
@@ -62,6 +63,9 @@ export function Footer() {
             </div>
           </div>
         </div>
+        
+        <PartnerFooter />
+
         <div className="mt-12 border-t border-border pt-8">
           <p className="text-base text-text-muted xl:text-center">
             &copy; {new Date().getFullYear()} Stwart Lucas. All rights reserved.

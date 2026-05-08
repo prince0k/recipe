@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPolicyPage() {
-  const lastUpdated = "7 May 2026";
+  const lastUpdated = "8 May 2026";
   const siteName = "Stwart Lucas";
   const siteUrl = process.env.AUTH_URL || "https://stewartlucas.com";
   const contactEmail = "privacy@stewartlucas.com";
@@ -94,8 +94,14 @@ export default function PrivacyPolicyPage() {
           {/* 5. Data Sharing */}
           <section>
             <h2 className="text-xl font-bold font-serif text-gray-900 mb-3">5. Data Sharing &amp; Third Parties</h2>
-            <p className="text-gray-600 leading-relaxed mb-3">We do not sell your personal data. We may share limited data with the following third-party services:</p>
+            <p className="text-gray-600 leading-relaxed mb-3">
+              <strong>We do not sell your personal data under any circumstances.</strong> We value your trust and your privacy.
+            </p>
+            <p className="text-gray-600 leading-relaxed mb-3">
+              We may share limited data with our trusted <strong>Partners</strong> and the following third-party services to provide and improve our services:
+            </p>
             <ul className="list-disc list-inside text-gray-600 space-y-1 ml-2">
+              <li><strong>Trusted Partners</strong> — We may share anonymous or limited user data with our verified partners listed on our website to enhance our collaborative offerings.</li>
               <li><strong>ip-api.com</strong> — IP geolocation service (receives your IP address to return location data)</li>
               <li><strong>Resend</strong> — email delivery service (receives your email address and name to send newsletters)</li>
               <li><strong>Google Analytics</strong> — website analytics (receives anonymised browsing data)</li>
