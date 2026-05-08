@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/Badge";
 import { DownloadGate } from "./DownloadGate";
 import { RelatedContent } from "./RelatedContent";
 import { FavoriteButton } from "./FavoriteButton";
+import { ShareButton } from "./ShareButton";
 
 export function ContentDetailView({ content, relatedItems, isFavorited = false }: { content: any, relatedItems?: any[], isFavorited?: boolean }) {
   if (!content) return null;
@@ -92,6 +93,12 @@ export function ContentDetailView({ content, relatedItems, isFavorited = false }
                     className="w-full"
                   />
                   <DownloadGate content={content} />
+                  <ShareButton 
+                    title={content.title} 
+                    text={content.excerpt} 
+                    variant="ghost"
+                    className="w-full text-muted-foreground"
+                  />
                 </div>
               </div>
               
