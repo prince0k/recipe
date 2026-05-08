@@ -14,8 +14,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
       allowDangerousEmailAccountLinking: true,
-      profile(profile) {
-        const cookieStore = cookies();
+      async profile(profile) {
+        const cookieStore = await cookies();
         const marketingConsent = cookieStore.get("marketing_consent")?.value === "true";
         return {
           id: profile.sub,
@@ -35,8 +35,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.AUTH_YAHOO_ID,
       clientSecret: process.env.AUTH_YAHOO_SECRET,
       checks: ["pkce", "state"], // Yahoo returns empty nonce, so we skip it
-      profile(profile) {
-        const cookieStore = cookies();
+      async profile(profile) {
+        const cookieStore = await cookies();
         const marketingConsent = cookieStore.get("marketing_consent")?.value === "true";
         return {
           id: profile.sub,
