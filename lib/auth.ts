@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import Yahoo from "next-auth/providers/yahoo";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./db";
@@ -14,10 +13,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
     }),
-    Yahoo({
+    {
+      id: "yahoo",
+      name: "Yahoo",
+      type: "oidc",
+      issuer: "https://api.login.yahoo.com",
       clientId: process.env.AUTH_YAHOO_ID,
       clientSecret: process.env.AUTH_YAHOO_SECRET,
-    }),
+    },
     Credentials({
       credentials: {
         email: { label: "Email", type: "email" },
