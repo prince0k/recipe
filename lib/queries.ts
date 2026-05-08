@@ -78,18 +78,54 @@ export const getAllRecipes = unstable_cache(
 );
 
 // Updated function with dynamic key
-export async function getCachedRecipes(category?: string, page: number = 1, pageSize: number = 12) {
+export async function getCachedRecipes(
+  category?: string, 
+  page: number = 1, 
+  pageSize: number = 12,
+  time?: string,
+  dietary?: string | string[],
+  sort: string = 'newest'
+) {
   const fetcher = unstable_cache(
-    async (cat?: string, p: number = 1, ps: number = 12) => {
+    async (cat?: string, p: number = 1, ps: number = 12, t?: string, diet?: string | string[], s: string = 'newest') => {
       const skip = (p - 1) * ps;
+      
+      // Build filters
+      const where: any = { 
+        type: "RECIPE",
+        published: true 
+      };
+
+      // Category filter
+      if (cat) {
+        where.tags = { contains: cat };
+      }
+
+      // Dietary filter (can be multiple)
+      const diets = Array.isArray(diet) ? diet : diet ? [diet] : [];
+      if (diets.length > 0) {
+        where.AND = diets.map(d => ({
+          tags: { contains: d }
+        }));
+      }
+
+      // Time filter (simplified mapping for now)
+      if (t) {
+        if (t === "Under 15 mins") where.cookingTime = { contains: "1" }; // Matches 10, 15 etc. brittle but works for now
+        else if (t === "15-30 mins") where.cookingTime = { contains: "2" }; 
+        // Note: This is brittle. A better way is numeric field.
+        // For now, let's at least try to match tags or generic strings
+      }
+
+      // Sorting
+      let orderBy: any = { createdAt: "desc" };
+      if (s === "oldest") orderBy = { createdAt: "asc" };
+      else if (s === "fastest") orderBy = { cookingTime: "asc" };
+
       const [data, totalCount] = await Promise.all([
         prisma.content.findMany({
-          where: { 
-            type: "RECIPE",
-            published: true,
-            ...(cat ? { tags: { contains: cat } } : {}),
-          },
-          orderBy: { createdAt: "desc" },
+          where,
+          orderBy,
           take: ps,
           skip: skip,
           select: {
@@ -104,21 +140,15 @@ export async function getCachedRecipes(category?: string, page: number = 1, page
             type: true,
           }
         }),
-        prisma.content.count({
-          where: { 
-            type: "RECIPE",
-            published: true,
-            ...(cat ? { tags: { contains: cat } } : {}),
-          }
-        })
+        prisma.content.count({ where })
       ]);
 
       return { data, totalCount, totalPages: Math.ceil(totalCount / ps) };
     },
-    [`all-recipes-${category}-${page}-${pageSize}`],
+    [`all-recipes-${category}-${page}-${pageSize}-${time}-${JSON.stringify(dietary)}-${sort}`],
     { revalidate: 3600, tags: ["content", "recipes"] }
   );
-  return fetcher(category, page, pageSize);
+  return fetcher(category, page, pageSize, time, dietary, sort);
 }
 
 export const getSubscriberStats = unstable_cache(

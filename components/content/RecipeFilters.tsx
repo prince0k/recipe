@@ -13,16 +13,42 @@ export function RecipeFilters() {
   
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "");
   const [selectedTime, setSelectedTime] = useState(searchParams.get("time") || "");
+  const [selectedDietary, setSelectedDietary] = useState<string[]>(
+    searchParams.get("dietary")?.split(",") || []
+  );
 
-  const updateFilters = (newParams: Record<string, string>) => {
+  // Sync state with URL when it changes
+  useEffect(() => {
+    setSelectedCategory(searchParams.get("category") || "");
+    setSelectedTime(searchParams.get("time") || "");
+    setSelectedDietary(searchParams.get("dietary")?.split(",") || []);
+  }, [searchParams]);
+
+  const updateFilters = (newParams: Record<string, string | string[] | null>) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(newParams).forEach(([key, value]) => {
-      if (value) params.set(key, value);
-      else params.delete(key);
+      if (value) {
+        if (Array.isArray(value)) {
+          if (value.length > 0) params.set(key, value.join(","));
+          else params.delete(key);
+        } else {
+          params.set(key, value);
+        }
+      } else {
+        params.delete(key);
+      }
     });
     // Reset page on filter change
     params.set("page", "1");
     router.push(`/recipes?${params.toString()}`, { scroll: false });
+  };
+
+  const handleDietaryChange = (diet: string) => {
+    const newDietary = selectedDietary.includes(diet)
+      ? selectedDietary.filter(d => d !== diet)
+      : [...selectedDietary, diet];
+    setSelectedDietary(newDietary);
+    updateFilters({ dietary: newDietary });
   };
 
   return (
@@ -80,8 +106,15 @@ export function RecipeFilters() {
         <div className="space-y-3">
           {DIETARY.map((diet) => (
             <label key={diet} className="flex items-center group cursor-pointer">
-              <input type="checkbox" className="w-4 h-4 rounded border-border text-primary focus:ring-primary mr-3" />
-              <span className="text-text-muted group-hover:text-primary transition-colors">{diet}</span>
+              <input 
+                type="checkbox" 
+                checked={selectedDietary.includes(diet)}
+                onChange={() => handleDietaryChange(diet)}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary mr-3" 
+              />
+              <span className={`transition-colors ${selectedDietary.includes(diet) ? "text-primary font-bold" : "text-text-muted group-hover:text-primary"}`}>
+                {diet}
+              </span>
             </label>
           ))}
         </div>
@@ -91,6 +124,7 @@ export function RecipeFilters() {
         onClick={() => {
           setSelectedCategory("");
           setSelectedTime("");
+          setSelectedDietary([]);
           router.push("/recipes");
         }}
         className="text-xs font-bold text-primary underline uppercase tracking-widest hover:text-primary-dark transition-colors"

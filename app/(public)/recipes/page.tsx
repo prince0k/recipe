@@ -18,12 +18,14 @@ export default async function RecipesPage({
 }) {
   const sParams = await searchParams;
   const category = typeof sParams.category === 'string' ? sParams.category : undefined;
-  const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
+  const time = typeof sParams.time === 'string' ? sParams.time : undefined;
+  const dietary = typeof sParams.dietary === 'string' ? sParams.dietary.split(',') : (Array.isArray(sParams.dietary) ? sParams.dietary : undefined);
   const sort = typeof sParams.sort === 'string' ? sParams.sort : 'newest';
+  const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
   const pageSize = 12;
   
   // Use updated cached query with dynamic key
-  const { data: recipes, totalPages } = await getCachedRecipes(category, page, pageSize);
+  const { data: recipes, totalPages } = await getCachedRecipes(category, page, pageSize, time, dietary, sort);
 
   return (
     <div className="bg-background min-h-screen">
