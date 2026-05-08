@@ -30,15 +30,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     {
       id: "yahoo",
       name: "Yahoo",
-      type: "oidc",
-      issuer: "https://api.login.yahoo.com",
+      type: "oauth",
       clientId: process.env.AUTH_YAHOO_ID,
       clientSecret: process.env.AUTH_YAHOO_SECRET,
-      checks: ["pkce", "state"], 
+      authorization: {
+        url: "https://api.login.yahoo.com/oauth2/request_auth",
+        params: { scope: "openid email profile" },
+      },
+      token: "https://api.login.yahoo.com/oauth2/get_token",
+      userinfo: "https://api.login.yahoo.com/openid/v1/userinfo",
+      checks: ["state"],
       client: {
         token_endpoint_auth_method: "client_secret_post",
       },
-      async profile(profile) {
+      async profile(profile: any) {
         const cookieStore = await cookies();
         const marketingConsent = cookieStore.get("marketing_consent")?.value === "true";
         return {
