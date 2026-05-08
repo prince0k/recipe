@@ -4,15 +4,33 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { RelatedContent } from "@/components/content/RelatedContent";
+import { FavoriteButton } from "@/components/content/FavoriteButton";
+import { auth } from "@/lib/auth";
 
 export default async function RecipeDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const session = await auth();
+
   const recipe = await prisma.content.findUnique({
     where: { slug },
   });
 
   if (!recipe || recipe.type !== "RECIPE") {
     return notFound();
+  }
+
+  // Check if favorited
+  let isFavorited = false;
+  if (session?.user?.id) {
+    const fav = await prisma.favorite.findUnique({
+      where: {
+        userId_contentId: {
+          userId: session.user.id,
+          contentId: recipe.id,
+        }
+      }
+    });
+    isFavorited = !!fav;
   }
 
   const tags = JSON.parse(recipe.tags || "[]");
@@ -143,10 +161,11 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
               <div className="bg-white p-8 rounded-[2.5rem] cinematic-shadow border border-border">
                 <h3 className="text-xl font-bold text-text mb-6">Enjoying this recipe?</h3>
                 <div className="space-y-4">
-                  <Button className="w-full py-4 rounded-xl shadow-lg flex items-center justify-center gap-2">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-                    Save to Favorites
-                  </Button>
+                  <FavoriteButton 
+                    contentId={recipe.id} 
+                    initialFavorited={isFavorited}
+                    className="w-full py-4 shadow-lg"
+                  />
                   <Button variant="outline" className="w-full py-4 rounded-xl border-2 border-border text-text-muted flex items-center justify-center gap-2 hover:bg-surface">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                     Share Recipe

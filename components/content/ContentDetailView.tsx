@@ -3,8 +3,9 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/Badge";
 import { DownloadGate } from "./DownloadGate";
 import { RelatedContent } from "./RelatedContent";
+import { FavoriteButton } from "./FavoriteButton";
 
-export function ContentDetailView({ content, relatedItems }: { content: any, relatedItems?: any[] }) {
+export function ContentDetailView({ content, relatedItems, isFavorited = false }: { content: any, relatedItems?: any[], isFavorited?: boolean }) {
   if (!content) return null;
 
   let tags: string[] = [];
@@ -83,7 +84,13 @@ export function ContentDetailView({ content, relatedItems }: { content: any, rel
                 <p className="mt-2 text-sm text-muted-foreground">
                   Download the complete PDF including grocery lists and meal prep instructions.
                 </p>
-                <div className="mt-6">
+                <div className="mt-6 space-y-4">
+                  <FavoriteButton 
+                    contentId={content.id} 
+                    initialFavorited={isFavorited}
+                    variant="outline"
+                    className="w-full"
+                  />
                   <DownloadGate content={content} />
                 </div>
               </div>
