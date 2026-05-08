@@ -118,7 +118,7 @@ export default function SignupPage() {
           </div>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-6 space-y-3">
           <Button
             type="button"
             variant="outline"
@@ -144,6 +144,21 @@ export default function SignupPage() {
               />
             </svg>
             Google
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => signIn("yahoo", { callbackUrl: "/" })}
+          >
+            <svg className="mr-2 h-5 w-5" viewBox="0 0 512 512">
+              <path
+                fill="#6001d2"
+                d="M328.6 30.6l-102.3 226-102.3-226h-94l154.6 313.3v137.5h83.4v-137.5l154.6-313.3z"
+              />
+            </svg>
+            Yahoo
           </Button>
         </div>
       </div>
