@@ -6,8 +6,6 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
 });
 
-const model = ai.models.get("gemini-1.5-flash");
-
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
@@ -25,21 +23,21 @@ export async function POST(req: Request) {
       If a user asks about something totally unrelated to food or the site, politely guide them back to culinary topics.
     `;
 
-    const chat = model.startChat({
-      history: [
-        { role: "user", parts: [{ text: systemPrompt }] },
-        { role: "model", parts: [{ text: "Understood. I am Stwart Lucas, your culinary coach. How can I inspire your cooking today?" }] },
-        ...messages.map((m: any) => ({
-          role: m.role === "user" ? "user" : "model",
-          parts: [{ text: m.content }],
-        })),
-      ],
+    const contents = [
+      { role: "user", parts: [{ text: systemPrompt }] },
+      { role: "model", parts: [{ text: "Understood. I am Stwart Lucas, your culinary coach. How can I inspire your cooking today?" }] },
+      ...messages.map((m: any) => ({
+        role: m.role === "user" ? "user" : "model",
+        parts: [{ text: m.content }],
+      })),
+    ];
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: contents,
     });
 
-    const lastMessage = messages[messages.length - 1].content;
-    const result = await chat.sendMessage(lastMessage);
-    const response = await result.response;
-    const text = response.text();
+    const text = response.text || "";
 
     return NextResponse.json({ content: text });
   } catch (error: any) {
