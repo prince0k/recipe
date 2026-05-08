@@ -13,6 +13,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
       allowDangerousEmailAccountLinking: true,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+          role: profile.role ?? "USER",
+          marketingConsent: true,
+        };
+      },
     }),
     {
       id: "yahoo",
@@ -29,6 +39,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: profile.email,
           image: profile.picture,
           role: "USER",
+          marketingConsent: true,
         };
       },
       allowDangerousEmailAccountLinking: true,
