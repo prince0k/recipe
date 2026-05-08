@@ -26,6 +26,7 @@ model User {
   favorites            Favorite[]
   pageViews            PageView[]
   personalizedRequests PersonalizedRequest[]
+  reviews              Review[]
   sessions             Session[]
   subscribers          Subscriber[]
 
@@ -66,6 +67,7 @@ model Content {
   downloads            Download[]
   favorites            Favorite[]
   personalizedRequests PersonalizedRequest[]
+  reviews              Review[]
 
   @@index([createdAt])
 }
@@ -190,6 +192,21 @@ model Subscriber {
   @@index([email])
   @@index([country])
   @@index([createdAt])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  contentId String
+  rating    Int      @default(5)
+  comment   String
+  isApproved Boolean  @default(false) // For testimonials
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([contentId])
+  @@index([userId])
 }
 
 model AILog {

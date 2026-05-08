@@ -5,6 +5,7 @@ import { DownloadGate } from "./DownloadGate";
 import { RelatedContent } from "./RelatedContent";
 import { FavoriteButton } from "./FavoriteButton";
 import { ShareButton } from "./ShareButton";
+import { Reviews } from "./Reviews";
 
 export function ContentDetailView({ content, relatedItems, isFavorited = false }: { content: any, relatedItems?: any[], isFavorited?: boolean }) {
   if (!content) return null;
@@ -105,6 +106,10 @@ export function ContentDetailView({ content, relatedItems, isFavorited = false }
               <RelatedContent items={relatedItems || []} />
             </div>
           </div>
+        </div>
+
+        <div className="mt-20 border-t border-border pt-12">
+          <Reviews contentId={content.id} />
         </div>
       </div>
     </article>

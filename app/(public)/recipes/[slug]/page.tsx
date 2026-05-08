@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { RelatedContent } from "@/components/content/RelatedContent";
 import { FavoriteButton } from "@/components/content/FavoriteButton";
 import { ShareButton } from "@/components/content/ShareButton";
+import { Reviews } from "@/components/content/Reviews";
 import { auth } from "@/lib/auth";
 
 export default async function RecipeDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -188,6 +189,10 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
               <RelatedContent items={relatedItems} />
             </div>
           </aside>
+        </div>
+
+        <div className="mt-24 max-w-4xl">
+          <Reviews contentId={recipe.id} />
         </div>
       </div>
     </div>

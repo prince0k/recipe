@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 
 import { getFeaturedRecipes } from "@/lib/queries";
+import { Testimonials } from "@/components/home/Testimonials";
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -129,6 +130,9 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials */}
+      <Testimonials />
 
       {/* Brand Story / About CTA */}
       <section className="py-24 bg-background">
