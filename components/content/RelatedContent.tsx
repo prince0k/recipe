@@ -15,7 +15,11 @@ export function RelatedContent({ items }: { items: any[] }) {
         {items.map((item) => (
           <Link 
             key={item.id} 
-            href={`/${item.type.toLowerCase().replace('_', '-')}/${item.slug}`}
+            href={
+              item.type === "RECIPE" ? `/recipes/${item.slug}` :
+              item.type === "CHEAT_SHEET" ? `/cheat-sheets/${item.slug}` :
+              `/${item.type.toLowerCase().replace('_', '-')}/${item.slug}`
+            }
             className="group block space-y-2"
           >
             {item.coverImage && (

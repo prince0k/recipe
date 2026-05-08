@@ -39,7 +39,11 @@ export default async function FavoritesPage() {
                 excerpt={fav.content.excerpt}
                 coverImage={fav.content.coverImage}
                 tags={JSON.parse(fav.content.tags || "[]")}
-                hrefPrefix={fav.content.type === "RECIPE" ? "recipes" : fav.content.type.toLowerCase().replace("_", "-")}
+                hrefPrefix={
+                  fav.content.type === "RECIPE" ? "recipes" : 
+                  fav.content.type === "CHEAT_SHEET" ? "cheat-sheets" : 
+                  fav.content.type.toLowerCase().replace("_", "-")
+                }
               />
             ))}
           </div>
