@@ -18,18 +18,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       id: "yahoo",
       name: "Yahoo",
       type: "oauth",
+
+      wellKnown:
+        "https://api.login.yahoo.com/.well-known/openid-configuration",
+
       clientId: process.env.AUTH_YAHOO_ID,
       clientSecret: process.env.AUTH_YAHOO_SECRET,
+
       authorization: {
-        url: "https://api.login.yahoo.com/oauth2/request_auth",
-        params: { scope: "sdps-r" },
+        params: {
+          scope: "openid email profile",
+        },
       },
-      token: "https://api.login.yahoo.com/oauth2/get_token",
-      userinfo: "https://api.login.yahoo.com/openid/v1/userinfo",
-      checks: ["state"],
-      client: {
-        token_endpoint_auth_method: "client_secret_post",
-      },
+
+      idToken: true,
+
+      checks: ["pkce", "state"],
+
       profile(profile: any) {
         return {
           id: profile.sub,
@@ -39,6 +44,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           role: "USER",
         };
       },
+
       allowDangerousEmailAccountLinking: true,
     },
     Credentials({
