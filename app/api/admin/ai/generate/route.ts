@@ -31,12 +31,23 @@ export async function POST(req: Request) {
 
       Requirements for ${type}:
       - **Title**: Catchy and SEO-optimized.
-      - **Excerpt**: 2-3 sentences summarizing the content.
-      - **Body**: Detailed HTML content (1200+ words for blogs).
+      - **Excerpt**: 2-3 sentences summarizing the content. This should be an emotionally engaging "Story" that connects the reader to the dish or topic.
+      - **Body**: Detailed HTML content. For recipes, this should be the step-by-step preparation method with clear instructions.
       - **SEO**: Meta title and Meta description.
       - **Tags**: 3-5 relevant tags.
       - **Schema**: A JSON-LD string.
-      - **coverImagePrompt**: A detailed, descriptive AI image generation prompt for a high-quality cinematic cover image (1200x800). Focus on mood, lighting, and composition.
+      - **coverImagePrompt**: A detailed, descriptive AI image generation prompt.
+
+      ${type === "RECIPE" ? `
+      Additional Requirements for RECIPE:
+      - **cookingTime**: Total time (e.g., "45 mins").
+      - **prepTime**: Preparation time (e.g., "15 mins").
+      - **difficulty**: "Easy", "Medium", or "Hard".
+      - **servings**: Number of servings (e.g., 4).
+      - **calories**: Caloric value per serving.
+      - **ingredients**: A list of strings (e.g., ["500g Shrimp", "2 Limes"]).
+      - **Nutrition**: Include Fat (g), Carbs (g), and Protein (g) in the body or schema, but also provide them as separate fields if possible.
+      ` : ""}
 
       Return the response in Strict JSON format:
       {
@@ -47,7 +58,18 @@ export async function POST(req: Request) {
         "seoDesc": "...",
         "tags": ["...", "..."],
         "schema": "...",
-        "coverImagePrompt": "..."
+        "coverImagePrompt": "...",
+        ${type === "RECIPE" ? `
+        "cookingTime": "...",
+        "prepTime": "...",
+        "difficulty": "...",
+        "servings": 4,
+        "calories": 450,
+        "ingredients": ["...", "..."],
+        "fat": "12g",
+        "carbs": "54g",
+        "protein": "18g"
+        ` : ""}
       }
     `;
 
@@ -78,6 +100,15 @@ export async function POST(req: Request) {
         body: data.body,
         coverImage: coverImageUrl,
         coverImagePrompt: data.coverImagePrompt,
+        ingredients: type === "RECIPE" ? JSON.stringify(data.ingredients || []) : "[]",
+        cookingTime: data.cookingTime,
+        prepTime: data.prepTime,
+        difficulty: data.difficulty,
+        servings: data.servings,
+        calories: data.calories,
+        fat: data.fat,
+        carbs: data.carbs,
+        protein: data.protein,
         tags: JSON.stringify(data.tags || []),
         seoTitle: data.seoTitle,
         seoDesc: data.seoDesc,

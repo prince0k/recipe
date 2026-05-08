@@ -109,8 +109,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
                 Ingredients
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-surface p-8 rounded-[2rem] border border-border">
-                {/* Mocking ingredients for now as they might be part of the body */}
-                {["500g Fresh Pasta", "4 Cloves of Garlic, minced", "1/2 cup Extra Virgin Olive Oil", "1 tsp Chili Flakes", "Fresh Parsley, chopped", "Sea Salt & Black Pepper", "Grated Parmesan"].map((item) => (
+                {JSON.parse(recipe.ingredients || "[]").map((item: string) => (
                   <label key={item} className="flex items-start gap-4 p-3 rounded-xl hover:bg-white transition-colors cursor-pointer group">
                     <input type="checkbox" className="mt-1 w-5 h-5 rounded-md border-border text-primary focus:ring-primary" />
                     <span className="text-text-muted group-hover:text-text transition-colors">{item}</span>
@@ -125,7 +124,6 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
                 Instructions
               </h2>
               <div className="space-y-10">
-                {/* If body is HTML, we show it, otherwise we'd parse steps */}
                 <div 
                   className="prose prose-lg prose-olive max-w-none prose-headings:font-serif prose-headings:text-text"
                   dangerouslySetInnerHTML={{ __html: recipe.body }} 
@@ -137,19 +135,19 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
               <h3 className="text-2xl font-bold text-olive mb-6">Nutrition Information</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                 <div>
-                  <span className="block text-3xl font-bold text-olive">{recipe.calories || '450'}</span>
+                  <span className="block text-3xl font-bold text-olive">{recipe.calories || '—'}</span>
                   <span className="text-xs uppercase tracking-widest font-bold text-olive/60">Calories</span>
                 </div>
                 <div>
-                  <span className="block text-3xl font-bold text-olive">12g</span>
+                  <span className="block text-3xl font-bold text-olive">{recipe.fat || '—'}</span>
                   <span className="text-xs uppercase tracking-widest font-bold text-olive/60">Fat</span>
                 </div>
                 <div>
-                  <span className="block text-3xl font-bold text-olive">54g</span>
+                  <span className="block text-3xl font-bold text-olive">{recipe.carbs || '—'}</span>
                   <span className="text-xs uppercase tracking-widest font-bold text-olive/60">Carbs</span>
                 </div>
                 <div>
-                  <span className="block text-3xl font-bold text-olive">18g</span>
+                  <span className="block text-3xl font-bold text-olive">{recipe.protein || '—'}</span>
                   <span className="text-xs uppercase tracking-widest font-bold text-olive/60">Protein</span>
                 </div>
               </div>

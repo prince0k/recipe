@@ -42,11 +42,15 @@ model Content {
   coverImage           String?
   coverVideo           String?
   coverImagePrompt     String?
+  ingredients          String?               @default("[]")
   downloadUrl          String?
   cookingTime          String?
   prepTime             String?
   difficulty           String?
   calories             Int?
+  fat                  String?
+  carbs                String?
+  protein              String?
   rating               Float                 @default(0)
   servings             Int?
   seoTitle             String?
