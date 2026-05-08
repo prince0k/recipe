@@ -11,6 +11,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -56,6 +57,29 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
+        <div className="flex items-start">
+          <div className="flex h-5 items-center">
+            <input
+              id="consent"
+              type="checkbox"
+              required
+              checked={consent}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setConsent(checked);
+                document.cookie = `marketing_consent=${checked}; path=/; max-age=3600; SameSite=Lax`;
+              }}
+              className="h-4 w-4 rounded border-border bg-background text-foreground focus:ring-ring"
+            />
+          </div>
+          <div className="ml-3 text-sm">
+            <label htmlFor="consent" className="font-medium text-foreground">
+              I agree to receive nutritional tips and marketing emails.
+            </label>
+            <p className="text-muted-foreground">Required for first-time social login.</p>
+          </div>
+        </div>
+
         {error && (
           <div className="text-center text-sm text-red-600">{error}</div>
         )}
@@ -82,7 +106,13 @@ export default function LoginPage() {
             type="button"
             variant="outline"
             className="w-full"
-            onClick={() => signIn("google", { callbackUrl: "/" })}
+            onClick={() => {
+              if (!consent) {
+                setError("Please agree to the marketing terms before continuing.");
+                return;
+              }
+              signIn("google", { callbackUrl: "/" });
+            }}
           >
             <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
               <path
@@ -109,7 +139,13 @@ export default function LoginPage() {
             type="button"
             variant="outline"
             className="w-full"
-            onClick={() => signIn("yahoo", { callbackUrl: "/" })}
+            onClick={() => {
+              if (!consent) {
+                setError("Please agree to the marketing terms before continuing.");
+                return;
+              }
+              signIn("yahoo", { callbackUrl: "/" });
+            }}
           >
             <svg className="mr-2 h-5 w-5" viewBox="0 0 512 512">
               <path

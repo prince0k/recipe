@@ -85,7 +85,11 @@ export default function SignupPage() {
               type="checkbox"
               required
               checked={consent}
-              onChange={(e) => setConsent(e.target.checked)}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setConsent(checked);
+                document.cookie = `marketing_consent=${checked}; path=/; max-age=3600; SameSite=Lax`;
+              }}
               className="h-4 w-4 rounded border-border bg-background text-foreground focus:ring-ring"
             />
           </div>
@@ -123,7 +127,13 @@ export default function SignupPage() {
             type="button"
             variant="outline"
             className="w-full"
-            onClick={() => signIn("google", { callbackUrl: "/" })}
+            onClick={() => {
+              if (!consent) {
+                setError("Please agree to the marketing terms before continuing.");
+                return;
+              }
+              signIn("google", { callbackUrl: "/" });
+            }}
           >
             <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
               <path
@@ -150,7 +160,13 @@ export default function SignupPage() {
             type="button"
             variant="outline"
             className="w-full"
-            onClick={() => signIn("yahoo", { callbackUrl: "/" })}
+            onClick={() => {
+              if (!consent) {
+                setError("Please agree to the marketing terms before continuing.");
+                return;
+              }
+              signIn("yahoo", { callbackUrl: "/" });
+            }}
           >
             <svg className="mr-2 h-5 w-5" viewBox="0 0 512 512">
               <path

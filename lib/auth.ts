@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import { cookies } from "next/headers";
 import { prisma } from "./db";
 import bcrypt from "bcryptjs";
 
@@ -14,13 +15,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
       allowDangerousEmailAccountLinking: true,
       profile(profile) {
+        const cookieStore = cookies();
+        const marketingConsent = cookieStore.get("marketing_consent")?.value === "true";
         return {
           id: profile.sub,
           name: profile.name,
           email: profile.email,
           image: profile.picture,
           role: profile.role ?? "USER",
-          marketingConsent: true,
+          marketingConsent,
         };
       },
     }),
@@ -33,13 +36,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.AUTH_YAHOO_SECRET,
       checks: ["pkce", "state"], // Yahoo returns empty nonce, so we skip it
       profile(profile) {
+        const cookieStore = cookies();
+        const marketingConsent = cookieStore.get("marketing_consent")?.value === "true";
         return {
           id: profile.sub,
           name: profile.name,
           email: profile.email,
           image: profile.picture,
           role: "USER",
-          marketingConsent: true,
+          marketingConsent,
         };
       },
       allowDangerousEmailAccountLinking: true,
