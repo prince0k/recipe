@@ -1,4 +1,5 @@
 import { ContentDetailView } from "@/components/content/ContentDetailView";
+import { AdBanner } from "@/components/ui/AdBanner";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
@@ -36,5 +37,12 @@ export default async function CheatSheetPage(props: { params: Promise<{ slug: st
     orderBy: { createdAt: "desc" }
   });
 
-  return <ContentDetailView content={content} relatedItems={relatedItems} isFavorited={isFavorited} />;
+  return (
+    <ContentDetailView 
+      content={content} 
+      relatedItems={relatedItems} 
+      isFavorited={isFavorited} 
+      adComponent={<AdBanner placement="BLOG_SIDEBAR" />}
+    />
+  );
 }

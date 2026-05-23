@@ -497,7 +497,14 @@ export function ContentEditForm({ id, initialData }: ContentEditFormProps) {
       <Modal isOpen={isPreviewOpen} onClose={() => setIsPreviewOpen(false)} title="Live Preview">
         <div className="max-h-[80vh] overflow-y-auto pt-4 border-t border-slate-100 mt-2">
           <div className="max-w-4xl mx-auto pointer-events-none">
-            <ContentDetailView content={{ ...formData, id: id || "preview" } as any} />
+            <ContentDetailView 
+              content={{ ...formData, id: id || "preview" } as any} 
+              adComponent={
+                <div className="p-6 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50 text-xs text-slate-455 font-bold uppercase tracking-wider select-none">
+                  Advertisement (Blog Sidebar Placement)
+                </div>
+              } 
+            />
           </div>
         </div>
       </Modal>

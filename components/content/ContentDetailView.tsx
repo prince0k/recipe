@@ -6,9 +6,18 @@ import { RelatedContent } from "./RelatedContent";
 import { FavoriteButton } from "./FavoriteButton";
 import { ShareButton } from "./ShareButton";
 import { Reviews } from "./Reviews";
-import { AdBanner } from "@/components/ui/AdBanner";
 
-export function ContentDetailView({ content, relatedItems, isFavorited = false }: { content: any, relatedItems?: any[], isFavorited?: boolean }) {
+export function ContentDetailView({ 
+  content, 
+  relatedItems, 
+  isFavorited = false,
+  adComponent
+}: { 
+  content: any, 
+  relatedItems?: any[], 
+  isFavorited?: boolean,
+  adComponent?: React.ReactNode 
+}) {
   if (!content) return null;
 
   let tags: string[] = [];
@@ -110,7 +119,7 @@ export function ContentDetailView({ content, relatedItems, isFavorited = false }
               
               <RelatedContent items={relatedItems || []} />
               
-              <AdBanner placement="BLOG_SIDEBAR" />
+              {adComponent}
             </div>
           </div>
         </div>

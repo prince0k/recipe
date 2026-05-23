@@ -43,7 +43,7 @@ next-env.d.ts
 /app/generated/prisma
 *.db
 *.db-journal
-/scratch//public/uploads
+/scratch/
 
 certificates
 
