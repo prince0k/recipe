@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent } from "@/components/ui/Card";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import { ArrowLeft, User, Mail, FileText, ClipboardList, Sparkles, Send, Copy, Check } from "lucide-react";
 
 interface RequestDetailProps {
   id: string;
@@ -16,6 +17,7 @@ interface RequestDetailProps {
 export function RequestDetail({ id, request }: RequestDetailProps) {
   const router = useRouter();
   const [isSending, setIsSending] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleMarkAsSent = async () => {
     setIsSending(true);
@@ -37,86 +39,179 @@ export function RequestDetail({ id, request }: RequestDetailProps) {
     }
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(request.generatedContent || "");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   let answers = {};
   try { answers = JSON.parse(request.answers); } catch (e) {}
 
+  const userInitials = request.user.name 
+    ? request.user.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase() 
+    : request.user.email.slice(0, 2).toUpperCase();
+
   return (
-    <div>
-      <div className="mb-6 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <Link href="/admin/requests" className="text-gray-500 hover:text-gray-900">
-            ← Back
-          </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Review Request</h1>
-          <Badge variant={request.status === "SENT" ? "success" : "warning"}>{request.status}</Badge>
+    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in px-4 sm:px-6 lg:px-8 py-6">
+      
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-6">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 mb-1">
+            <Link 
+              href="/admin/requests" 
+              className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5 transition-all duration-200 group bg-emerald-50 hover:bg-emerald-100/80 px-3 py-1.5 rounded-full w-fit"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" /> 
+              Back to Requests
+            </Link>
+          </div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 font-serif">
+              Request Review
+            </h1>
+            {request.status === "SENT" ? (
+              <Badge variant="success" className="font-bold border border-green-200/50">
+                SENT &amp; DELIVERED
+              </Badge>
+            ) : (
+              <Badge variant="warning" className="font-bold border border-yellow-200/50">
+                PENDING REVIEW
+              </Badge>
+            )}
+          </div>
         </div>
-        
+
         {request.status === "PENDING" && (
-          <Button onClick={handleMarkAsSent} isLoading={isSending}>
+          <Button 
+            onClick={handleMarkAsSent} 
+            isLoading={isSending}
+            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md shadow-emerald-600/10 hover:shadow-lg transition-all duration-200 active:scale-98"
+          >
+            <Send className="w-4 h-4" />
             Mark as Sent (Skip Email)
           </Button>
         )}
       </div>
 
+      {/* Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Sidebar: User Details */}
-        <div className="col-span-1 space-y-6">
-          <Card>
-            <div className="px-5 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-medium">User Profile</h3>
+        {/* Sidebar panels */}
+        <div className="col-span-1 space-y-8">
+          
+          {/* Card 1: User Profile */}
+          <Card className="border border-slate-100 shadow-sm bg-white overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+              <h3 className="font-bold text-slate-900 font-serif text-base flex items-center gap-2">
+                <User className="w-4 h-4 text-emerald-600" />
+                User Profile
+              </h3>
             </div>
-            <CardContent className="space-y-4 pt-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase">Name</label>
-                <div className="text-sm font-medium">{request.user.name || "Unknown"}</div>
+            <CardContent className="p-6 space-y-5">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold text-base border border-emerald-500/20 shadow-inner">
+                  {userInitials}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-slate-900 truncate">
+                    {request.user.name || "Anonymous User"}
+                  </p>
+                  <p className="text-xs text-slate-500 truncate flex items-center gap-1 mt-0.5">
+                    <Mail className="w-3.5 h-3.5 text-slate-400" />
+                    {request.user.email}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase">Email</label>
-                <div className="text-sm font-medium">{request.user.email}</div>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase">Requested Content</label>
-                <div className="text-sm font-medium text-[#10b981]">{request.content.title}</div>
+
+              <div className="border-t border-slate-100 pt-4 space-y-3">
+                <div>
+                  <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Requested Guide</span>
+                  <span className="text-sm font-semibold text-emerald-600 flex items-center gap-1 mt-1 font-serif">
+                    <FileText className="w-4 h-4" />
+                    {request.content.title}
+                  </span>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <div className="px-5 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-medium">Survey Answers</h3>
+          {/* Card 2: Questionnaire Answers */}
+          <Card className="border border-slate-100 shadow-sm bg-white overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+              <h3 className="font-bold text-slate-900 font-serif text-base flex items-center gap-2">
+                <ClipboardList className="w-4 h-4 text-emerald-600" />
+                Survey Responses
+              </h3>
             </div>
-            <CardContent className="space-y-4 pt-4">
+            <CardContent className="p-6 divide-y divide-slate-100">
               {Object.entries(answers).map(([key, value]) => (
-                <div key={key} className="pb-3 border-b border-gray-100 last:border-0 last:pb-0">
-                  <div className="text-xs font-medium text-gray-500 uppercase mb-1">{key}</div>
-                  <div className="text-sm font-medium">{value as string}</div>
+                <div key={key} className="py-3 first:pt-0 last:pb-0">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
+                    {key.replace(/([A-Z])/g, ' $1').trim()}
+                  </span>
+                  <span className="text-sm font-semibold text-slate-700 leading-relaxed block">
+                    {value as string}
+                  </span>
                 </div>
               ))}
+              {Object.keys(answers).length === 0 && (
+                <p className="text-xs text-slate-400 text-center py-4 italic">No survey answers found.</p>
+              )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Main: AI Generated Content */}
+        {/* Main Document panel */}
         <div className="col-span-2">
-          <Card className="h-full">
-            <div className="px-5 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-lg font-medium">AI Generated Plan</h3>
-              <div className="text-xs text-gray-500">Generated by GPT-4o-mini</div>
+          <Card className="border border-slate-100 shadow-sm bg-white overflow-hidden h-full flex flex-col">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white">
+              <div>
+                <h3 className="font-bold text-slate-900 font-serif text-base flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-emerald-600" />
+                  AI Generated Guide
+                </h3>
+              </div>
+              <div className="flex items-center gap-3">
+                {request.generatedContent && (
+                  <button
+                    onClick={handleCopy}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors border border-slate-200/50"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        Copy text
+                      </>
+                    )}
+                  </button>
+                )}
+                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded-md border border-slate-200/40">
+                  GPT-4o-mini
+                </span>
+              </div>
             </div>
-            <CardContent className="pt-6">
-              <div className="bg-[#fdfcfb] text-[#2d2a26] p-10 md:p-20 rounded-[2.5rem] border border-[#e8e2d9] shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] overflow-y-auto max-h-[850px]">
-                <div className="prose prose-stone prose-lg md:prose-xl max-w-none 
-                  prose-headings:text-[#1a1816] prose-headings:font-serif prose-headings:font-medium prose-headings:tracking-tight prose-headings:mt-12 prose-headings:mb-6
-                  prose-p:leading-[1.8] prose-p:text-[#4a453e] prose-p:mb-8
-                  prose-strong:text-[#1a1816] prose-strong:font-semibold
-                  prose-li:my-4 prose-li:text-[#4a453e]
-                  prose-hr:border-[#e8e2d9] prose-hr:my-16
-                  [&>p]:mb-8 [&>ul]:mb-10">
+            
+            <CardContent className="p-6 flex-1 bg-slate-50/50">
+              <div className="bg-white text-[#2d2a26] p-8 md:p-14 rounded-2xl border border-slate-200/60 shadow-inner overflow-y-auto max-h-[750px] scrollbar-thin">
+                <div className="prose prose-stone prose-emerald max-w-none 
+                  prose-headings:text-slate-900 prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:mb-4
+                  prose-p:leading-[1.8] prose-p:text-slate-650 prose-p:mb-6
+                  prose-strong:text-slate-900 prose-strong:font-bold
+                  prose-li:my-2 prose-li:text-slate-650
+                  prose-hr:border-slate-150 prose-hr:my-10">
                   {request.generatedContent ? (
                     <ReactMarkdown>{request.generatedContent}</ReactMarkdown>
                   ) : (
-                    <div className="text-stone-400 italic">No content generated.</div>
+                    <div className="text-slate-400 italic text-center py-12">
+                      No content generated yet.
+                    </div>
                   )}
                 </div>
               </div>

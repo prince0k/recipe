@@ -29,8 +29,9 @@ export function Navbar() {
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center group">
-              <span className="font-serif text-3xl font-bold text-primary group-hover:text-secondary transition-colors">
-                Stwart Lucas
+              <span className="font-serif text-2xl md:text-3xl font-bold text-primary group-hover:text-secondary transition-colors flex flex-col line-tight">
+                NutriGuide 
+                <span className="text-xs md:text-sm font-medium opacity-80 italic -mt-1 tracking-wide">by Stewart Lucas</span>
               </span>
             </Link>
             <div className="hidden sm:ml-10 sm:flex sm:space-x-8">

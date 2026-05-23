@@ -5,6 +5,9 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
 });
 
+// Hoisted regex for prompt sanitization (js-hoist-regexp)
+const PROMPT_SANITIZE_RE = /[^a-zA-Z0-9 ,.'\-]/g;
+
 // Reliable text models list
 // Stage 1: Cost-optimized prompt/text generation
 const STABLE_MODELS = [
@@ -54,8 +57,8 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
           text = text.replace(/```json\n?/, "").replace(/\n?```/, "").trim();
         }
 
-        // Log successful generation
-        await prisma.aILog.create({
+        // Fire-and-forget: don't block response for logging (server-after-nonblocking)
+        prisma.aILog.create({
           data: {
             prompt,
             model: modelName,
@@ -65,7 +68,7 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
             status: "SUCCESS",
             estimatedCost: COST_PER_1K_TOKENS_INR * 0.5 // Rough estimate
           }
-        });
+        }).catch((e: any) => console.warn("AI log write failed:", e.message));
 
         return text;
       } catch (error: any) {
@@ -199,7 +202,7 @@ export async function generateImage(prompt: string, quality: 'preview' | 'produc
 
 async function handleImageFallback(prompt: string, reason: string, startTime: number) {
   console.warn(`[Image Gen] ⚠️ Falling back to Pollinations.ai due to: ${reason}`);
-  const cleanPrompt = prompt.replace(/[^a-zA-Z0-9 ,.\-']/g, "").slice(0, 300);
+  const cleanPrompt = prompt.replace(PROMPT_SANITIZE_RE, "").slice(0, 300);
   const seed = Math.floor(Math.random() * 999999);
   const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=1200&height=800&seed=${seed}&nologo=true`;
 
@@ -236,8 +239,8 @@ export async function searchSerper(query: string) {
   }
 }
 
-export const STWART_LUCAS_VOICE = `
-Act as **Stwart Lucas**, the expert culinary coach and nutritionist. 
+export const STEWART_LUCAS_VOICE = `
+Act as Stewart Lucas, representing NutriGuide. You are the expert culinary coach and nutritionist. 
 Your tone is warm, cinematic, encouraging, and deeply professional. 
 Use vibrant words like "cinematic," "artisanal," "honest cooking," and "nourished." 
 Avoid bulky paragraphs. Use short, punchy, elegant sentences. 

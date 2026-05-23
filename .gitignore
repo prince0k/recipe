@@ -44,3 +44,9 @@ next-env.d.ts
 *.db
 *.db-journal
 /scratch//public/uploads
+
+certificates
+
+# workspaces and notes
+*.code-workspace
+* - Science-Backed Diet Plans.txt

@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/db";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
+import { AdBanner } from "@/components/ui/AdBanner";
 
 import { getFeaturedRecipes } from "@/lib/queries";
 import { Testimonials } from "@/components/home/Testimonials";
@@ -45,10 +45,13 @@ export default async function Home() {
               <input 
                 type="text" 
                 placeholder="Search recipes, ingredients..." 
+                aria-label="Search recipes and ingredients"
                 className="w-full h-16 pl-6 pr-16 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-primary transition-all group-hover:bg-white/20"
                 suppressHydrationWarning
               />
               <button 
+                type="button"
+                aria-label="Search recipes"
                 className="absolute right-3 top-3 bottom-3 px-6 rounded-xl bg-primary text-white font-bold shadow-lg hover:bg-primary-dark transition-all"
                 suppressHydrationWarning
               >
@@ -100,6 +103,8 @@ export default async function Home() {
         </div>
       </section>
 
+      <AdBanner placement="HOMEPAGE_BANNER" />
+
       {/* Featured Section */}
       <section className="py-24 bg-surface rounded-[4rem] mx-4 lg:mx-8 mb-24 overflow-hidden relative">
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -mr-48 -mt-48" />
@@ -141,7 +146,7 @@ export default async function Home() {
             <div className="relative h-[600px] rounded-[3rem] overflow-hidden cinematic-shadow">
               <Image 
                 src="/assets/hero.png" 
-                alt="Stwart Lucas Kitchen" 
+                alt="Stewart Lucas Kitchen" 
                 fill 
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -155,7 +160,7 @@ export default async function Home() {
                 One Simple Meal at a Time.
               </h2>
               <p className="text-lg text-text-muted mb-6 leading-relaxed font-serif italic">
-                "I believe that good food shouldn't be complicated or expensive. Stwart Lucas is born from a passion for home cooking that celebrates real ingredients and cinematic moments around the table."
+                "I believe that good food shouldn't be complicated or expensive. NutriGuide by Stewart Lucas is born from a passion for home cooking that celebrates real ingredients and cinematic moments around the table."
               </p>
               <p className="text-base text-text-muted mb-10 leading-relaxed">
                 Whether you're a busy professional looking for a 15-minute dinner or a home cook wanting to impress with a weekend feast, our recipes are designed to fit your life and your budget.

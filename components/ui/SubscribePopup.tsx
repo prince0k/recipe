@@ -14,7 +14,7 @@ export function SubscribePopup() {
     // Check if the user is already logged in, has already subscribed or dismissed the popup
     if (status === "authenticated") return;
     
-    const hasSeen = localStorage.getItem("stwart_lucas_popup_dismissed");
+    const hasSeen = localStorage.getItem("stewart_lucas_popup_dismissed");
     if (hasSeen) return;
 
     let fallbackTimer: NodeJS.Timeout;
@@ -57,7 +57,7 @@ export function SubscribePopup() {
 
   const handleClose = () => {
     setIsVisible(false);
-    localStorage.setItem("stwart_lucas_popup_dismissed", "true");
+    localStorage.setItem("stewart_lucas_popup_dismissed", "true");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

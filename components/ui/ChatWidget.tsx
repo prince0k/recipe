@@ -14,7 +14,7 @@ export function ChatWidget() {
   const { status } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "Hello! I'm Stwart. How can I help you in the kitchen today?" }
+    { role: "assistant", content: "Hello! I'm Stewart from NutriGuide. How can I help you in the kitchen today?" }
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -66,7 +66,7 @@ export function ChatWidget() {
                 S
               </div>
               <div>
-                <h3 className="font-bold text-sm">Chat with Stwart</h3>
+                <h3 className="font-bold text-sm">Chat with Stewart</h3>
                 <p className="text-[10px] text-white/70">Online & Ready to Cook</p>
               </div>
             </div>
@@ -95,7 +95,7 @@ export function ChatWidget() {
               <div className="flex justify-start">
                 <div className="bg-white p-3 rounded-2xl rounded-tl-none border border-border flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                  <span className="text-xs text-text-muted">Stwart is typing...</span>
+                  <span className="text-xs text-text-muted">Stewart is typing...</span>
                 </div>
               </div>
             )}

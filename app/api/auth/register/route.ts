@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
+import { sendVerificationEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -41,6 +42,12 @@ export async function POST(req: Request) {
         role: isAdmin ? "ADMIN" : "USER",
       },
     });
+
+    // ─── Fire verification email (async, non-blocking) ────────────────
+    console.log(`[register] Triggering verification email for ${email}`);
+    sendVerificationEmail(email, name || "").catch((err) =>
+      console.error("[register] Verification email fire-and-forget error:", err)
+    );
 
     return NextResponse.json(
       { message: "User created successfully", userId: user.id },

@@ -60,7 +60,7 @@ export async function GET() {
       ALREADY PUBLISHED CONTENT (DO NOT suggest anything similar to these titles):
       ${existingTitles.length > 0 ? existingTitles.map(t => `- "${t}"`).join('\n') : 'None yet.'}
 
-      Task: Based on the search results and current culinary trends for ${monthYear}, suggest 10 FRESH, UNIQUE topics for a premium nutrition website called "Stwart Lucas".
+      Task: Based on the search results and current culinary trends for ${monthYear}, suggest 10 FRESH, UNIQUE topics for a premium nutrition website called "Stewart Lucas".
       
       Rules:
       - Do NOT suggest anything similar to the already published content listed above.

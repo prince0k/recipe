@@ -192,7 +192,22 @@ export const getSubscriberStats = unstable_cache(
 
 export const getAdminDashboardStats = unstable_cache(
   async () => {
-    const [totalUsers, recentDownloads, publishedContent, latestUsers] = await Promise.all([
+    const [
+      totalUsers,
+      recentDownloads,
+      publishedContent,
+      latestUsers,
+      totalSubscribers,
+      pendingRequestsCount,
+      pendingReviewsCount,
+      aiStats,
+      pendingReviews,
+      pendingRequests,
+      recentUsersForGrowth,
+      recentDownloadsForGrowth,
+      contentDistribution,
+      subscribersByCountry
+    ] = await Promise.all([
       prisma.user.count(),
       prisma.download.count(),
       prisma.content.count({ where: { published: true } }),
@@ -200,13 +215,121 @@ export const getAdminDashboardStats = unstable_cache(
         take: 5,
         orderBy: { createdAt: "desc" },
         select: { id: true, name: true, email: true, createdAt: true }
+      }),
+      prisma.subscriber.count(),
+      prisma.personalizedRequest.count({ where: { status: "PENDING" } }),
+      prisma.review.count({ where: { isApproved: false } }),
+      prisma.aILog.aggregate({
+        _count: { id: true },
+        _sum: { estimatedCost: true }
+      }),
+      prisma.review.findMany({
+        where: { isApproved: false },
+        take: 5,
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: { select: { name: true, email: true } },
+          content: { select: { title: true } }
+        }
+      }),
+      prisma.personalizedRequest.findMany({
+        where: { status: "PENDING" },
+        take: 5,
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: { select: { name: true, email: true } },
+          content: { select: { title: true } }
+        }
+      }),
+      prisma.user.findMany({
+        where: {
+          createdAt: {
+            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+          }
+        },
+        select: { createdAt: true }
+      }),
+      prisma.download.findMany({
+        where: {
+          createdAt: {
+            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+          }
+        },
+        select: { createdAt: true }
+      }),
+      prisma.content.groupBy({
+        by: ["type"],
+        _count: { id: true }
+      }),
+      prisma.subscriber.groupBy({
+        by: ["country"],
+        _count: { id: true },
+        orderBy: {
+          _count: { id: "desc" }
+        },
+        take: 5
       })
     ]);
 
-    return { totalUsers, recentDownloads, publishedContent, latestUsers };
+    // Format Growth Trend over the last 30 days
+    const dateMap: { [key: string]: { date: string; users: number; downloads: number } } = {};
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateKey = d.toISOString().split("T")[0];
+      const dateLabel = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      dateMap[dateKey] = { date: dateLabel, users: 0, downloads: 0 };
+    }
+
+    recentUsersForGrowth.forEach((u) => {
+      const dateKey = u.createdAt.toISOString().split("T")[0];
+      if (dateMap[dateKey]) {
+        dateMap[dateKey].users++;
+      }
+    });
+
+    recentDownloadsForGrowth.forEach((d) => {
+      const dateKey = d.createdAt.toISOString().split("T")[0];
+      if (dateMap[dateKey]) {
+        dateMap[dateKey].downloads++;
+      }
+    });
+
+    const growthTrend = Object.keys(dateMap)
+      .sort()
+      .map((key) => dateMap[key]);
+
+    const formattedContentDistribution = contentDistribution.map((c) => ({
+      name: c.type.replace("_", " "),
+      value: c._count.id
+    }));
+
+    const formattedSubscribersByCountry = subscribersByCountry.map((c) => ({
+      country: c.country || "Unknown",
+      count: c._count.id
+    }));
+
+    return {
+      totalUsers,
+      recentDownloads,
+      publishedContent,
+      latestUsers,
+      totalSubscribers,
+      pendingRequestsCount,
+      pendingReviewsCount,
+      aiStats: {
+        totalRequests: aiStats._count.id,
+        totalCost: aiStats._sum.estimatedCost || 0
+      },
+      pendingReviews,
+      pendingRequests,
+      growthTrend,
+      contentDistribution: formattedContentDistribution,
+      subscribersByCountry: formattedSubscribersByCountry
+    };
   },
   ["admin-dashboard-stats"],
-  { revalidate: 60, tags: ["admin", "users", "content", "downloads"] }
+  { revalidate: 60, tags: ["admin", "users", "content", "downloads", "subscribers", "reviews", "requests"] }
 );
 
 export const getAllBlogPosts = unstable_cache(

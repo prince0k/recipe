@@ -16,6 +16,7 @@ export function AdminSidebar() {
     { name: "AI Content Gen", href: "/admin/content/ai-generator", icon: "✨" },
     { name: "Reviews", href: "/admin/reviews", icon: "⭐" },
     { name: "Partners", href: "/admin/partners", icon: "🤝" },
+    { name: "Ads Manager", href: "/admin/ads", icon: "📢" },
     { name: "Analytics", href: "/admin/analytics", icon: "📈" },
   ];
 

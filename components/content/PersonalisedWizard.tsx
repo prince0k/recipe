@@ -29,9 +29,9 @@ export function PersonalisedWizard({
     // ignore parse errors
   }
 
-  const totalSteps = 4 + customQuestions.length;
-
+  const totalSteps = 8 + customQuestions.length;
   const standardQuestions = [
+    // ... same as before
     {
       id: "goal",
       question: "What is your primary health goal right now?",
@@ -43,6 +43,11 @@ export function PersonalisedWizard({
       options: ["18-25", "26-35", "36-50", "50+"],
     },
     {
+      id: "gender",
+      question: "Which gender do you identify as?",
+      options: ["Male", "Female", "Non-binary", "Prefer not to say"],
+    },
+    {
       id: "diet",
       question: "Do you have any strict dietary preferences?",
       options: ["None", "Vegan/Vegetarian", "Keto/Low-Carb", "Gluten-Free/Dairy-Free"],
@@ -52,6 +57,21 @@ export function PersonalisedWizard({
       question: "How much time do you have for meal prep daily?",
       options: ["Under 15 mins", "15-30 mins", "30-60 mins", "Over an hour"],
     },
+    {
+      id: "activity",
+      question: "How would you describe your daily activity level?",
+      options: ["Sedentary", "Lightly Active", "Moderately Active", "Very Active"],
+    },
+    {
+      id: "struggle",
+      question: "What is your biggest struggle with healthy eating?",
+      options: ["Cravings", "Consistency", "Emotional Eating", "Lack of Knowledge"],
+    },
+    {
+      id: "additional",
+      question: "Anything else you'd like to share to make this plan even more personalized? (Optional)",
+      type: "text"
+    }
   ];
 
   const allQuestions = [
@@ -63,7 +83,7 @@ export function PersonalisedWizard({
     })),
   ];
 
-  const currentQuestion = allQuestions[step - 1];
+  const currentQuestion = allQuestions[step - 1] as any;
 
   const handleSelect = (option: string) => {
     setAnswers({ ...answers, [currentQuestion.id]: option });
@@ -84,10 +104,12 @@ export function PersonalisedWizard({
           }),
         });
 
+        const data = await res.json();
+
         if (res.ok) {
           setSuccess(true);
         } else {
-          alert("Something went wrong. Please try again.");
+          alert(data.error || "Something went wrong. Please try again.");
         }
       } catch (e) {
         alert("Failed to submit.");
@@ -99,7 +121,7 @@ export function PersonalisedWizard({
 
   if (success) {
     return (
-      <Modal isOpen={isOpen} onClose={onClose} title="Request Received">
+      <Modal isOpen={isOpen} onClose={onClose} title="Success!">
         <div className="space-y-4 py-6 text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-secondary text-foreground">
             <svg
@@ -117,18 +139,15 @@ export function PersonalisedWizard({
             </svg>
           </div>
           <h3 className="text-xl font-semibold text-foreground">
-            Request Received
+            Plan Request Sent
           </h3>
           <p className="text-muted-foreground">
-            We&apos;ve saved your preferences and are generating a custom version
-            of <strong className="text-foreground">{content.title}</strong>{" "}
-            tailored for you.
+            We&apos;ve received your request for a personalized version of <strong className="text-foreground">{content.title}</strong>.
           </p>
-          <div className="rounded-lg border border-border bg-secondary/50 p-4 text-sm text-foreground">
-            <p className="font-medium">What happens next?</p>
-            <p className="mt-1 text-muted-foreground">
-              Our team will review the AI generation for quality, then send the
-              final PDF directly to your email.
+          <div className="rounded-lg border border-border bg-emerald-500/10 p-4 text-emerald-700 dark:text-emerald-400">
+            <p className="font-semibold text-lg">Check your mail box / inbox or spam</p>
+            <p className="mt-1 text-sm opacity-90">
+              Your personalized guide is being generated and will be sent shortly.
             </p>
           </div>
           <Button onClick={onClose} className="mt-4 w-full">
@@ -162,24 +181,33 @@ export function PersonalisedWizard({
             <h3 className="mb-4 text-lg font-medium text-foreground">
               {currentQuestion.question}
             </h3>
-            <div className="space-y-3">
-              {currentQuestion.options.map((opt: string, i: number) => {
-                const isSelected = answers[currentQuestion.id] === opt;
-                return (
-                  <button
-                    key={i}
-                    onClick={() => handleSelect(opt)}
-                    className={`w-full rounded-lg border px-4 py-3 text-left transition-colors ${
-                      isSelected
-                        ? "border-foreground bg-secondary text-foreground"
-                        : "border-border text-foreground hover:border-foreground/30 hover:bg-secondary/50"
-                    }`}
-                  >
-                    {opt}
-                  </button>
-                );
-              })}
-            </div>
+            {currentQuestion.type === "text" ? (
+              <textarea
+                value={answers[currentQuestion.id] || ""}
+                onChange={(e) => setAnswers({ ...answers, [currentQuestion.id]: e.target.value })}
+                placeholder="Share any specific details, allergies, or preferences..."
+                className="w-full rounded-lg border border-border bg-secondary/50 p-4 text-foreground focus:border-foreground focus:outline-none min-h-[120px]"
+              />
+            ) : (
+              <div className="space-y-3">
+                {currentQuestion.options.map((opt: string, i: number) => {
+                  const isSelected = answers[currentQuestion.id] === opt;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => handleSelect(opt)}
+                      className={`w-full rounded-lg border px-4 py-3 text-left transition-colors ${
+                        isSelected
+                          ? "border-foreground bg-secondary text-foreground"
+                          : "border-border text-foreground hover:border-foreground/30 hover:bg-secondary/50"
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
@@ -195,7 +223,7 @@ export function PersonalisedWizard({
 
           <Button
             onClick={nextStep}
-            disabled={!answers[currentQuestion?.id] || isSubmitting}
+            disabled={(currentQuestion?.type !== "text" && !answers[currentQuestion?.id]) || isSubmitting}
             isLoading={isSubmitting}
           >
             {step === totalSteps ? "Send by Mail" : "Continue"}

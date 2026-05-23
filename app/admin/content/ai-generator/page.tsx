@@ -3,8 +3,21 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
 import { useRouter } from "next/navigation";
+import { 
+  Sparkles, 
+  Search, 
+  Plus, 
+  Minus, 
+  Check, 
+  AlertCircle, 
+  TrendingUp, 
+  HelpCircle, 
+  FileText, 
+  Image as ImageIcon,
+  BookOpen,
+  CheckSquare
+} from "lucide-react";
 
 export default function AIGeneratorPage() {
   const router = useRouter();
@@ -15,7 +28,7 @@ export default function AIGeneratorPage() {
   const [topicMode, setTopicMode] = useState<"trends" | "manual">("trends");
   const [pastedTopics, setPastedTopics] = useState("");
   const [imageMode, setImageMode] = useState<"image" | "prompt">("image");
-  const [ progress, setProgress] = useState({ current: 0, total: 0, currentTitle: "" });
+  const [progress, setProgress] = useState({ current: 0, total: 0, currentTitle: "" });
   const [counts, setCounts] = useState({
     BLOG: 3,
     RECIPE: 3,
@@ -101,91 +114,115 @@ export default function AIGeneratorPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto pb-20">
-      <div className="flex justify-between items-center mb-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 animate-fade-in pb-20">
+      
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 font-serif">AI Content Engine</h1>
-          <p className="text-gray-500 mt-1">Generate bulk, SEO-optimized content based on real-time trends.</p>
+          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 font-serif">
+            AI Content Engine
+          </h1>
+          <p className="text-slate-500 mt-1.5 text-sm sm:text-base max-w-2xl leading-relaxed">
+            Automatically discover online search trends and instantly draft AEO-optimized content cards.
+          </p>
         </div>
         <Button 
           onClick={searchTrends} 
           isLoading={isSearching}
           disabled={isGenerating}
-          variant="outline"
+          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs sm:text-sm px-5 hover:shadow-lg hover:shadow-emerald-600/15 transition-all duration-200"
         >
-          🔍 Search Trending Topics
+          <Search className="w-4 h-4" /> 
+          Discover Hot Topics
         </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
         {/* Step 1: Select Topics */}
         <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <div className="px-5 py-4 border-b border-gray-200 bg-gray-50/50 flex justify-between items-center">
+          <Card className="border border-slate-100 bg-white shadow-sm rounded-2xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
               <div className="flex gap-4">
                 <button 
                   onClick={() => setTopicMode("trends")}
-                  className={`text-sm font-bold pb-1 transition-all ${topicMode === "trends" ? "text-[#10b981] border-b-2 border-[#10b981]" : "text-gray-400 hover:text-gray-600"}`}
+                  className={`text-sm font-bold pb-1.5 transition-all border-b-2 ${
+                    topicMode === "trends" 
+                      ? "text-emerald-600 border-emerald-600" 
+                      : "text-slate-400 border-transparent hover:text-slate-600"
+                  }`}
                 >
                   📈 Trending Topics
                 </button>
                 <button 
                   onClick={() => setTopicMode("manual")}
-                  className={`text-sm font-bold pb-1 transition-all ${topicMode === "manual" ? "text-[#10b981] border-b-2 border-[#10b981]" : "text-gray-400 hover:text-gray-600"}`}
+                  className={`text-sm font-bold pb-1.5 transition-all border-b-2 ${
+                    topicMode === "manual" 
+                      ? "text-emerald-600 border-emerald-600" 
+                      : "text-slate-400 border-transparent hover:text-slate-600"
+                  }`}
                 >
                   📝 Manual Paste
                 </button>
               </div>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
                 {topicMode === "trends" ? `${selectedTopics.length} selected` : `${pastedTopics.split("\n").filter(t => t.trim()).length} topics`}
               </span>
             </div>
-            <CardContent className="pt-6">
+            
+            <CardContent className="p-6">
               {topicMode === "manual" ? (
                 <div className="space-y-4">
-                  <label className="text-sm font-medium text-gray-700 block italic">
+                  <label className="text-sm font-semibold text-slate-700 block">
                     Paste your topics below, one per line:
                   </label>
                   <textarea
-                    className="w-full h-[400px] p-4 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#10b981]/50 font-serif text-lg leading-relaxed shadow-inner"
+                    className="w-full h-[380px] p-4 border border-slate-200 rounded-xl outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 font-mono text-sm leading-relaxed transition-all"
                     placeholder="e.g.&#10;How to lose weight fast&#10;Intermittent fasting guide&#10;Keto diet recipes"
                     value={pastedTopics}
                     onChange={(e) => setPastedTopics(e.target.value)}
                     disabled={isGenerating}
                   />
-                  <p className="text-xs text-gray-400">
-                    💡 Every new line will trigger a separate content generation request.
+                  <p className="text-xs text-slate-400 flex items-center gap-1.5 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <HelpCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Every separate line will trigger a standalone content generator request in draft mode.</span>
                   </p>
                 </div>
               ) : categories.length === 0 ? (
-                <div className="text-center py-12 text-gray-400 border-2 border-dashed border-gray-100 rounded-lg">
-                  Click "Search Trending Topics" to fetch latest data from Serper.
+                <div className="text-center py-16 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 bg-slate-50/20">
+                  <TrendingUp className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                  <p className="text-sm font-semibold text-slate-500">Ready to fetch real-time trends?</p>
+                  <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto leading-relaxed">
+                    Click "Discover Hot Topics" at the top right to analyze search trends using Serper API.
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-8">
                   {categories.map(category => (
                     <div key={category.name} className="space-y-4">
-                      <h4 className="font-serif text-lg font-bold text-[#10b981] border-l-4 border-[#10b981] pl-3">
+                      <h4 className="font-serif text-lg font-bold text-slate-800 border-l-4 border-emerald-500 pl-3">
                         {category.name}
                       </h4>
-                      <div className="grid gap-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {category.topics.map(topic => (
                           <div 
                             key={topic}
                             onClick={() => !isGenerating && toggleTopic(topic)}
-                            className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                            className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between group ${
                               selectedTopics.includes(topic) 
-                                ? "border-[#10b981] bg-[#10b981]/5" 
-                                : "border-gray-100 hover:border-gray-200"
+                                ? "border-emerald-500 bg-emerald-50/30" 
+                                : "border-slate-200 hover:border-slate-300 bg-white"
                             } ${isGenerating ? "opacity-50 cursor-not-allowed" : ""}`}
                           >
-                            <div className="flex items-center gap-3">
-                              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                selectedTopics.includes(topic) ? "bg-[#10b981] border-[#10b981]" : "border-gray-300"
-                              }`}>
-                                {selectedTopics.includes(topic) && <span className="text-white text-xs">✓</span>}
-                              </div>
-                              <span className="font-medium text-gray-700">{topic}</span>
+                            <span className="font-semibold text-sm text-slate-700 leading-normal group-hover:text-emerald-700 transition-colors">
+                              {topic}
+                            </span>
+                            <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ml-3 transition-colors ${
+                              selectedTopics.includes(topic) 
+                                ? "bg-emerald-600 border-emerald-600 text-white" 
+                                : "border-slate-350 bg-white"
+                            }`}>
+                              {selectedTopics.includes(topic) && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                             </div>
                           </div>
                         ))}
@@ -200,68 +237,81 @@ export default function AIGeneratorPage() {
 
         {/* Step 2: Configure & Generate */}
         <div className="space-y-6">
-          <Card>
-            <div className="px-5 py-4 border-b border-gray-200 bg-gray-50/50">
-              <h3 className="font-semibold text-gray-900">2. Configure Output</h3>
+          <Card className="border border-slate-100 bg-white shadow-sm rounded-2xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+              <h3 className="font-bold text-slate-950 text-base font-serif">Configure Output</h3>
             </div>
-            <CardContent className="pt-6 space-y-6">
-              <div className="space-y-4">
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100 mb-6">
-                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 block">Image Generation Mode</label>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setImageMode("image")}
-                      className={`flex-1 py-2 px-3 rounded-md text-xs font-bold transition-all ${
-                        imageMode === "image" 
-                          ? "bg-[#10b981] text-white shadow-md shadow-[#10b981]/20" 
-                          : "bg-white text-gray-600 border border-gray-200 hover:border-[#10b981]/50"
-                      }`}
-                    >
-                      🖼️ Full Image
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setImageMode("prompt")}
-                      className={`flex-1 py-2 px-3 rounded-md text-xs font-bold transition-all ${
-                        imageMode === "prompt" 
-                          ? "bg-amber-500 text-white shadow-md shadow-amber-500/20" 
-                          : "bg-white text-gray-600 border border-gray-200 hover:border-amber-500/50"
-                      }`}
-                    >
-                      📜 Prompt Only
-                    </button>
-                  </div>
-                  <p className="text-[10px] text-gray-400 mt-2 italic">
-                    {imageMode === "image" ? "Best for hands-off automation." : "Generate prompts to copy-paste into DALL-E later."}
-                  </p>
+            
+            <CardContent className="p-6 space-y-6">
+              
+              {/* Image Selection Toggle */}
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <label className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-2.5 block">
+                  Image Generation Mode
+                </label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setImageMode("image")}
+                    className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+                      imageMode === "image" 
+                        ? "bg-emerald-600 text-white shadow-sm" 
+                        : "bg-white text-slate-600 border border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    🖼️ Active Image
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImageMode("prompt")}
+                    className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+                      imageMode === "prompt" 
+                        ? "bg-amber-600 text-white shadow-sm" 
+                        : "bg-white text-slate-600 border border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    📜 Prompt Only
+                  </button>
                 </div>
+                <p className="text-[10px] text-slate-450 mt-2 italic">
+                  {imageMode === "image" ? "Automatically generate and link cover imagery." : "Only write prompts so you can create images manually later."}
+                </p>
+              </div>
 
+              {/* Counts Incrementer List */}
+              <div className="space-y-4">
                 {(Object.keys(counts) as Array<keyof typeof counts>).map(type => (
-                  <div key={type} className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-600 capitalize">
-                      {type.replace("_", " ")}s
+                  <div key={type} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
+                    <label className="text-sm font-semibold text-slate-600 capitalize">
+                      {type.replace("_", " ").toLowerCase()}s
                     </label>
                     <div className="flex items-center gap-3">
                       <button 
+                        type="button"
                         onClick={() => setCounts(prev => ({ ...prev, [type]: Math.max(0, prev[type] - 1) }))}
-                        className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50"
-                        disabled={isGenerating}
-                      >-</button>
-                      <span className="w-4 text-center font-bold">{counts[type]}</span>
+                        className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 font-bold text-slate-600 transition-colors disabled:opacity-50"
+                        disabled={isGenerating || counts[type] === 0}
+                      >
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="w-5 text-center font-bold text-sm text-slate-900">{counts[type]}</span>
                       <button 
+                        type="button"
                         onClick={() => setCounts(prev => ({ ...prev, [type]: Math.min(10, prev[type] + 1) }))}
-                        className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50"
-                        disabled={isGenerating}
-                      >+</button>
+                        className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 font-bold text-slate-600 transition-colors disabled:opacity-50"
+                        disabled={isGenerating || counts[type] === 10}
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="pt-4 border-t border-gray-100">
+              {/* Generate button action */}
+              <div className="pt-4 border-t border-slate-100">
                 <Button 
-                  className="w-full py-6 text-lg shadow-lg shadow-[#10b981]/20"
+                  className="w-full py-4 text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-md hover:shadow-slate-950/20 transition-all duration-200 active:scale-98"
                   onClick={handleGenerate}
                   disabled={
                     isGenerating || 
@@ -270,23 +320,27 @@ export default function AIGeneratorPage() {
                   }
                   isLoading={isGenerating}
                 >
-                  ✨ Generate {(topicMode === "trends" ? selectedTopics.length : pastedTopics.split("\n").filter(t => t.trim()).length) * Object.values(counts).reduce((a,b)=>a+b, 0)} Items
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate {(topicMode === "trends" ? selectedTopics.length : pastedTopics.split("\n").filter(t => t.trim()).length) * Object.values(counts).reduce((a,b)=>a+b, 0)} Items
                 </Button>
               </div>
 
+              {/* progress details */}
               {isGenerating && (
-                <div className="space-y-3 pt-4">
-                  <div className="flex justify-between text-xs font-medium text-gray-500">
+                <div className="space-y-3.5 pt-4 bg-emerald-50/30 p-4 rounded-xl border border-emerald-100/60">
+                  <div className="flex justify-between text-xs font-semibold text-slate-600">
                     <span>Overall Progress</span>
-                    <span>{progress.current} / {progress.total}</span>
+                    <span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
+                      {progress.current} / {progress.total}
+                    </span>
                   </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-[#10b981] transition-all duration-500"
+                      className="h-full bg-emerald-500 transition-all duration-500 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500"
                       style={{ width: `${(progress.current / progress.total) * 100}%` }}
                     />
                   </div>
-                  <p className="text-[10px] text-center text-gray-400 italic">
+                  <p className="text-[10px] text-center text-slate-500 italic font-medium leading-relaxed">
                     {progress.currentTitle}
                   </p>
                 </div>
@@ -294,17 +348,22 @@ export default function AIGeneratorPage() {
             </CardContent>
           </Card>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+          {/* info Callout */}
+          <div className="bg-amber-50/50 border border-amber-200/80 rounded-2xl p-5 shadow-inner">
             <div className="flex gap-3">
-              <span className="text-xl">💡</span>
-              <div className="text-sm text-amber-800">
-                <p className="font-semibold mb-1">AEO Optimized</p>
-                All content is generated with specific Answer Engine Optimization (AEO) patterns to help you trend on AI search tools.
+              <span className="text-2xl p-2 bg-amber-100 rounded-xl h-fit">💡</span>
+              <div className="text-xs sm:text-sm text-amber-800 leading-relaxed">
+                <p className="font-bold mb-1">AEO Optimized Drafting</p>
+                All content pieces utilize custom Answer Engine Optimization patterns to index cleanly on next-generation search assistants.
               </div>
             </div>
           </div>
+          
         </div>
+        
       </div>
+      
     </div>
   );
 }
+

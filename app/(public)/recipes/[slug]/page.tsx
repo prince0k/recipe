@@ -8,6 +8,7 @@ import { FavoriteButton } from "@/components/content/FavoriteButton";
 import { ShareButton } from "@/components/content/ShareButton";
 import { Reviews } from "@/components/content/Reviews";
 import { auth } from "@/lib/auth";
+import { AdBanner } from "@/components/ui/AdBanner";
 
 export default async function RecipeDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -178,15 +179,9 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
                 </div>
               </div>
 
-              <div className="bg-primary/5 p-8 rounded-[2.5rem] border border-primary/10">
-                <h3 className="text-xl font-bold text-primary mb-4">Meal Planning?</h3>
-                <p className="text-sm text-text-muted mb-6 leading-relaxed">
-                  Get a personalized diet plan based on recipes like this one.
-                </p>
-                <Button className="w-full bg-secondary hover:bg-secondary-dark rounded-xl">Get Started</Button>
-              </div>
-
               <RelatedContent items={relatedItems} />
+              
+              <AdBanner placement="RECIPES_SIDEBAR" />
             </div>
           </aside>
         </div>

@@ -13,9 +13,30 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
     const { id } = await params;
     
-    // In the future, integrate Resend here.
-    // For now, we just mark it as SENT per user request.
+    // 1. Fetch the request with user info
+    const personalisedRequest = await prisma.personalizedRequest.findUnique({
+      where: { id },
+      include: {
+        user: true,
+      }
+    });
 
+    if (!personalisedRequest) {
+      return NextResponse.json({ error: "Request not found" }, { status: 404 });
+    }
+
+    const SITE_URL = process.env.SITE_URL || process.env.AUTH_URL || "https://stewartlucas.com";
+    const viewUrl = `${SITE_URL}/personalized/${id}`;
+
+    // 2. Trigger the email
+    const { sendPersonalisedPlanReadyEmail } = await import("@/lib/email");
+    await sendPersonalisedPlanReadyEmail({
+      to: personalisedRequest.user.email,
+      name: personalisedRequest.user.name || "Friend",
+      viewUrl,
+    });
+
+    // 3. Mark as SENT
     await prisma.personalizedRequest.update({
       where: { id },
       data: { status: "SENT" }

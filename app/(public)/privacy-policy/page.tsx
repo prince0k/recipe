@@ -2,13 +2,13 @@ import React from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Stwart Lucas",
-  description: "Learn how Stwart Lucas collects, uses, and protects your personal data. Our privacy policy covers data collection, cookies, subscriber tracking, and your rights under GDPR and CCPA.",
+  title: "Privacy Policy | Stewart Lucas",
+  description: "Learn how Stewart Lucas collects, uses, and protects your personal data. Our privacy policy covers data collection, cookies, subscriber tracking, and your rights under GDPR and CCPA.",
 };
 
 export default function PrivacyPolicyPage() {
   const lastUpdated = "8 May 2026";
-  const siteName = "Stwart Lucas";
+  const siteName = "Stewart Lucas";
   const siteUrl = process.env.AUTH_URL || "https://stewartlucas.com";
   const contactEmail = "privacy@stewartlucas.com";
 

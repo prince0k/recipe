@@ -15,9 +15,49 @@ export default function SignupPage() {
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [suggestion, setSuggestion] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [startTime] = useState(Date.now());
+  const [isVerified, setIsVerified] = useState(false);
+
+  const checkEmailTypo = (email: string) => {
+    const commonDomains = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com"];
+    const [user, domain] = email.split("@");
+    if (!domain) return;
+
+    const typos: Record<string, string> = {
+      "gamil.com": "gmail.com",
+      "gmial.com": "gmail.com",
+      "gmal.com": "gmail.com",
+      "yaho.com": "yahoo.com",
+      "yhoo.com": "yahoo.com",
+      "hotmal.com": "hotmail.com",
+      "outlok.com": "outlook.com",
+    };
+
+    if (typos[domain.toLowerCase()]) {
+      setSuggestion(`${user}@${typos[domain.toLowerCase()]}`);
+    } else {
+      setSuggestion("");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Bot check 1: Honeypot
+    if (honeypot) {
+      setIsSuccess(true); // Fake success for bots
+      return;
+    }
+
+    // Bot check 2: Speed trap (humans take >4s to fill form)
+    if (Date.now() - startTime < 4000) {
+      setIsSuccess(true); // Fake success for bots
+      return;
+    }
+
     setIsLoading(true);
     setError("");
 
@@ -33,14 +73,7 @@ export default function SignupPage() {
         throw new Error(data.message || "Something went wrong");
       }
 
-      await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      router.push("/");
-      router.refresh();
+      setIsSuccess(true);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Something went wrong";
       setError(errorMessage);
@@ -52,10 +85,43 @@ export default function SignupPage() {
   return (
     <>
       <h2 className="mb-6 text-center font-serif text-2xl font-bold text-foreground">
-        Create your free account
+        {isSuccess ? "Check your email" : "Create your free account"}
       </h2>
 
-      <form className="space-y-5" onSubmit={handleSubmit}>
+      {isSuccess ? (
+        <div className="text-center">
+          <div className="mb-6 rounded-lg bg-emerald-500/10 p-6 text-emerald-700 border border-emerald-500/20">
+            <h3 className="text-lg font-bold mb-2">Check your inbox</h3>
+            <p className="text-sm">
+              We&apos;ve sent a verification link to <strong className="text-foreground">{email}</strong>. 
+              Please click the link in the email to activate your account.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <Button onClick={() => router.push("/login")} className="w-full">
+              Continue to Login
+            </Button>
+            <button 
+              onClick={() => setIsSuccess(false)}
+              className="text-sm text-muted-foreground hover:text-primary transition-colors underline"
+            >
+              Entered the wrong email? Fix it here.
+            </button>
+          </div>
+        </div>
+      ) : (
+        <form className="space-y-5" onSubmit={handleSubmit}>
+        {/* Honeypot field - hidden from users */}
+        <div className="hidden" aria-hidden="true">
+          <input
+            type="text"
+            name="website_url"
+            tabIndex={-1}
+            autoComplete="off"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+          />
+        </div>
         <Input
           label="Full Name"
           type="text"
@@ -63,13 +129,31 @@ export default function SignupPage() {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <Input
-          label="Email address"
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <div className="space-y-1">
+          <Input
+            label="Email address"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => {
+              const val = e.target.value;
+              setEmail(val);
+              checkEmailTypo(val);
+            }}
+          />
+          {suggestion && (
+            <button
+              type="button"
+              onClick={() => {
+                setEmail(suggestion);
+                setSuggestion("");
+              }}
+              className="text-xs text-primary font-medium hover:underline"
+            >
+              Did you mean <span className="font-bold">{suggestion}</span>?
+            </button>
+          )}
+        </div>
         <Input
           label="Password"
           type="password"
@@ -101,16 +185,38 @@ export default function SignupPage() {
           </div>
         </div>
 
+        <div className="flex items-center justify-between rounded-lg border border-border bg-surface p-4">
+          <div className="flex items-center gap-3">
+            <input 
+              type="checkbox" 
+              id="human-verify"
+              checked={isVerified}
+              onChange={(e) => setIsVerified(e.target.checked)}
+              className="h-5 w-5 rounded border-border text-primary focus:ring-primary cursor-pointer" 
+            />
+            <label htmlFor="human-verify" className="text-sm font-medium text-text cursor-pointer">
+              I am not a robot
+            </label>
+          </div>
+        </div>
+
         {error && (
           <div className="text-center text-sm text-red-600">{error}</div>
         )}
 
-        <Button type="submit" className="w-full" isLoading={isLoading}>
+        <Button 
+          type="submit" 
+          className="w-full" 
+          isLoading={isLoading}
+          disabled={!isVerified}
+        >
           Sign up
         </Button>
-      </form>
+        </form>
+      )}
 
-      <div className="mt-6">
+      {!isSuccess && (
+        <div className="mt-6">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-border" />
@@ -178,6 +284,7 @@ export default function SignupPage() {
           </Button>
         </div>
       </div>
+      )}
 
       <p className="mt-8 text-center text-sm text-muted-foreground">
         Already have an account?{" "}

@@ -18,12 +18,12 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
-  title: "NutriGuide - Science-Backed Diet Plans & Recipes",
-  description: "Transform your health with free, science-backed diet plans, cheat sheets, and recipes designed for real results.",
-  keywords: "diet plan, healthy recipes, weight loss, PCOS diet, diabetes diet, meal planning",
+  title: "NutriGuide by Stewart Lucas - Science-Backed Diet Plans & Recipes",
+  description: "Transform your health with free, science-backed diet plans, cheat sheets, and recipes from NutriGuide by Stewart Lucas.",
+  keywords: "diet plan, healthy recipes, weight loss, PCOS diet, diabetes diet, meal planning, Stewart Lucas",
   openGraph: {
-    title: "NutriGuide - Science-Backed Diet Plans & Recipes",
-    description: "Transform your health with free, science-backed diet plans and recipes.",
+    title: "NutriGuide by Stewart Lucas - Science-Backed Diet Plans & Recipes",
+    description: "Transform your health with free, science-backed diet plans and recipes from Stewart Lucas.",
     type: "website",
   },
   other: {
@@ -38,7 +38,7 @@ export const viewport: Viewport = {
 };
 
 import { SignupTracker } from "@/components/ui/SignupTracker";
-import { BotpressChat } from "@/components/ui/BotpressChat";
+import { BotpressChat } from "@/components/ui/BotpressChatWrapper";
 
 export default function RootLayout({
   children,
@@ -47,14 +47,26 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${newsreader.variable} bg-background`} suppressHydrationWarning>
-      <head>
-        <script
-          async
+      <head />
+      <body className="min-h-screen flex flex-col" suppressHydrationWarning>
+        <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6909933688780427"
           crossOrigin="anonymous"
-        ></script>
-      </head>
-      <body className="min-h-screen flex flex-col" suppressHydrationWarning>
+          strategy="lazyOnload"
+        />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-STTYDWMM79"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-STTYDWMM79');
+          `}
+        </Script>
         <SessionProvider>
           <SignupTracker />
           <BotpressChat />

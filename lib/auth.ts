@@ -18,29 +18,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       id: "yahoo",
       name: "Yahoo",
       type: "oauth",
-
+      wellKnown: "https://api.login.yahoo.com/.well-known/openid-configuration",
       issuer: "https://api.login.yahoo.com",
-
       clientId: process.env.AUTH_YAHOO_ID,
       clientSecret: process.env.AUTH_YAHOO_SECRET,
-
       authorization: {
-        url: "https://api.login.yahoo.com/oauth2/request_auth",
         params: {
           scope: "openid email profile",
         },
       },
-
-      token: "https://api.login.yahoo.com/oauth2/get_token",
-      userinfo: "https://api.login.yahoo.com/openid/v1/userinfo",
-
-      checks: ["pkce", "state"],
-
-      client: {
-        id_token_signed_response_alg: "ES256",
-        token_endpoint_auth_method: "client_secret_post",
-      },
-
       profile(profile: any) {
         return {
           id: profile.sub,
@@ -50,7 +36,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           role: "USER",
         };
       },
-
       allowDangerousEmailAccountLinking: true,
     },
     Credentials({
@@ -80,6 +65,37 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
 
   callbacks: {
+    async signIn({ user, account }) {
+      // 1. Credentials flow: Block if not verified
+      if (account?.provider === "credentials") {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email as string },
+          select: { emailVerified: true }
+        });
+
+        if (!dbUser?.emailVerified) {
+          // Returning false or throwing will redirect to the error page
+          throw new Error("EmailNotVerified");
+        }
+      }
+
+      // 2. OAuth flow (Google/Yahoo): Auto-verify if needed
+      if (account?.provider !== "credentials" && user.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email },
+          select: { emailVerified: true }
+        });
+
+        if (!dbUser?.emailVerified) {
+          await prisma.user.update({
+            where: { email: user.email },
+            data: { emailVerified: new Date() }
+          });
+        }
+      }
+
+      return true;
+    },
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -97,5 +113,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   pages: {
     signIn: "/login",
+  },
+  events: {
+    async signIn({ user, isNewUser }) {
+      if (isNewUser && user.email) {
+        console.log(`[auth] New user signed in: ${user.email}. Triggering smart tracking.`);
+      }
+    }
   }
 });

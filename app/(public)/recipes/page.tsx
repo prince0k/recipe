@@ -7,7 +7,7 @@ import { getCachedRecipes } from "@/lib/queries";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Explore Recipes | Stwart Lucas",
+  title: "Explore Recipes | Stewart Lucas",
   description: "Browse our collection of cinematic, moody, and budget-friendly home-cooked recipes.",
 };
 

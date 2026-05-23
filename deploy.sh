@@ -11,8 +11,29 @@ git fetch origin main
 git checkout prisma/schema.prisma package-lock.json   # discard local changes first
 git pull origin main
 
-echo "▶ Patching schema for PostgreSQL (production)..."
-sed -i 's/provider = "sqlite"/provider = "postgresql"/' prisma/schema.prisma
+# Detect database provider from .env.production or .env
+DB_URL=""
+if [ -f ".env.production" ]; then
+  DB_URL=$(grep -E "^DATABASE_URL=" .env.production | cut -d'=' -f2- | tr -d '"' -d "'" | tr -d '\r')
+fi
+if [ -z "$DB_URL" ] && [ -f ".env" ]; then
+  DB_URL=$(grep -E "^DATABASE_URL=" .env | cut -d'=' -f2- | tr -d '"' -d "'" | tr -d '\r')
+fi
+
+# Default provider is sqlite, check if postgresql is requested
+DB_PROVIDER="sqlite"
+if [[ "$DB_URL" == postgresql://* ]] || [[ "$DB_URL" == postgres://* ]]; then
+  DB_PROVIDER="postgresql"
+fi
+
+echo "▶ Detected database provider: $DB_PROVIDER"
+if [ "$DB_PROVIDER" = "postgresql" ]; then
+  echo "▶ Patching schema for PostgreSQL (production)..."
+  sed -i 's/provider = "sqlite"/provider = "postgresql"/' prisma/schema.prisma
+else
+  echo "▶ Ensuring schema uses SQLite (production)..."
+  sed -i 's/provider = "postgresql"/provider = "sqlite"/' prisma/schema.prisma
+fi
 
 echo "▶ Installing dependencies..."
 npm ci
@@ -30,7 +51,7 @@ echo "▶ Building..."
 npm run build
 
 echo "▶ Restarting PM2..."
-pm2 restart all --update-env
+pm2 startOrReload ecosystem.config.js --env production --update-env
 
 echo "✅ Deploy complete!"
 pm2 logs nutriguide --lines 20 --nostream

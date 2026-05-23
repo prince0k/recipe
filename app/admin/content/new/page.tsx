@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { MediaLibrary } from "@/components/admin/MediaLibrary";
 import { ContentDetailView } from "@/components/content/ContentDetailView";
 import { Modal } from "@/components/ui/Modal";
+import { ArrowLeft, Sparkles, Eye, FileText, Image as ImageIcon, Video, HelpCircle, Check, X, Plus } from "lucide-react";
+import Link from "next/link";
 
 export default function NewContentPage() {
   const router = useRouter();
@@ -137,16 +139,43 @@ export default function NewContentPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 font-serif mb-8">Create Content</h1>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 animate-fade-in">
+      
+      {/* Header */}
+      <div className="flex flex-col gap-4 border-b border-slate-100 pb-6">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Link 
+              href="/admin/content" 
+              className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5 transition-all duration-200 group bg-emerald-50 hover:bg-emerald-100/80 px-3 py-1.5 rounded-full w-fit"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" /> 
+              Back to Library
+            </Link>
+          </div>
+          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 font-serif">
+            Create Content
+          </h1>
+          <p className="text-slate-500 mt-1.5 text-sm sm:text-base max-w-2xl leading-relaxed">
+            Publish a new diet guide, culinary recipe, or custom resource for your audience.
+          </p>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <Card>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        
+        {/* Core Details Card */}
+        <Card className="border border-slate-100 bg-white shadow-sm rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+            <h3 className="font-bold text-slate-900 text-base font-serif">Core Details</h3>
+            <p className="text-xs text-slate-400 mt-0.5">Primary information regarding the content</p>
+          </div>
+          <CardContent className="p-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
                 label="Title"
                 required
+                className="rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
                 value={formData.title}
                 onChange={(e) => {
                   setFormData({
@@ -159,16 +188,17 @@ export default function NewContentPage() {
               <Input
                 label="Slug"
                 required
+                className="rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Content Type</label>
                 <select
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#10b981]/50 outline-none"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none text-slate-700 bg-white transition-all text-sm"
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                 >
@@ -181,46 +211,57 @@ export default function NewContentPage() {
               <Input
                 label="Tags (comma separated)"
                 placeholder="weight-loss, keto, easy"
+                className="rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
                 value={formData.tags}
                 onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Excerpt</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Excerpt</label>
               <textarea
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none"
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm leading-relaxed"
                 rows={3}
                 required
+                placeholder="Brief summary of this content piece..."
                 value={formData.excerpt}
                 onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Cover Images/Videos */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Cover Image</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-1.5">
+                  <ImageIcon className="w-4 h-4 text-slate-400" />
+                  Cover Image URL
+                </label>
                 <div className="flex gap-2 items-center">
                   <Input 
                     placeholder="/uploads/..." 
+                    className="rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20 flex-1"
                     value={formData.coverImage} 
                     onChange={(e) => setFormData({...formData, coverImage: e.target.value})} 
                   />
-                  <label className="cursor-pointer bg-gray-100 px-3 py-2 rounded-md text-sm border hover:bg-gray-200">
+                  <label className="cursor-pointer bg-slate-50 hover:bg-slate-100 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-bold border border-slate-200 transition-all duration-200 shrink-0 h-10 flex items-center justify-center">
                     {isUploadingImage ? "..." : "Upload"}
                     <input type="file" className="hidden" accept="image/*" onChange={(e) => handleCoverUpload(e, "coverImage")} disabled={isUploadingImage} />
                   </label>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Cover Video (Optional)</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-1.5">
+                  <Video className="w-4 h-4 text-slate-400" />
+                  Cover Video URL (Optional)
+                </label>
                 <div className="flex gap-2 items-center">
                   <Input 
                     placeholder="/uploads/..." 
+                    className="rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20 flex-1"
                     value={formData.coverVideo} 
                     onChange={(e) => setFormData({...formData, coverVideo: e.target.value})} 
                   />
-                  <label className="cursor-pointer bg-gray-100 px-3 py-2 rounded-md text-sm border hover:bg-gray-200">
+                  <label className="cursor-pointer bg-slate-50 hover:bg-slate-100 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-bold border border-slate-200 transition-all duration-200 shrink-0 h-10 flex items-center justify-center">
                     {isUploadingVideo ? "..." : "Upload"}
                     <input type="file" className="hidden" accept="video/mp4,video/webm" onChange={(e) => handleCoverUpload(e, "coverVideo")} disabled={isUploadingVideo} />
                   </label>
@@ -228,11 +269,12 @@ export default function NewContentPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-6">
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Body (HTML/Markdown)</label>
+            {/* Document editor body */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Body (HTML/Markdown)</label>
                 <textarea
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none font-mono text-sm"
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none font-mono text-sm leading-relaxed focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all"
                   rows={20}
                   required
                   value={formData.body}
@@ -240,41 +282,55 @@ export default function NewContentPage() {
                   placeholder="<h1>Title</h1><p>Content goes here...</p>"
                 />
               </div>
-              <div className="col-span-1">
+              <div className="lg:col-span-1 bg-slate-50/50 rounded-2xl border border-slate-100 p-4">
                 <MediaLibrary />
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5 pt-2">
               <input 
                 type="checkbox" 
                 id="published" 
                 checked={formData.published}
                 onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
-                className="w-4 h-4 text-[#10b981] rounded focus:ring-[#10b981]"
+                className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
               />
-              <label htmlFor="published" className="font-medium text-gray-700">Publish immediately</label>
+              <label htmlFor="published" className="font-semibold text-sm text-slate-700 select-none">
+                Publish immediately
+              </label>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <div className="px-5 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h3 className="text-lg font-medium">SEO & Metadata</h3>
-            <Button type="button" variant="outline" size="sm" onClick={generateSEO} isLoading={isGeneratingSEO}>
-              ✨ Auto-Generate SEO
+        {/* SEO Card */}
+        <Card className="border border-slate-100 bg-white shadow-sm rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+            <div>
+              <h3 className="font-bold text-slate-900 text-base font-serif">SEO &amp; Metadata</h3>
+              <p className="text-xs text-slate-400 mt-0.5">Optimize discovery in Google search queries</p>
+            </div>
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm" 
+              onClick={generateSEO} 
+              isLoading={isGeneratingSEO}
+              className="flex items-center gap-1.5 text-xs text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 rounded-xl font-bold"
+            >
+              <Sparkles className="w-3.5 h-3.5" /> Auto-Generate
             </Button>
           </div>
-          <CardContent className="space-y-4 pt-4">
+          <CardContent className="p-6 space-y-4">
             <Input
               label="SEO Title"
+              className="rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
               value={formData.seoTitle}
               onChange={(e) => setFormData({ ...formData, seoTitle: e.target.value })}
             />
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">SEO Description</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">SEO Description</label>
               <textarea
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none"
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm leading-relaxed"
                 rows={2}
                 value={formData.seoDesc}
                 onChange={(e) => setFormData({ ...formData, seoDesc: e.target.value })}
@@ -283,81 +339,122 @@ export default function NewContentPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <div className="px-5 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h3 className="text-lg font-medium">Personalisation Survey (Pain Points)</h3>
-            <Button type="button" variant="outline" size="sm" onClick={addQuestion} disabled={questions.length >= 3}>
-              + Add Question
+        {/* personalization Questionnaire */}
+        <Card className="border border-slate-100 bg-white shadow-sm rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+            <div>
+              <h3 className="font-bold text-slate-900 text-base font-serif">Personalisation Survey</h3>
+              <p className="text-xs text-slate-400 mt-0.5">Questions for generating dynamic content versions</p>
+            </div>
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm" 
+              onClick={addQuestion} 
+              disabled={questions.length >= 3}
+              className="flex items-center gap-1.5 text-xs rounded-xl font-bold"
+            >
+              <Plus className="w-3.5 h-3.5" /> Add Question
             </Button>
           </div>
-          <CardContent className="space-y-6">
-            <p className="text-sm text-gray-500">
-              Add up to 3 custom multiple-choice questions that users will be asked when they request a personalised version of this content.
+          <CardContent className="p-6 space-y-6">
+            <p className="text-sm text-slate-500 leading-relaxed">
+              Add up to 3 custom multiple-choice questions that users will be asked when they request a personalized version of this content.
             </p>
-            {questions.map((q, qIndex) => (
-              <div key={qIndex} className="p-4 border border-gray-200 rounded-lg relative bg-gray-50">
-                <button 
-                  type="button" 
-                  onClick={() => removeQuestion(qIndex)}
-                  className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-                >
-                  ✕
-                </button>
-                <div className="mb-4 pr-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Question {qIndex + 1}</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded outline-none"
-                    value={q.question}
-                    onChange={(e) => updateQuestion(qIndex, e.target.value)}
-                    placeholder="e.g. What is your biggest struggle with sugar?"
-                  />
-                </div>
-                <div className="space-y-2 pl-4 border-l-2 border-[#10b981]">
-                  <label className="block text-xs font-medium text-gray-500 uppercase">Options</label>
-                  {q.options.map((opt, optIndex) => (
-                    <div key={optIndex} className="flex gap-2">
-                      <input
-                        type="text"
-                        className="flex-1 px-3 py-1.5 border border-gray-300 rounded text-sm outline-none"
-                        value={opt}
-                        onChange={(e) => updateOption(qIndex, optIndex, e.target.value)}
-                        placeholder={`Option ${optIndex + 1}`}
-                      />
-                    </div>
-                  ))}
+            
+            <div className="grid grid-cols-1 gap-6">
+              {questions.map((q, qIndex) => (
+                <div key={qIndex} className="p-5 border border-slate-150 rounded-2xl relative bg-slate-50/50 space-y-4">
                   <button 
                     type="button" 
-                    onClick={() => addOption(qIndex)}
-                    className="text-xs text-[#10b981] font-medium hover:underline mt-2 inline-block"
+                    onClick={() => removeQuestion(qIndex)}
+                    className="absolute top-4 right-4 p-1 text-slate-400 hover:text-red-500 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition-all"
                   >
-                    + Add Option
+                    <X className="w-4 h-4" />
                   </button>
+                  <div className="pr-10">
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                      Question {qIndex + 1}
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-white outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-semibold text-slate-950"
+                      value={q.question}
+                      onChange={(e) => updateQuestion(qIndex, e.target.value)}
+                      placeholder="e.g. What is your biggest struggle with sugar?"
+                    />
+                  </div>
+                  <div className="space-y-3 pl-4 border-l-2 border-emerald-500">
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Options</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {q.options.map((opt, optIndex) => (
+                        <div key={optIndex} className="relative">
+                          <input
+                            type="text"
+                            className="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm bg-white outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-slate-700"
+                            value={opt}
+                            onChange={(e) => updateOption(qIndex, optIndex, e.target.value)}
+                            placeholder={`Option ${optIndex + 1}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => addOption(qIndex)}
+                      className="text-xs text-emerald-600 font-bold hover:text-emerald-700 transition-colors mt-2 inline-flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-lg"
+                    >
+                      <Plus className="w-3 h-3" /> Add Option
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
             {questions.length === 0 && (
-              <div className="text-center py-6 border-2 border-dashed border-gray-200 rounded-lg text-gray-500">
-                No custom questions added.
+              <div className="text-center py-10 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 bg-slate-50/30">
+                <HelpCircle className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                <p className="text-sm font-semibold text-slate-500">No personalisation survey defined</p>
+                <p className="text-xs text-slate-400 mt-0.5">Add questions to enable personalized recipe versions.</p>
               </div>
             )}
           </CardContent>
         </Card>
 
-        <div className="flex justify-between mt-8 border-t pt-6">
-          <Button type="button" variant="outline" onClick={() => setIsPreviewOpen(true)}>👀 Live Preview</Button>
-          <div className="flex gap-4">
-            <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
-            <Button type="submit" isLoading={isLoading}>Save Content</Button>
+        {/* Footer controls */}
+        <div className="flex justify-between items-center mt-8 border-t border-slate-100 pt-6">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => setIsPreviewOpen(true)}
+            className="flex items-center gap-1.5 rounded-xl font-bold border-slate-200 hover:bg-slate-50"
+          >
+            <Eye className="w-4 h-4" /> Live Preview
+          </Button>
+          <div className="flex gap-3">
+            <Button 
+              type="button" 
+              variant="ghost" 
+              onClick={() => router.back()}
+              className="rounded-xl font-bold"
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              isLoading={isLoading}
+              className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold px-6 shadow-md"
+            >
+              Save Content
+            </Button>
           </div>
         </div>
       </form>
 
       {/* Full Screen Live Preview */}
       <Modal isOpen={isPreviewOpen} onClose={() => setIsPreviewOpen(false)} title="Live Preview">
-        <div className="max-h-[80vh] overflow-y-auto pt-4 border-t mt-2">
+        <div className="max-h-[80vh] overflow-y-auto pt-4 border-t border-slate-100 mt-2">
           <div className="max-w-4xl mx-auto pointer-events-none">
-            {/* The pointer-events-none ensures buttons don't actually trigger downloads in preview */}
             <ContentDetailView content={{ ...formData, id: "preview" } as any} />
           </div>
         </div>
@@ -365,3 +462,4 @@ export default function NewContentPage() {
     </div>
   );
 }
+

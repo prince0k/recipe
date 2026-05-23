@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { parseUserAgent, geolocateIP } from "@/lib/geo";
+import { sendVerificationEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -68,6 +69,29 @@ export async function POST(req: Request) {
     });
 
     console.log(`[signup-track] Tracked new signup: ${email} | ${geo.country}/${geo.city} | IP: ${ip}`);
+    
+    // ─── Fire Smart Email (async, non-blocking) ────────────────
+    (async () => {
+      const dbUser = await prisma.user.findUnique({
+        where: { email },
+        select: { emailVerified: true }
+      });
+
+      const name = session.user.name || "";
+
+      if (dbUser?.emailVerified) {
+        // OAuth or already verified -> Send Welcome directly
+        console.log(`[signup-track] User verified. Sending Welcome directly to ${email}`);
+        const { sendWelcomeEmail } = await import("@/lib/email");
+        await sendWelcomeEmail(email, name);
+      } else {
+        // Credentials or unverified -> Send Verification
+        console.log(`[signup-track] User unverified. Sending Verification Link to ${email}`);
+        await sendVerificationEmail(email, name);
+      }
+    })().catch((err) =>
+      console.error("[signup-track] Smart trigger email error:", err)
+    );
 
     return NextResponse.json({ success: true, message: "Signup tracked successfully" });
   } catch (error) {

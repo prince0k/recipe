@@ -70,6 +70,8 @@ model Content {
   reviews              Review[]
 
   @@index([createdAt])
+  @@index([type, published])
+  @@index([slug])
 }
 
 model Download {
@@ -82,6 +84,10 @@ model Download {
   createdAt DateTime @default(now())
   content   Content  @relation(fields: [contentId], references: [id])
   user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([contentId])
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model PageView {
@@ -92,6 +98,10 @@ model PageView {
   country   String?
   createdAt DateTime @default(now())
   user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([path])
+  @@index([createdAt])
+  @@index([userId])
 }
 
 model EmailLog {
@@ -234,4 +244,16 @@ model AILog {
 
   @@index([createdAt])
   @@index([type])
+}
+
+model Ad {
+  id        String   @id @default(cuid())
+  title     String
+  imageUrl  String?
+  targetUrl String?
+  adCode    String?
+  placement String   // "HOMEPAGE_BANNER", "RECIPES_SIDEBAR", "BLOG_SIDEBAR", "GLOBAL_FOOTER"
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

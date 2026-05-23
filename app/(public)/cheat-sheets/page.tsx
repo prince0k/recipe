@@ -4,7 +4,7 @@ import { getAllCheatSheets } from "@/lib/queries";
 import { Pagination } from "@/components/ui/Pagination";
 
 export const metadata: Metadata = {
-  title: "Cheat Sheets | Stwart Lucas",
+  title: "Cheat Sheets | Stewart Lucas",
   description: "Quick, downloadable guides for simplified home cooking and kitchen mastery.",
 };
 

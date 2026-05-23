@@ -1,5 +1,5 @@
 /**
- * lib/prompts.ts — Stwart Lucas Specialized Content Generation Prompts
+ * lib/prompts.ts — NutriGuide by Stewart Lucas Specialized Content Generation Prompts
  * 
  * This file contains specialized prompt templates for different content types.
  * Each template is designed to return a consistent JSON structure that maps
@@ -8,7 +8,7 @@
 
 // ── Shared: Brand Voice ───────────────────────────────────────
 export const BRAND_VOICE = `
-Act as Stwart Lucas, the expert culinary coach and nutritionist.
+Act as Stewart Lucas, representing NutriGuide. You are the expert culinary coach and nutritionist.
 Your tone is warm, cinematic, encouraging, and deeply professional.
 Use vibrant words like "cinematic," "artisanal," "honest cooking," and "nourished."
 Avoid bulky paragraphs. Use short, punchy, elegant sentences.
@@ -34,7 +34,7 @@ Task: Generate a premium, cinematic RECIPE for: "${topic}".
 Layout Requirements:
 - Use attractive HTML with inline CSS for spacing and typography.
 - Use <h2> and <h3> for clear hierarchy.
-- Add a "Stwart's Secret" tip box with a warm background (#FFF8F0) and left border (#E8603C).
+- Add a "Stewart's Secret" tip box with a warm background (#FFF8F0) and left border (#E8603C).
 - Add a "Nutrition Snapshot" table with clean borders and alternating row colors.
 - Ingredients should be displayed in a two-column grid layout.
 - Steps should be numbered with a large, styled counter.
@@ -43,7 +43,7 @@ Return a single valid JSON object with these exact fields. **All values (nutriti
 {
   "title": "Catchy, SEO-optimized recipe name",
   "excerpt": "2–3 sentences. A cinematic, emotionally engaging story connecting the reader to this dish.",
-  "body": "Full HTML content with: Quick Summary, Ingredients section (2-col grid), Step-by-step method (numbered), Stwart's Secret tip box, Nutrition Snapshot table, FAQ (3–5 Qs), and JSON-LD schema script tag at the end.",
+  "body": "Full HTML content with: Quick Summary, Ingredients section (2-col grid), Step-by-step method (numbered), Stewart's Secret tip box, Nutrition Snapshot table, FAQ (3–5 Qs), and JSON-LD schema script tag at the end.",
   "seoTitle": "SEO-optimized title under 60 chars",
   "seoDesc": "Compelling meta description under 155 chars",
   "tags": ["A list of 3-5 tags. MUST include at least one from these CATEGORIES if applicable: Quick Recipes, Healthy Eating, Budget Friendly, Breakfast, Lunch, Dinner. ALSO include any applicable DIETARY labels: Vegetarian, Vegan, Gluten Free, Dairy Free. Include other descriptive tags like 'High Protein', 'Keto', etc."],
@@ -73,7 +73,7 @@ Layout Requirements:
 - Open with a powerful 2–3 sentence hook — no generic intros.
 - Use <h2> for main sections, <h3> for sub-points.
 - Include a "Quick Takeaways" box at the top (light teal background, #F0FAF6).
-- Include one "Stwart's Perspective" pull-quote box (italic, warm border, #FFF8F0).
+- Include one "Stewart's Perspective" pull-quote box (italic, warm border, #FFF8F0).
 - Include one data-backed or science-backed callout box (light blue, #F0F6FF).
 - End with an empowering "Your Next Step" CTA section.
 
@@ -81,7 +81,7 @@ Return a single valid JSON object with these exact fields:
 {
   "title": "Magnetic, SEO-optimized blog headline",
   "excerpt": "2–3 sentences. A story-driven hook that makes the reader feel this topic is urgent and personal to them.",
-  "body": "Full HTML content with: Quick Takeaways box, Hook paragraph, 4–6 H2 sections with supporting H3s, Stwart's Perspective pull-quote, Science callout box, FAQ (3–5 Qs), Your Next Step CTA, and JSON-LD Article schema script tag at the end.",
+  "body": "Full HTML content with: Quick Takeaways box, Hook paragraph, 4–6 H2 sections with supporting H3s, Stewart's Perspective pull-quote, Science callout box, FAQ (3–5 Qs), Your Next Step CTA, and JSON-LD Article schema script tag at the end.",
   "seoTitle": "SEO-optimized title under 60 chars",
   "seoDesc": "Compelling meta description under 155 chars",
   "tags": ["tag1", "tag2", "tag3"],

@@ -2,8 +2,8 @@ import Image from "next/image";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About Stwart Lucas | Home Cooking Simplified",
-  description: "The story behind Stwart Lucas - a premium food blog dedicated to cinematic, budget-friendly home cooking.",
+  title: "About Stewart Lucas | Home Cooking Simplified",
+  description: "The story behind Stewart Lucas - a premium food blog dedicated to cinematic, budget-friendly home cooking.",
 };
 
 export default function AboutPage() {
@@ -27,7 +27,7 @@ export default function AboutPage() {
           <div className="relative h-[700px] rounded-[3.5rem] overflow-hidden cinematic-shadow">
             <Image 
               src="/assets/hero.png" 
-              alt="Stwart Lucas Kitchen" 
+              alt="Stewart Lucas Kitchen" 
               fill 
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 50vw"
@@ -38,7 +38,7 @@ export default function AboutPage() {
             <div>
               <h2 className="text-3xl font-bold text-text mb-6">Simple, Honest, & Moody.</h2>
               <p className="text-lg text-text-muted leading-relaxed mb-6">
-                Stwart Lucas started in a small kitchen with a big dream: to make home cooking feel as beautiful as it tastes. We focus on real ingredients, simple techniques, and the moody, cinematic lighting that makes every dish look like a piece of art.
+                Stewart Lucas started in a small kitchen with a big dream: to make home cooking feel as beautiful as it tastes. We focus on real ingredients, simple techniques, and the moody, cinematic lighting that makes every dish look like a piece of art.
               </p>
               <p className="text-lg text-text-muted leading-relaxed">
                 Our mission is to empower you to cook delicious, healthy, and budget-friendly meals without the stress. From 15-minute weeknight pasta to slow-cooked Sunday roasts, we're here to guide you every step of the way.
@@ -58,7 +58,7 @@ export default function AboutPage() {
 
             <div className="pt-10">
               <h3 className="text-xl font-bold text-text mb-4 font-serif italic">"Cooking is the ultimate act of love—for yourself and those around you."</h3>
-              <p className="text-text-muted font-bold">— Stwart Lucas</p>
+              <p className="text-text-muted font-bold">— Stewart Lucas</p>
             </div>
           </div>
         </div>

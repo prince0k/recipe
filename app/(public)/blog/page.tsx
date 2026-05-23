@@ -4,7 +4,7 @@ import { getAllBlogPosts } from "@/lib/queries";
 import { Pagination } from "@/components/ui/Pagination";
 
 export const metadata: Metadata = {
-  title: "Kitchen Stories | Stwart Lucas",
+  title: "Kitchen Stories | Stewart Lucas",
   description: "Articles on home cooking, kitchen techniques, and the cinematic life around the table.",
 };
 

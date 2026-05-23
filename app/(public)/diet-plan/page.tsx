@@ -5,7 +5,7 @@ import { getAllDietPlans } from "@/lib/queries";
 export const revalidate = 3600; // Revalidate every hour
 
 export const metadata: Metadata = {
-  title: "Diet Plans | Stwart Lucas",
+  title: "Diet Plans | Stewart Lucas",
   description: "Structured meal plans for simplified home cooking and healthy living.",
 };
 

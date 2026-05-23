@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
-  title: "Contact Us | Stwart Lucas",
-  description: "Get in touch with the Stwart Lucas team for collaborations, questions, or just to say hi.",
+  title: "Contact Us | Stewart Lucas",
+  description: "Get in touch with the Stewart Lucas team for collaborations, questions, or just to say hi.",
 };
 
 export default function ContactPage() {
@@ -25,7 +25,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <span className="block text-xs font-bold uppercase tracking-widest text-text-muted mb-1">Email Us</span>
-                  <span className="text-lg font-bold text-text">hello@stwartlucas.com</span>
+                  <span className="text-lg font-bold text-text">hello@stewartlucas.com</span>
                 </div>
               </div>
               <div className="flex items-center gap-6">

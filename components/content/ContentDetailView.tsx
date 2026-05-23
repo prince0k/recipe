@@ -6,6 +6,7 @@ import { RelatedContent } from "./RelatedContent";
 import { FavoriteButton } from "./FavoriteButton";
 import { ShareButton } from "./ShareButton";
 import { Reviews } from "./Reviews";
+import { AdBanner } from "@/components/ui/AdBanner";
 
 export function ContentDetailView({ content, relatedItems, isFavorited = false }: { content: any, relatedItems?: any[], isFavorited?: boolean }) {
   if (!content) return null;
@@ -80,12 +81,16 @@ export function ContentDetailView({ content, relatedItems, isFavorited = false }
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-8">
               <div className="rounded-lg border border-border bg-secondary/50 p-6">
-                <h3 className="font-serif text-lg font-semibold text-foreground">
-                  Get the full guide
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Download the complete PDF including grocery lists and meal prep instructions.
-                </p>
+                {content.type !== "BLOG" && (
+                  <>
+                    <h3 className="font-serif text-lg font-semibold text-foreground">
+                      Get the full guide
+                    </h3>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Download the complete PDF including grocery lists and meal prep instructions.
+                    </p>
+                  </>
+                )}
                 <div className="mt-6 space-y-4">
                   <FavoriteButton 
                     contentId={content.id} 
@@ -93,7 +98,7 @@ export function ContentDetailView({ content, relatedItems, isFavorited = false }
                     variant="outline"
                     className="w-full"
                   />
-                  <DownloadGate content={content} />
+                  {content.type !== "BLOG" && <DownloadGate content={content} />}
                   <ShareButton 
                     title={content.title} 
                     text={content.excerpt} 
@@ -104,6 +109,8 @@ export function ContentDetailView({ content, relatedItems, isFavorited = false }
               </div>
               
               <RelatedContent items={relatedItems || []} />
+              
+              <AdBanner placement="BLOG_SIDEBAR" />
             </div>
           </div>
         </div>

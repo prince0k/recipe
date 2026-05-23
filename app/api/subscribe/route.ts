@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { parseUserAgent, geolocateIP } from "@/lib/geo";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -65,6 +66,11 @@ export async function POST(req: Request) {
     });
 
     console.log(`[subscribe] New subscriber: ${email} | ${geo.country}/${geo.city} | ${ua.browser} ${ua.browserVersion} | ${ua.deviceType} | IP: ${ip}`);
+
+    // ─── Fire welcome email (async, non-blocking) ─────────────────────
+    sendWelcomeEmail(email, name || "").catch((err) =>
+      console.error("[subscribe] Welcome email fire-and-forget error:", err)
+    );
 
     return NextResponse.json({ success: true, message: "Subscribed successfully" });
   } catch (error) {

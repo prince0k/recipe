@@ -8,7 +8,10 @@ export function Footer() {
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8 xl:col-span-1">
-            <span className="font-serif text-3xl font-bold text-primary">Stwart Lucas</span>
+            <span className="font-serif text-2xl md:text-3xl font-bold text-primary flex flex-col line-tight">
+              NutriGuide 
+              <span className="text-xs md:text-sm font-medium opacity-80 italic -mt-1 tracking-wide">by Stewart Lucas</span>
+            </span>
             <p className="text-text-muted text-base max-w-xs">
               Simple recipes for real life. Moody, cinematic food inspiration and budget-friendly home cooking.
             </p>
@@ -68,7 +71,7 @@ export function Footer() {
 
         <div className="mt-12 border-t border-border pt-8">
           <p className="text-base text-text-muted xl:text-center">
-            &copy; {new Date().getFullYear()} Stwart Lucas. All rights reserved.
+            &copy; {new Date().getFullYear()} NutriGuide by Stewart Lucas. All rights reserved.
           </p>
         </div>
       </div>

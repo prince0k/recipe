@@ -16,46 +16,12 @@ export function DownloadGate({ content }: DownloadGateProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
-
-  const handleGeneralDownload = async () => {
-    setIsLoading(true);
-
-    try {
-      const res = await fetch("/api/downloads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contentId: content.id }),
-      });
-
-      const data = await res.json();
-
-      if (res.status === 401 && data.requiresAuth) {
-        setShowOptionsModal(false);
-        setShowAuthModal(true);
-      } else if (res.ok) {
-        if (content.downloadUrl) {
-          window.open(content.downloadUrl, "_blank");
-        } else {
-          alert("File is not available right now.");
-        }
-      } else {
-        alert(data.message || "An error occurred.");
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handlePersonalisedRequest = () => {
     if (!session) {
-      setShowOptionsModal(false);
       setShowAuthModal(true);
     } else {
-      setShowOptionsModal(false);
       setShowWizard(true);
     }
   };
@@ -63,52 +29,14 @@ export function DownloadGate({ content }: DownloadGateProps) {
   return (
     <>
       <Button
-        onClick={() => setShowOptionsModal(true)}
+        onClick={handlePersonalisedRequest}
         size="lg"
         className="w-full"
       >
-        Download Free PDF
+        Get
       </Button>
 
-      {/* Options Modal */}
-      <Modal
-        isOpen={showOptionsModal}
-        onClose={() => setShowOptionsModal(false)}
-        title="Choose Download Option"
-      >
-        <div className="space-y-4 pt-2">
-          <button
-            onClick={handleGeneralDownload}
-            disabled={isLoading}
-            className="w-full rounded-lg border border-border p-4 text-left transition-all hover:border-foreground/30 hover:bg-secondary/50"
-          >
-            <h4 className="font-semibold text-foreground">
-              General PDF (Instant)
-            </h4>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Download the standard version immediately.
-            </p>
-          </button>
-
-          <button
-            onClick={handlePersonalisedRequest}
-            className="w-full rounded-lg border border-border bg-secondary/50 p-4 text-left transition-all hover:border-foreground/30"
-          >
-            <div className="flex items-center justify-between">
-              <h4 className="font-semibold text-foreground">
-                Personalised Plan
-              </h4>
-              <span className="rounded-full bg-foreground px-2 py-0.5 text-xs font-medium text-background">
-                Recommended
-              </span>
-            </div>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Answer 7 quick questions and we&apos;ll generate a custom version
-              just for your body type and goals.
-            </p>
-          </button>
-        </div>
-      </Modal>
+      {/* Auth Modal */}
 
       {/* Wizard Modal */}
       {showWizard && (
