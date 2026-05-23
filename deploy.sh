@@ -11,18 +11,28 @@ git fetch origin main
 git checkout prisma/schema.prisma package-lock.json   # discard local changes first
 git pull origin main
 
-# Detect database provider from the same sources Prisma CLI uses:
-# 1. System environment variable DATABASE_URL
-# 2. .env file
-# 3. .env.production file (as fallback)
+# Helper function to extract DATABASE_URL from an env file
+get_db_url_from_file() {
+  local file="$1"
+  if [ -f "$file" ]; then
+    local line
+    line=$(grep -E "^[[:space:]]*(export[[:space:]]+)?DATABASE_URL[[:space:]]*=" "$file" | head -n 1)
+    if [ -n "$line" ]; then
+      local val
+      val=$(echo "$line" | cut -d'=' -f2- | tr -d '\r')
+      # Trim whitespace and quotes
+      val=$(echo "$val" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")
+      echo "$val"
+    fi
+  fi
+}
+
 DB_URL="$DATABASE_URL"
-
-if [ -z "$DB_URL" ] && [ -f ".env" ]; then
-  DB_URL=$(grep -E "^DATABASE_URL=" .env | cut -d'=' -f2- | tr -d '"' -d "'" | tr -d '\r')
+if [ -z "$DB_URL" ]; then
+  DB_URL=$(get_db_url_from_file ".env")
 fi
-
-if [ -z "$DB_URL" ] && [ -f ".env.production" ]; then
-  DB_URL=$(grep -E "^DATABASE_URL=" .env.production | cut -d'=' -f2- | tr -d '"' -d "'" | tr -d '\r')
+if [ -z "$DB_URL" ]; then
+  DB_URL=$(get_db_url_from_file ".env.production")
 fi
 
 # Default provider is sqlite, check if postgresql is requested
