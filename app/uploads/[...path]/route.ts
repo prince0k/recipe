@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { Readable } from "stream";
 
 export async function GET(
   request: Request,
@@ -48,15 +49,9 @@ export async function GET(
       const chunksize = (end - start) + 1;
       
       const fileStream = fs.createReadStream(filePath, { start, end });
-      const webStream = new ReadableStream({
-        start(controller) {
-          fileStream.on("data", (chunk) => controller.enqueue(chunk));
-          fileStream.on("end", () => controller.close());
-          fileStream.on("error", (err) => controller.error(err));
-        }
-      });
+      const webStream = Readable.toWeb(fileStream);
 
-      return new NextResponse(webStream, {
+      return new NextResponse(webStream as any, {
         status: 206,
         headers: {
           "Content-Range": `bytes ${start}-${end}/${stat.size}`,
@@ -69,15 +64,9 @@ export async function GET(
 
     // Default: Serve full file
     const fileStream = fs.createReadStream(filePath);
-    const webStream = new ReadableStream({
-      start(controller) {
-        fileStream.on("data", (chunk) => controller.enqueue(chunk));
-        fileStream.on("end", () => controller.close());
-        fileStream.on("error", (err) => controller.error(err));
-      }
-    });
+    const webStream = Readable.toWeb(fileStream);
 
-    return new NextResponse(webStream, {
+    return new NextResponse(webStream as any, {
       headers: {
         "Content-Type": contentType,
         "Content-Length": stat.size.toString(),

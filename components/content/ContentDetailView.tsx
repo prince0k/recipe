@@ -58,6 +58,8 @@ export function ContentDetailView({
               src={content.coverVideo}
               poster={content.coverImage || undefined}
               controls
+              preload="metadata"
+              playsInline
               className="h-full w-full object-cover"
             />
           </div>

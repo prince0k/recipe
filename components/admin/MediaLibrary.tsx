@@ -65,7 +65,7 @@ export function MediaLibrary() {
     if (media.type === "image") {
       snippet = `<img src="${media.url}" alt="Uploaded image" class="w-full h-auto rounded-lg my-4 shadow-md" />`;
     } else {
-      snippet = `<video src="${media.url}" controls class="w-full rounded-lg my-4 shadow-md"></video>`;
+      snippet = `<video src="${media.url}" controls preload="metadata" playsinline class="w-full rounded-lg my-4 shadow-md"></video>`;
     }
 
     navigator.clipboard.writeText(snippet);
@@ -99,7 +99,7 @@ export function MediaLibrary() {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={media.url} alt="Uploaded" className="w-full h-32 object-cover rounded mb-3 bg-gray-100" />
             ) : (
-              <video src={media.url} className="w-full h-32 object-cover rounded mb-3 bg-gray-100" />
+              <video src={media.url} preload="none" muted className="w-full h-32 object-cover rounded mb-3 bg-gray-100" />
             )}
             <Button 
               type="button"
