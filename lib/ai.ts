@@ -8,6 +8,13 @@ const ai = new GoogleGenAI({
 // Hoisted regex for prompt sanitization (js-hoist-regexp)
 const PROMPT_SANITIZE_RE = /[^a-zA-Z0-9 ,.'\-]/g;
 
+function sanitizeContent(text: string): string {
+  return text
+    .replace(/Stwart Lucas/g, 'Stewart Lucas')
+    .replace(/Stwart/g, 'Stewart')
+    .trim();
+}
+
 // Reliable text models list
 // Stage 1: Cost-optimized prompt/text generation
 const STABLE_MODELS = [
@@ -53,6 +60,7 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
         });
 
         let text = response.text || "";
+        text = sanitizeContent(text);
         if (jsonMode) {
           text = text.replace(/```json\n?/, "").replace(/\n?```/, "").trim();
         }

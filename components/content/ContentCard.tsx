@@ -13,10 +13,18 @@ interface ContentCardProps {
   coverImage?: string | null;
   tags?: string[];
   hrefPrefix: string;
+  reviews?: { rating: number }[];
 }
 
-export function ContentCard({ type, title, slug, excerpt, coverImage, tags = [], hrefPrefix }: ContentCardProps) {
+export function ContentCard({ type, title, slug, excerpt, coverImage, tags = [], hrefPrefix, reviews }: ContentCardProps) {
   const [imgError, setImgError] = React.useState(false);
+
+  const avgRating = React.useMemo(() => {
+    if (!reviews || reviews.length === 0) return 0;
+    return reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+  }, [reviews]);
+
+  const reviewCount = reviews ? reviews.length : 0;
 
   const typeLabels = {
     RECIPE: "Recipe",
@@ -60,6 +68,16 @@ export function ContentCard({ type, title, slug, excerpt, coverImage, tags = [],
           <h3 className="text-xl font-bold font-serif text-[var(--color-text)] mb-3 group-hover:text-primary transition-colors line-clamp-2 leading-tight">
             {title}
           </h3>
+          {type === "RECIPE" && reviewCount > 0 && (
+            <div className="flex items-center gap-0.5 mb-3">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <span key={s} className={s <= Math.round(avgRating) ? 'text-amber-400' : 'text-gray-250'} style={{ fontSize: '13px' }}>
+                  ★
+                </span>
+              ))}
+              <span className="text-[10px] font-bold text-[var(--color-text-muted)] ml-1">({reviewCount})</span>
+            </div>
+          )}
           <p className="text-[var(--color-text-muted)] text-sm line-clamp-2 mb-6 flex-grow leading-relaxed italic">
             {excerpt || ""}
           </p>

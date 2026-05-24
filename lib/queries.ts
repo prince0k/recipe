@@ -25,6 +25,10 @@ export const getFeaturedRecipes = unstable_cache(
         cookingTime: true,
         difficulty: true,
         tags: true,
+        reviews: {
+          where: { isApproved: true },
+          select: { rating: true },
+        },
       }
     });
   },
@@ -128,17 +132,21 @@ export async function getCachedRecipes(
           orderBy,
           take: ps,
           skip: skip,
-          select: {
-            id: true,
-            title: true,
-            slug: true,
-            excerpt: true,
-            coverImage: true,
-            tags: true,
-            cookingTime: true,
-            difficulty: true,
-            type: true,
-          }
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              excerpt: true,
+              coverImage: true,
+              tags: true,
+              cookingTime: true,
+              difficulty: true,
+              type: true,
+              reviews: {
+                where: { isApproved: true },
+                select: { rating: true },
+              },
+            }
         }),
         prisma.content.count({ where })
       ]);

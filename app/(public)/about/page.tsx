@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Metadata } from "next";
+import { EmailCaptureForm } from "@/components/ui/EmailCaptureForm";
 
 export const metadata: Metadata = {
   title: "About Stewart Lucas | Home Cooking Simplified",
@@ -68,25 +69,14 @@ export default function AboutPage() {
         <div className="absolute inset-0 opacity-10">
           <Image src="/assets/hero.png" alt="Background" fill className="object-cover" sizes="100vw" />
         </div>
-        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-          <h2 className="text-4xl md:text-5xl font-bold mb-8">Join Our Community</h2>
-          <p className="text-xl text-white/80 mb-12 leading-relaxed">
-            Get weekly recipes, kitchen tips, and cinematic inspiration delivered straight to your inbox. No fluff, just good food.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <input 
-              type="email" 
-              placeholder="Your email address" 
-              className="px-8 py-4 rounded-2xl bg-white text-text w-full sm:w-80 focus:outline-none"
-              suppressHydrationWarning
-            />
-            <button 
-              className="px-10 py-4 rounded-2xl bg-accent text-text font-bold shadow-xl hover:scale-105 transition-transform"
-              suppressHydrationWarning
-            >
-              Subscribe
-            </button>
-          </div>
+        <div className="max-w-4xl mx-auto px-4 relative z-10 text-center">
+          <EmailCaptureForm
+            source="about"
+            heading="Join Our Community"
+            subheading="Get weekly recipes, kitchen tips, and cinematic inspiration delivered straight to your inbox. No fluff, just good food."
+            buttonText="Subscribe →"
+            freebie="newsletter"
+          />
         </div>
       </section>
     </div>

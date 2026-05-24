@@ -1,5 +1,48 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import Link from "next/link";
+
+export async function generateMetadata(
+  props: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const { slug } = await props.params;
+  const content = await prisma.content.findUnique({
+    where: { slug },
+    select: { title: true, excerpt: true, coverImage: true, tags: true, seoTitle: true, seoDesc: true }
+  });
+
+  if (!content) return { title: 'Recipe Not Found' };
+
+  const parsedTags = (() => {
+    try {
+      return JSON.parse(content.tags || "[]");
+    } catch {
+      return [];
+    }
+  })();
+
+  const title = content.seoTitle || `${content.title} | NutriGuide by Stewart Lucas`;
+  const description = content.seoDesc || content.excerpt?.slice(0, 155) || 'Discover this delicious recipe from NutriGuide.';
+
+  return {
+    title,
+    description,
+    keywords: parsedTags,
+    openGraph: {
+      title: content.title,
+      description,
+      images: content.coverImage ? [{ url: content.coverImage }] : [],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: content.title,
+      description,
+      images: content.coverImage ? [content.coverImage] : [],
+    },
+  };
+}
 import Image from "next/image";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -9,6 +52,8 @@ import { ShareButton } from "@/components/content/ShareButton";
 import { Reviews } from "@/components/content/Reviews";
 import { auth } from "@/lib/auth";
 import { AdBanner } from "@/components/ui/AdBanner";
+import { RecipeSchema } from "@/components/content/RecipeSchema";
+import { ShareButtons } from "@/components/ui/ShareButtons";
 
 export default async function RecipeDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -47,8 +92,49 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     orderBy: { createdAt: "desc" }
   });
 
+  const ingredientsList = (() => {
+    try {
+      return JSON.parse(recipe.ingredients || "[]");
+    } catch {
+      return [];
+    }
+  })();
+
+  const instructionsList = (() => {
+    const bodyStr = recipe.body || "";
+    const matches = bodyStr.match(/<li[^>]*>(.*?)<\/li>/g) || bodyStr.match(/<p[^>]*>(.*?)<\/p>/g);
+    if (matches && matches.length > 0) {
+      return matches.map(m => m.replace(/<[^>]*>?/gm, '').trim()).filter(Boolean);
+    }
+    return [recipe.excerpt || "Follow instructions on page."];
+  })();
+
   return (
-    <div className="bg-background min-h-screen">
+    <>
+      {recipe.schema ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: recipe.schema }}
+        />
+      ) : (
+        <RecipeSchema
+          title={recipe.title}
+          description={recipe.excerpt || "A delicious recipe from Stewart Lucas."}
+          image={recipe.coverImage || undefined}
+          cookingTime={recipe.cookingTime || undefined}
+          servings={recipe.servings || undefined}
+          ingredients={ingredientsList}
+          instructions={instructionsList}
+          nutrition={{
+            calories: recipe.calories ? String(recipe.calories) : undefined,
+            protein: recipe.protein || undefined,
+            fat: recipe.fat || undefined,
+            carbs: recipe.carbs || undefined,
+          }}
+          datePublished={recipe.createdAt?.toISOString()}
+        />
+      )}
+      <div className="bg-background min-h-screen">
       {/* Cinematic Hero Header */}
       <div className="relative h-[60vh] min-h-[400px] w-full bg-black" id="video-player">
         {recipe.coverVideo ? (
@@ -102,6 +188,15 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
                 <svg className="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                 <span className="font-bold tracking-wide">{recipe.rating.toFixed(1)} Rating</span>
               </div>
+            </div>
+            
+            <div className="mt-8 pt-6 border-t border-white/10 max-w-xl">
+              <ShareButtons
+                url={`/recipes/${recipe.slug}`}
+                title={recipe.title}
+                image={recipe.coverImage || undefined}
+                description={recipe.excerpt}
+              />
             </div>
           </div>
         </div>
@@ -167,6 +262,38 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
                 </div>
               </div>
             </section>
+
+            {relatedItems.length > 0 && (
+              <section className="mt-16 pt-8 border-t border-border">
+                <h3 className="text-2xl font-bold text-text mb-6 font-serif italic">You Might Also Like</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  {relatedItems.map((r) => (
+                    <Link
+                      key={r.slug}
+                      href={`/recipes/${r.slug}`}
+                      className="group rounded-[2rem] overflow-hidden border border-border bg-white hover:cinematic-shadow transition-all duration-300 flex flex-col"
+                    >
+                      {r.coverImage && (
+                        <div className="relative h-36 w-full overflow-hidden">
+                          <Image src={r.coverImage} alt={r.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                        </div>
+                      )}
+                      <div className="p-4 flex-grow flex flex-col justify-between">
+                        <p className="text-sm font-bold text-text group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                          {r.title}
+                        </p>
+                        {r.cookingTime && (
+                          <p className="text-xs text-text-muted mt-2 flex items-center gap-1">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            {r.cookingTime}
+                          </p>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
 
           {/* Sidebar Actions */}
@@ -208,5 +335,6 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
         </div>
       </div>
     </div>
+    </>
   );
 }

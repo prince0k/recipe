@@ -18,13 +18,41 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
-  title: "NutriGuide by Stewart Lucas - Science-Backed Diet Plans & Recipes",
-  description: "Transform your health with free, science-backed diet plans, cheat sheets, and recipes from NutriGuide by Stewart Lucas.",
-  keywords: "diet plan, healthy recipes, weight loss, PCOS diet, diabetes diet, meal planning, Stewart Lucas",
+  title: {
+    default: 'NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes',
+    template: '%s | NutriGuide by Stewart Lucas',
+  },
+  description: 'Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.',
+  keywords: ['diet plan', 'healthy recipes', 'meal prep', 'weight loss', 'keto', 'gluten free', 'high protein', 'Stewart Lucas'],
+  authors: [{ name: 'Stewart Lucas', url: 'https://stewartlucas.com/about' }],
   openGraph: {
-    title: "NutriGuide by Stewart Lucas - Science-Backed Diet Plans & Recipes",
-    description: "Transform your health with free, science-backed diet plans and recipes from Stewart Lucas.",
-    type: "website",
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://stewartlucas.com',
+    siteName: 'NutriGuide by Stewart Lucas',
+    title: 'NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes',
+    description: 'Free science-backed diet plans, healthy recipes, and meal prep guides.',
+    images: [
+      {
+        url: 'https://stewartlucas.com/assets/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'NutriGuide by Stewart Lucas',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@stewartlucas',
+    creator: '@stewartlucas',
+    title: 'NutriGuide by Stewart Lucas',
+    description: 'Free science-backed diet plans and healthy recipes.',
+    images: ['https://stewartlucas.com/assets/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
   },
   other: {
     "google-adsense-account": "ca-pub-6909933688780427",

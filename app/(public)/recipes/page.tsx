@@ -85,6 +85,7 @@ export default async function RecipesPage({
                         }
                       })()}
                       hrefPrefix="recipes"
+                      reviews={recipe.reviews as any}
                     />
                   ))}
                 </div>

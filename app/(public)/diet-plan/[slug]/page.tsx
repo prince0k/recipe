@@ -1,4 +1,37 @@
 import { ContentDetailView } from "@/components/content/ContentDetailView";
+import type { Metadata } from "next";
+
+export async function generateMetadata(
+  props: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const { slug } = await props.params;
+  const content = await prisma.content.findUnique({
+    where: { slug, type: 'DIET_PLAN' },
+    select: { title: true, excerpt: true, coverImage: true, seoTitle: true, seoDesc: true }
+  });
+
+  if (!content) return { title: 'Diet Plan Not Found' };
+
+  const title = content.seoTitle || `${content.title} | Free Diet Plans by Stewart Lucas`;
+  const description = content.seoDesc || content.excerpt?.slice(0, 155) || 'Free science-backed diet plan from NutriGuide.';
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: content.title,
+      description,
+      images: content.coverImage ? [{ url: content.coverImage }] : [],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: content.title,
+      description,
+      images: content.coverImage ? [content.coverImage] : [],
+    },
+  };
+}
 import { AdBanner } from "@/components/ui/AdBanner";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";

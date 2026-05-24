@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/Badge";
 import { DownloadGate } from "./DownloadGate";
+import { EmailCaptureForm } from "@/components/ui/EmailCaptureForm";
 import { RelatedContent } from "./RelatedContent";
 import { FavoriteButton } from "./FavoriteButton";
 import { ShareButton } from "./ShareButton";
@@ -109,7 +110,19 @@ export function ContentDetailView({
                     variant="outline"
                     className="w-full"
                   />
-                  {content.type !== "BLOG" && <DownloadGate content={content} />}
+                  {content.type === "CHEAT_SHEET" ? (
+                    <div className="pt-2 border-t border-border/20">
+                      <EmailCaptureForm
+                        source="cheatsheet"
+                        heading="Get the Free PDF"
+                        subheading="Instant download. No spam ever."
+                        buttonText="Download Free PDF →"
+                        freebie={content.slug}
+                      />
+                    </div>
+                  ) : (
+                    content.type !== "BLOG" && <DownloadGate content={content} />
+                  )}
                   <ShareButton 
                     title={content.title} 
                     text={content.excerpt} 
