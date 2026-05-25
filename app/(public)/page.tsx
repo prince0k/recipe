@@ -200,7 +200,7 @@ export default async function Home() {
                 AI-Powered Custom Nutrition
               </span>
               
-              <h2 className="text-4xl md:text-5xl font-bold font-serif leading-tight">
+              <h2 className="text-4xl md:text-5xl font-bold font-serif leading-tight text-white">
                 Tailored to your body. <br/>
                 <span className="text-emerald-400 italic">Designed for your life.</span>
               </h2>
@@ -211,12 +211,12 @@ export default async function Home() {
 
               <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Link href="/diet-plan">
-                  <Button size="lg" className="px-10 py-5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all shadow-xl shadow-emerald-500/20 active:scale-98 cursor-pointer">
+                  <Button size="lg" className="px-10 py-5 rounded-2xl !bg-emerald-600 hover:!bg-emerald-700 !text-white font-bold transition-all shadow-xl shadow-emerald-500/20 active:scale-98 cursor-pointer border-none">
                     Get Your Free Personalized Meal Plan
                   </Button>
                 </Link>
                 <Link href="/about">
-                  <Button variant="outline" size="lg" className="px-10 py-5 rounded-2xl border-white/20 text-white hover:bg-white/10 font-bold transition-all cursor-pointer">
+                  <Button variant="outline" size="lg" className="px-10 py-5 rounded-2xl !border-white/30 !text-white !bg-transparent hover:!bg-white/10 font-bold transition-all cursor-pointer">
                     How It Works
                   </Button>
                 </Link>

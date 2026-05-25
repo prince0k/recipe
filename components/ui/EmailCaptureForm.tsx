@@ -59,9 +59,9 @@ export function EmailCaptureForm({
   }
 
   return (
-    <div className="w-full max-w-xl mx-auto bg-white/5 backdrop-blur-md border border-white/10 rounded-[2rem] p-8 md:p-10 shadow-2xl">
+    <div className="w-full max-w-xl mx-auto bg-[#231b15] border border-[#3c2e24] rounded-[2rem] p-8 md:p-10 shadow-2xl text-white">
       <h3 className="text-2xl font-bold font-serif text-white mb-2">{heading}</h3>
-      <p className="text-sm text-white/60 mb-6 font-serif italic">{subheading}</p>
+      <p className="text-sm text-white/70 mb-6 font-serif italic">{subheading}</p>
 
       {status === 'success' ? (
         <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4 text-emerald-400">
@@ -75,7 +75,7 @@ export function EmailCaptureForm({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email address"
-            className="flex-grow px-5 py-4 rounded-xl bg-white/10 border border-white/10 text-white placeholder-white/40 text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+            className="flex-grow px-5 py-4 rounded-xl bg-[#32271f] border border-[#4e3c2f] text-white placeholder-white/40 text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
           />
           <button
             type="submit"
@@ -91,7 +91,7 @@ export function EmailCaptureForm({
         <p className="text-red-400 text-xs mt-3 font-semibold text-center">{message}</p>
       )}
 
-      <p className="text-white/30 text-[10px] uppercase tracking-widest font-bold mt-4 text-center">No spam. Unsubscribe anytime.</p>
+      <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mt-4 text-center">No spam. Unsubscribe anytime.</p>
     </div>
   );
 }
