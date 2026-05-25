@@ -149,12 +149,16 @@ export function ContentDetailView({
                 </div>
               </div>
               
-              <RelatedContent items={relatedItems || []} />
-              
               {adComponent}
             </div>
           </div>
         </div>
+
+        {relatedItems && relatedItems.length > 0 && (
+          <div className="mt-20 border-t border-border pt-12">
+            <RelatedContent items={relatedItems} />
+          </div>
+        )}
 
         <div className="mt-20 border-t border-border pt-12">
           <Reviews contentId={content.id} />
