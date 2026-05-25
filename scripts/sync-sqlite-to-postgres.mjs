@@ -108,13 +108,85 @@ async function main() {
     { name: 'Session', prismaModel: prisma.session }
   ];
 
-  console.log("🧹 Clearing existing data in target PostgreSQL database...");
-  for (const table of [...tables].reverse()) {
+  console.log("ℹ️ Merging SQLite data into PostgreSQL without clearing existing database...");
+
+  // Helper to merge a single row safely
+  async function mergeRow(tableName, prismaModel, item) {
     try {
-      await table.prismaModel.deleteMany({});
-      console.log(`   Cleaned ${table.name}`);
-    } catch (e) {
-      console.warn(`   Failed to clean ${table.name} (continuing): ${e.message}`);
+      if (tableName === 'User') {
+        const existing = await prismaModel.findFirst({
+          where: {
+            OR: [
+              { id: item.id },
+              { email: item.email }
+            ]
+          }
+        });
+        if (existing) {
+          const { id, email, ...updateData } = item;
+          await prismaModel.update({
+            where: { id: existing.id },
+            data: updateData
+          });
+          return 'updated';
+        }
+      } else if (tableName === 'Content') {
+        const existing = await prismaModel.findFirst({
+          where: {
+            OR: [
+              { id: item.id },
+              { slug: item.slug }
+            ]
+          }
+        });
+        if (existing) {
+          const { id, slug, ...updateData } = item;
+          await prismaModel.update({
+            where: { id: existing.id },
+            data: updateData
+          });
+          return 'updated';
+        }
+      } else if (tableName === 'Account') {
+        const existing = await prismaModel.findUnique({
+          where: {
+            provider_providerAccountId: {
+              provider: item.provider,
+              providerAccountId: item.providerAccountId
+            }
+          }
+        });
+        if (existing) return 'skipped';
+      } else if (tableName === 'Session') {
+        const existing = await prismaModel.findUnique({
+          where: { sessionToken: item.sessionToken }
+        });
+        if (existing) return 'skipped';
+      } else if (tableName === 'Favorite') {
+        const existing = await prismaModel.findUnique({
+          where: {
+            userId_contentId: {
+              userId: item.userId,
+              contentId: item.contentId
+            }
+          }
+        });
+        if (existing) return 'skipped';
+      } else {
+        // General check by ID for other tables
+        if (item.id) {
+          const existing = await prismaModel.findUnique({
+            where: { id: item.id }
+          });
+          if (existing) return 'skipped';
+        }
+      }
+
+      await prismaModel.create({ data: item });
+      return 'created';
+    } catch (err) {
+      console.warn(`   ⚠️ Failed to merge row in ${tableName} (${item.id || item.email || 'unknown'}): ${err.message}`);
+      return 'failed';
     }
   }
 
@@ -125,65 +197,53 @@ async function main() {
 
     if (rows.length === 0) continue;
 
-    // Chunk writes to avoid hitting database limits
-    const chunkSize = 100;
-    for (let i = 0; i < rows.length; i += chunkSize) {
-      const chunk = rows.slice(i, i + chunkSize);
-      
+    let createdCount = 0;
+    let updatedCount = 0;
+    let skippedCount = 0;
+    let failedCount = 0;
+
+    for (const row of rows) {
       // Clean up fields (casing, booleans, dates)
-      const data = chunk.map(row => {
-        const cleanRow = { ...row };
-        
-        Object.keys(cleanRow).forEach(key => {
-          // Convert SQLite 1/0 to Boolean
-          if (cleanRow[key] === 1 && (
-            key === 'published' || 
-            key === 'featured' || 
-            key === 'isAnon' || 
-            key === 'marketingConsent' || 
-            key === 'isApproved' || 
-            key === 'active'
-          )) {
-            cleanRow[key] = true;
-          } else if (cleanRow[key] === 0 && (
-            key === 'published' || 
-            key === 'featured' || 
-            key === 'isAnon' || 
-            key === 'marketingConsent' || 
-            key === 'isApproved' || 
-            key === 'active'
-          )) {
-            cleanRow[key] = false;
-          }
+      const cleanRow = { ...row };
+      
+      Object.keys(cleanRow).forEach(key => {
+        // Convert SQLite 1/0 to Boolean
+        if (cleanRow[key] === 1 && (
+          key === 'published' || 
+          key === 'featured' || 
+          key === 'isAnon' || 
+          key === 'marketingConsent' || 
+          key === 'isApproved' || 
+          key === 'active'
+        )) {
+          cleanRow[key] = true;
+        } else if (cleanRow[key] === 0 && (
+          key === 'published' || 
+          key === 'featured' || 
+          key === 'isAnon' || 
+          key === 'marketingConsent' || 
+          key === 'isApproved' || 
+          key === 'active'
+        )) {
+          cleanRow[key] = false;
+        }
 
-          // SQLite dates are stored as ISO strings or timestamps, convert to Date object
-          if (key === 'createdAt' || key === 'updatedAt' || key === 'emailVerified' || key === 'expires') {
-            if (cleanRow[key]) {
-              cleanRow[key] = new Date(cleanRow[key]);
-            }
-          }
-        });
-
-        return cleanRow;
-      });
-
-      try {
-        await table.prismaModel.createMany({
-          data,
-          skipDuplicates: true
-        });
-        console.log(`   Written rows ${i + 1} to ${Math.min(i + chunkSize, rows.length)} into ${table.name}`);
-      } catch (err) {
-        console.warn(`   ⚠️ createMany failed for ${table.name}, falling back to single inserts: ${err.message}`);
-        for (const item of data) {
-          try {
-            await table.prismaModel.create({ data: item });
-          } catch (singleErr) {
-            // Ignore duplicates
+        // SQLite dates are stored as ISO strings or timestamps, convert to Date object
+        if (key === 'createdAt' || key === 'updatedAt' || key === 'emailVerified' || key === 'expires') {
+          if (cleanRow[key]) {
+            cleanRow[key] = new Date(cleanRow[key]);
           }
         }
-      }
+      });
+
+      const status = await mergeRow(table.name, table.prismaModel, cleanRow);
+      if (status === 'created') createdCount++;
+      else if (status === 'updated') updatedCount++;
+      else if (status === 'skipped') skippedCount++;
+      else if (status === 'failed') failedCount++;
     }
+
+    console.log(`   ✨ ${table.name} Sync Report: ${createdCount} created, ${updatedCount} updated, ${skippedCount} skipped, ${failedCount} failed.`);
   }
 
   console.log("✅ Sync complete!");
