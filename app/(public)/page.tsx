@@ -7,8 +7,8 @@ import type { Metadata } from "next";
 import { getFeaturedRecipes } from "@/lib/queries";
 import { Testimonials } from "@/components/home/Testimonials";
 import { EmailCaptureForm } from "@/components/ui/EmailCaptureForm";
-
-export const revalidate = 3600; // Revalidate every hour
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = {
   title: "NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes",
@@ -22,7 +22,72 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
+  const session = await auth();
   const featuredRecipes = await getFeaturedRecipes();
+  
+  let userProfile = null;
+  let personalizedPlans: any[] = [];
+  let recommendedRecipes: any[] = [];
+  let leadDataObj: any = {};
+
+  if (session?.user?.id) {
+    userProfile = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: {
+        personalizedRequests: {
+          include: {
+            content: true
+          },
+          orderBy: {
+            createdAt: "desc"
+          },
+          take: 3
+        }
+      }
+    });
+
+    if (userProfile) {
+      personalizedPlans = userProfile.personalizedRequests;
+      try {
+        leadDataObj = JSON.parse(userProfile.leadData || "{}");
+      } catch (e) {
+        leadDataObj = {};
+      }
+
+      // Fetch recommended recipes matching diet preference or goals
+      const dietPreference = leadDataObj.diet;
+      const healthGoal = leadDataObj.goal;
+
+      const rawRecipes = await prisma.content.findMany({
+        where: {
+          type: "RECIPE",
+          published: true,
+        },
+        include: {
+          reviews: {
+            where: { isApproved: true }
+          }
+        },
+        take: 6
+      });
+
+      recommendedRecipes = rawRecipes.filter(recipe => {
+        try {
+          const tags = JSON.parse(recipe.tags || "[]");
+          const matchDiet = dietPreference && tags.some((t: string) => t.toLowerCase() === dietPreference.toLowerCase());
+          const matchGoal = healthGoal && tags.some((t: string) => t.toLowerCase() === healthGoal.toLowerCase());
+          return matchDiet || matchGoal;
+        } catch {
+          return false;
+        }
+      });
+
+      if (recommendedRecipes.length < 3) {
+        const fillers = rawRecipes.filter(r => !recommendedRecipes.some(rec => rec.id === r.id));
+        recommendedRecipes = [...recommendedRecipes, ...fillers].slice(0, 3);
+      }
+    }
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -47,58 +112,231 @@ export default async function Home() {
               Authentic Home Cooking
             </span>
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-[1.1]">
-              Simple Recipes <br />
-              <span className="text-accent">for Real Life.</span>
+              {session ? (
+                <>
+                  Welcome back, <br />
+                  <span className="text-accent">{session.user?.name?.split(' ')[0] || "Friend"}.</span>
+                </>
+              ) : (
+                <>
+                  Simple Recipes <br />
+                  <span className="text-accent">for Real Life.</span>
+                </>
+              )}
             </h1>
             <p className="text-xl text-white/80 mb-10 leading-relaxed font-serif italic max-w-lg">
-              Explore a collection of quick, budget-friendly, and healthy meals designed to make your home cooking journey effortless and cinematic.
+              {session ? (
+                leadDataObj.goal ? (
+                  `Let's keep making progress toward your ${leadDataObj.goal.replace('-', ' ')} goals. Addressing your challenge with ${leadDataObj.struggle || "daily nutrition"} is our mission today.`
+                ) : (
+                  "Welcome to your personalized workspace. Let's build a customized diet plan tailored to your lifestyle."
+                )
+              ) : (
+                "Explore a collection of quick, budget-friendly, and healthy meals designed to make your home cooking journey effortless and cinematic."
+              )}
             </p>
             
             <div className="mt-6 flex flex-col gap-3 sm:flex-row max-w-md">
-              <a
-                href="/personalized"
-                className="rounded-xl bg-white px-6 py-3 text-sm font-semibold text-black transition hover:bg-white/90 text-center cursor-pointer shadow-lg active:scale-98"
-              >
-                Get My Free Meal Plan →
-              </a>
-              <a
+              {session && personalizedPlans.length > 0 ? (
+                <Link
+                  href={`/personalized/${personalizedPlans[0].id}`}
+                  className="rounded-xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 text-center cursor-pointer shadow-lg active:scale-98"
+                >
+                  View Your Custom Plan →
+                </Link>
+              ) : (
+                <Link
+                  href="/diet-plan"
+                  className="rounded-xl bg-white px-6 py-3 text-sm font-semibold text-black transition hover:bg-white/90 text-center cursor-pointer shadow-lg active:scale-98"
+                >
+                  Get My Free Meal Plan →
+                </Link>
+              )}
+              <Link
                 href="/recipes"
                 className="rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10 text-center cursor-pointer active:scale-98"
               >
                 Browse Recipes
-              </a>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* AI Personalisation Banner — Browse by Category se pehle */}
-      <section className="border-t border-white/10 py-16 px-4 bg-slate-950 text-white">
-        <div className="mx-auto max-w-4xl text-center">
-          <span className="mb-4 inline-block text-xs font-semibold uppercase tracking-widest text-emerald-400">
-            Free · AI-Powered
-          </span>
-          <h2 className="mb-4 text-3xl font-semibold md:text-4xl text-white">
-            Your Personalised Meal Plan,<br />Built Around Your Life
-          </h2>
-          <p className="mx-auto mb-8 max-w-xl text-base text-white/60">
-            Tell us your goals, dietary needs, and schedule. Our AI builds a complete
-            plan just for you — in under 60 seconds.
-          </p>
-          <div className="mb-8 flex flex-wrap justify-center gap-6 text-sm text-white/50 font-medium">
-            <span>✓ Keto &amp; Gluten-Free friendly</span>
-            <span>✓ Budget-conscious options</span>
-            <span>✓ 15–30 minute meals</span>
-            <span>✓ 100% free</span>
+      {/* AI Personalisation Banner / Dashboard */}
+      {session ? (
+        <section className="border-t border-white/10 py-16 px-4 bg-slate-950 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+          <div className="mx-auto max-w-7xl">
+            <div className="border-b border-white/10 pb-8 mb-12 flex flex-col md:flex-row md:items-end justify-between">
+              <div>
+                <span className="text-emerald-400 font-bold tracking-widest uppercase text-xs mb-2 block">Your Workspace</span>
+                <h2 className="text-3xl md:text-4xl font-bold text-white font-serif">Personalized Dashboard</h2>
+              </div>
+              <p className="text-sm text-white/50 mt-2 md:mt-0 font-serif italic">
+                Science-backed nutrition configured for you.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Profile Summary Card */}
+              <div className="rounded-[2rem] bg-white/5 border border-white/10 p-8 backdrop-blur-sm flex flex-col justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                    <span className="mr-2">👤</span> Your Profile Config
+                  </h3>
+                  {leadDataObj.goal ? (
+                    <ul className="space-y-4 text-sm text-white/80">
+                      <li className="flex justify-between border-b border-white/5 pb-2">
+                        <span className="text-white/40">Goal:</span>
+                        <span className="font-semibold text-accent capitalize">{leadDataObj.goal.replace('-', ' ')}</span>
+                      </li>
+                      <li className="flex justify-between border-b border-white/5 pb-2">
+                        <span className="text-white/40">Struggle:</span>
+                        <span className="font-semibold text-white/90 line-clamp-1 max-w-[180px]" title={leadDataObj.struggle}>{leadDataObj.struggle}</span>
+                      </li>
+                      <li className="flex justify-between border-b border-white/5 pb-2">
+                        <span className="text-white/40">Dietary Style:</span>
+                        <span className="font-semibold text-white/90 capitalize">{leadDataObj.diet || "Standard"}</span>
+                      </li>
+                      <li className="flex justify-between border-b border-white/5 pb-2">
+                        <span className="text-white/40">Prep Time:</span>
+                        <span className="font-semibold text-white/90">{leadDataObj.time || "Flexible"}</span>
+                      </li>
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-white/60 leading-relaxed mb-6">
+                      You haven't set up your nutrition profile yet. Complete the quick assessment to receive custom suggestions.
+                    </p>
+                  )}
+                </div>
+                <div className="mt-8">
+                  <Link
+                    href="/diet-plan"
+                    className="inline-block w-full text-center rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 px-4 py-3 text-xs font-bold text-white transition cursor-pointer"
+                  >
+                    {leadDataObj.goal ? "Update Profile Quiz" : "Start Profile Quiz"}
+                  </Link>
+                </div>
+              </div>
+
+              {/* Personalized Meal Plan Card */}
+              <div className="rounded-[2rem] bg-white/5 border border-white/10 p-8 backdrop-blur-sm flex flex-col justify-between lg:col-span-2">
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                    <span className="mr-2">📋</span> Your Custom Meal Plans
+                  </h3>
+                  {personalizedPlans.length > 0 ? (
+                    <div className="space-y-4">
+                      {personalizedPlans.map((req) => (
+                        <div key={req.id} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition flex items-center justify-between">
+                          <div>
+                            <h4 className="font-bold text-white text-base line-clamp-1">{req.content.title}</h4>
+                            <p className="text-xs text-white/50 mt-1">Generated {new Date(req.createdAt).toLocaleDateString()}</p>
+                          </div>
+                          <Link
+                            href={`/personalized/${req.id}`}
+                            className="rounded-xl bg-emerald-600 hover:bg-emerald-700 px-4 py-2 text-xs font-bold text-white transition cursor-pointer"
+                          >
+                            Open Plan
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-sm text-white/60 leading-relaxed mb-6">
+                        Generate a custom meal plan optimized specifically for your body and dietary preferences.
+                      </p>
+                      <Link
+                        href="/diet-plan"
+                        className="inline-block rounded-xl bg-emerald-600 hover:bg-emerald-700 px-6 py-3 text-sm font-bold text-white transition cursor-pointer"
+                      >
+                        Generate My First Plan
+                      </Link>
+                    </div>
+                  )}
+                </div>
+                <div className="mt-6 border-t border-white/5 pt-4 text-xs text-white/40 flex items-center justify-between">
+                  <span>Limit 1 personalized plan request per day</span>
+                  <span>Active Plans: {personalizedPlans.length}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Recommended Recipes Section inside Dashboard */}
+            {recommendedRecipes.length > 0 && (
+              <div className="mt-16">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-2xl font-bold text-white font-serif flex items-center">
+                    <span className="mr-2">🍲</span> Recommended for Your Diet
+                  </h3>
+                  <Link href="/recipes" className="text-xs font-bold text-emerald-400 hover:underline">
+                    View All Recipes →
+                  </Link>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {recommendedRecipes.map((recipe) => (
+                    <div key={recipe.id} className="group bg-white/5 rounded-[2rem] p-4 border border-white/5 hover:border-white/10 transition-all duration-300">
+                      <div className="relative h-48 rounded-[1.5rem] overflow-hidden mb-4">
+                        <Image 
+                          src={recipe.coverImage || "https://images.unsplash.com/photo-1495195129352-aec325b55b65?auto=format&fit=crop&q=80&w=1000"} 
+                          alt={recipe.title} 
+                          fill 
+                          className="object-cover transition-transform duration-500 group-hover:scale-105" 
+                        />
+                        {leadDataObj.diet && (
+                          <div className="absolute top-3 left-3">
+                            <span className="bg-emerald-600/90 text-white px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider">
+                              Fits {leadDataObj.diet}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <h4 className="text-lg font-bold text-white line-clamp-1 group-hover:text-accent transition-colors">{recipe.title}</h4>
+                      <p className="text-xs text-white/50 mt-1 line-clamp-2">{recipe.excerpt}</p>
+                      <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+                        <span className="text-xs text-white/60 font-semibold">{recipe.cookingTime || "45m"}</span>
+                        <Link href={`/recipes/${recipe.slug}`} className="text-xs font-bold text-emerald-400 hover:underline">
+                          View Recipe →
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          <a
-            href="/personalized"
-            className="inline-block rounded-2xl bg-white px-8 py-4 text-sm font-semibold text-black transition hover:bg-white/90 shadow-xl cursor-pointer active:scale-98"
-          >
-            Get My Free Personalised Plan →
-          </a>
-        </div>
-      </section>
+        </section>
+      ) : (
+        /* Guest User: Call to Action Banner */
+        <section className="border-t border-white/10 py-16 px-4 bg-slate-950 text-white">
+          <div className="mx-auto max-w-4xl text-center">
+            <span className="mb-4 inline-block text-xs font-semibold uppercase tracking-widest text-emerald-400">
+              Free · AI-Powered
+            </span>
+            <h2 className="mb-4 text-3xl font-semibold md:text-4xl text-white">
+              Your Personalised Meal Plan,<br />Built Around Your Life
+            </h2>
+            <p className="mx-auto mb-8 max-w-xl text-base text-white/60">
+              Tell us your goals, dietary needs, and schedule. Our AI builds a complete
+              plan just for you — in under 60 seconds.
+            </p>
+            <div className="mb-8 flex flex-wrap justify-center gap-6 text-sm text-white/50 font-medium">
+              <span>✓ Keto &amp; Gluten-Free friendly</span>
+              <span>✓ Budget-conscious options</span>
+              <span>✓ 15–30 minute meals</span>
+              <span>✓ 100% free</span>
+            </div>
+            <Link
+              href="/personalized"
+              className="inline-block rounded-2xl bg-white px-8 py-4 text-sm font-semibold text-black transition hover:bg-white/90 shadow-xl cursor-pointer active:scale-98"
+            >
+              Get My Free Personalised Plan →
+            </Link>
+          </div>
+        </section>
+      )}
 
 
       {/* Categories Grid */}
