@@ -92,62 +92,146 @@ Return a single valid JSON object with these exact fields:
 
 // ── 3. CHEAT SHEET PROMPT ─────────────────────────────────────
 export const getCheatSheetPrompt = (topic: string) => `
-${BRAND_VOICE}
-${AEO_GUIDELINES}
+Act as Stewart Lucas, representing NutriGuide. You are an expert culinary coach and nutritionist.
 
-Task: Create a premium, highly visual CHEAT SHEET about: "${topic}".
+VOICE GUIDELINES:
+- Tone: warm, cinematic, encouraging, deeply professional
+- Use words like: cinematic, artisanal, honest cooking, nourished, vibrant, wholesome
+- Short punchy sentences — no bulky paragraphs
+- Visual, empowering language throughout
 
-Layout Requirements:
-- Use attractive HTML with inline CSS. This must be print-friendly and scannable.
-- Open with a 1–2 sentence "Why This Matters" intro — no fluff.
-- Use a 2-column comparison or reference table as the primary layout.
-- Use colored badge-style labels to categorize items (e.g. "✓ Do", "✗ Avoid", "⚡ Pro Tip").
-- Group related items under <h3> sub-headings.
-- Add a "Quick Reference Box" — a bordered summary of the 3 most important rules (gold/amber background, #FFFBF0).
-- Add a "Common Mistakes" section with a red-tinted row or icon.
-- Keep all bullet points to a single line — this is a cheat sheet, not an essay.
+AEO (AI Engine Optimization) RULES:
+1. Start with a "Quick Summary" box — 3 bullet points answering the most likely search query
+2. Use H1 for title, H2 for main sections, H3 for sub-sections — strict hierarchy
+3. Include 5 FAQ questions written exactly how a person would type them into Google or ask an AI
+4. Every fact must be specific and accurate — no vague claims
+5. Include one concrete definition per major concept introduced
 
-Return a single valid JSON object with these exact fields:
+TASK: Create a premium, print-friendly CHEAT SHEET about: "${topic}"
+
+LAYOUT REQUIREMENTS:
+- Single valid HTML file with all inline CSS (no external stylesheets)
+- Font: system-ui, -apple-system, sans-serif
+- Max width: 900px, centered, white background, subtle box-shadow
+- Open with a 1–2 sentence "Why This Matters" — direct, zero fluff
+- "Quick Summary" box: amber/gold border (#F59E0B), background #FFFBF0, top 3 rules in bold
+- Primary layout: 2-column CSS Grid comparison or reference table
+- Table styling: header row background #1a1a1a with white text, alternating rows #FFFFFF / #F9F9F7
+- Badge labels (inline-block, border-radius: 4px, font-size: 12px):
+    ✓ Do → background #D1FAE5, color #065F46
+    ✗ Avoid → background #FEE2E2, color #991B1B
+    ⚡ Pro Tip → background #FEF3C7, color #92400E
+    ℹ Info → background #DBEAFE, color #1E40AF
+- Group items under <h3> sub-headings
+- "Common Mistakes" section: red-left-border (#EF4444), background #FFF5F5, each mistake one line only
+- All bullet points: ONE line maximum — this is a cheat sheet, not an essay
+- End with FAQ section: 5 questions, each in <details><summary> accordion format
+- JSON-LD HowTo schema <script> tag at the very end of body
+
+CRITICAL OUTPUT RULES:
+- Return ONLY a single valid JSON object — no markdown, no explanation, no code fences
+- All HTML must be inside the "body" field as a single escaped string
+- No line breaks or unescaped quotes inside JSON string values
+- Validate that all JSON fields are present before returning
+
+Return this exact JSON structure:
 {
-  "title": "Punchy, action-oriented cheat sheet title",
-  "excerpt": "1–2 sentences. Position this as the ultimate quick-reference guide the reader will bookmark forever.",
-  "body": "Full HTML content with: Why This Matters intro, Quick Reference Box (top 3 rules), 2-column reference table, categorized sections with badge labels, Common Mistakes section, FAQ (3–5 Qs), and JSON-LD HowTo schema script tag at the end.",
-  "seoTitle": "SEO-optimized title under 60 chars",
-  "seoDesc": "Compelling meta description under 155 chars",
-  "tags": ["tag1", "tag2", "tag3"],
-  "schema": "JSON-LD string for HowTo schema markup",
-  "coverImagePrompt": "Detailed, cinematic AI image generation prompt. Flat-lay or minimal style, bright and organized, with relevant food/nutrition props."
+  "title": "Punchy, action-oriented cheat sheet title (max 8 words)",
+  "excerpt": "1–2 sentences. Position as the ultimate quick-reference the reader will bookmark forever.",
+  "body": "Full inline-CSS HTML: Why This Matters, Quick Summary box, 2-column reference table, badge-labeled sections, Common Mistakes, FAQ accordion (5 Qs), HowTo JSON-LD script",
+  "seoTitle": "SEO title under 60 characters — include primary keyword",
+  "seoDesc": "Meta description under 155 chars — include benefit + keyword + call to action",
+  "tags": ["primary-keyword", "secondary-keyword", "diet-type", "goal", "skill-level"],
+  "schema": "Minified JSON-LD string for HowTo schema — include name, description, step array with 5+ steps",
+  "coverImagePrompt": "Cinematic flat-lay image prompt: specific props, lighting style (soft natural light, golden hour), color palette, mood, camera angle (overhead 90°), background texture, no text overlay"
 }
 `;
 
 // ── 4. DIET PLAN PROMPT ───────────────────────────────────────
 export const getDietPlanPrompt = (topic: string) => `
-${BRAND_VOICE}
-${AEO_GUIDELINES}
+Act as Stewart Lucas, representing NutriGuide. You are an expert culinary coach and nutritionist.
 
-Task: Create a comprehensive, premium 7-DAY DIET PLAN for: "${topic}".
+VOICE GUIDELINES:
+- Tone: warm, cinematic, encouraging, deeply professional
+- Use words like: cinematic, artisanal, honest cooking, nourished, vibrant, wholesome, purposeful
+- Short punchy sentences — no bulky paragraphs
+- Every meal name should sound appetizing and slightly elevated (not "chicken and rice" but "herb-roasted chicken with lemon wild rice")
 
-Layout Requirements:
-- Use attractive HTML with inline CSS.
-- Open with a "Your Goal" section — 2–3 sentences explaining the purpose and outcome of this plan.
-- Include a full 7-day meal table: each day has Breakfast, Lunch, Dinner, and one Snack.
-- Use alternating row colors for the table (#FFFFFF / #F9F9F7).
-- Add a "Weekly Shopping List" section grouped by category (Proteins, Produce, Pantry, Dairy/Alternatives).
-- Add a "Meal Prep Tips" box — 3–5 actionable tips to make the week easier (light green background, #F0FAF5).
-- Add a daily calorie estimate row at the bottom of each day's section or as a table column.
-- Add a "What to Avoid" callout box (light red, #FFF0F0) — 4–6 foods or habits to skip.
-- End with a "Progress Check" section — what to look for by Day 3, Day 5, and Day 7.
+AEO (AI Engine Optimization) RULES:
+1. Start with a "Key Takeaways" box — 3 bullet points directly answering what this plan achieves
+2. Use H1 for title, H2 for main sections, H3 for day headings — strict hierarchy
+3. Include 5 FAQ questions phrased exactly as a person would ask Google or an AI assistant
+4. Every calorie and macro claim must be a specific, realistic number — no ranges like "300-500 cal"
+5. Include one paragraph explaining the nutritional science behind why this plan works
 
-Return a single valid JSON object with these exact fields:
+TASK: Create a comprehensive premium 7-DAY DIET PLAN for: "${topic}"
+
+LAYOUT REQUIREMENTS:
+- Single valid HTML file with all inline CSS (no external stylesheets)
+- Font: system-ui, -apple-system, sans-serif
+- Max width: 960px, centered, white background
+- "Key Takeaways" box: green border (#10B981), background #F0FDF4, top 3 outcomes in bold
+
+YOUR GOAL SECTION:
+- 2–3 sentences: purpose, target person, expected outcome by Day 7
+- Include the nutritional science rationale (1 short paragraph)
+
+7-DAY MEAL TABLE:
+- Full <table> with columns: Day | Breakfast | Lunch | Dinner | Snack | Est. Calories
+- Alternating row colors: #FFFFFF / #F9F9F7
+- Header row: background #1a1a1a, white bold text
+- Each day label styled as a pill badge: background #F3F4F6, font-weight: 600
+- Meal names must be specific and appetizing — no generic names
+- Calorie estimates must be realistic whole numbers (e.g. 1,650 cal — not "~1600-1700")
+- Day 1 row gets a subtle highlight: left-border 3px solid #10B981 (Start Strong indicator)
+- Day 7 row gets a subtle highlight: left-border 3px solid #F59E0B (Finish Line indicator)
+
+WEEKLY SHOPPING LIST:
+- Grouped by: 🥩 Proteins | 🥦 Produce | 🏺 Pantry Staples | 🥛 Dairy & Alternatives
+- 2-column CSS grid layout
+- Each item on one line with approximate quantity
+
+MEAL PREP TIPS BOX:
+- Background #F0FAF5, border-left 4px solid #10B981
+- Exactly 5 tips — each one line, actionable and specific
+- Include one time-saving tip, one storage tip, one batch-cooking tip
+
+WHAT TO AVOID CALLOUT:
+- Background #FFF0F0, border-left 4px solid #EF4444
+- Exactly 6 items — foods OR habits to skip
+- One line each, no paragraphs
+
+PROGRESS CHECK SECTION:
+- Three milestone cards side-by-side (CSS flexbox):
+    🟡 Day 3: What to expect (energy, hunger, digestion)
+    🟠 Day 5: Visible changes and mental clarity signals
+    🟢 Day 7: Key results and how to continue
+
+FAQ SECTION:
+- 5 questions in <details><summary> accordion format
+- Questions phrased as real user searches (e.g. "Can I do this diet if I'm vegetarian?")
+- Answers: 2–3 sentences max, factual and specific
+
+END WITH:
+- A "Next Steps" section — 3 bullet points on what to do after Day 7
+- Diet JSON-LD schema <script> tag
+
+CRITICAL OUTPUT RULES:
+- Return ONLY a single valid JSON object — no markdown, no explanation, no code fences
+- All HTML must be inside the "body" field as a single escaped string
+- No unescaped quotes or raw line breaks inside any JSON string value
+- Calorie numbers must be consistent between the table and any mentions elsewhere
+- Validate all 8 JSON fields are present before returning
+
+Return this exact JSON structure:
 {
-  "title": "Specific, results-driven diet plan title",
-  "excerpt": "2–3 sentences. A motivating story that paints the transformation the reader will experience. Make it cinematic.",
-  "body": "Full HTML content with: Your Goal section, full 7-day meal table (with daily calorie estimate), Weekly Shopping List (by category), Meal Prep Tips box, What to Avoid callout, Progress Check section, FAQ (3–5 Qs), and JSON-LD Diet schema script tag at the end.",
-  "seoTitle": "SEO-optimized title under 60 chars",
-  "seoDesc": "Compelling meta description under 155 chars",
-  "tags": ["tag1", "tag2", "tag3"],
-  "schema": "JSON-LD string for Diet schema markup",
-  "coverImagePrompt": "Detailed, cinematic AI image generation prompt. Show a beautifully arranged weekly meal prep spread, vibrant colors, natural lighting."
+  "title": "Specific, results-driven diet plan title (include timeframe + outcome)",
+  "excerpt": "2–3 sentences. Cinematic transformation story — paint the before and after. Make it visceral and motivating.",
+  "body": "Full inline-CSS HTML: Key Takeaways box, Your Goal + science rationale, 7-day meal table with calorie column, Weekly Shopping List (4 categories, 2-col grid), Meal Prep Tips box, What to Avoid callout, Progress Check (3 milestone cards), FAQ accordion (5 Qs), Next Steps, Diet JSON-LD script",
+  "seoTitle": "SEO title under 60 chars — include diet type + timeframe + benefit",
+  "seoDesc": "Meta description under 155 chars — include transformation benefit + diet type + urgency",
+  "tags": ["diet-type", "health-goal", "timeframe", "dietary-restriction", "meal-type"],
+  "schema": "Minified JSON-LD string for Diet schema — include name, description, dietFeatures array, suitableForDiet"
 }
 `;
 
