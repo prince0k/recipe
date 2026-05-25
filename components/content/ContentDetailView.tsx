@@ -50,6 +50,21 @@ export function ContentDetailView({
           <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
             {content.excerpt}
           </p>
+          
+          {/* Quick Actions Toolbar */}
+          <div className="mt-8 flex justify-center gap-4 border-y border-border/60 py-4 max-w-md mx-auto">
+            <FavoriteButton 
+              contentId={content.id} 
+              initialFavorited={isFavorited}
+              className="rounded-full px-6"
+            />
+            <ShareButton 
+              title={content.title} 
+              text={content.excerpt} 
+              variant="outline"
+              className="rounded-full px-6 text-muted-foreground hover:bg-secondary/15"
+            />
+          </div>
         </div>
 
         {/* Cover Media */}
@@ -78,80 +93,56 @@ export function ContentDetailView({
           </div>
         ) : null}
 
-        {/* Content Grid */}
-        <div className="grid gap-12 lg:grid-cols-3">
-          {/* Main Content */}
-          <div className="lg:col-span-2">
-            {(() => {
-              const formattedBody = typeof content.body === "string"
-                ? content.body
-                    .replace(/<table/g, '<div class="prose-table-wrapper"><table')
-                    .replace(/<\/table>/g, "</table></div>")
-                : "";
-              return (
-                <div
-                  className="prose prose-neutral max-w-none prose-headings:font-serif prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 hover:prose-a:text-muted-foreground prose-p:leading-relaxed prose-p:text-gray-700"
-                  style={{ fontSize: '1.125rem' }}
-                  dangerouslySetInnerHTML={{ __html: formattedBody }}
-                />
-              );
-            })()}
+        {/* Main Content Column */}
+        <div className="mx-auto max-w-3xl">
+          {(() => {
+            const formattedBody = typeof content.body === "string"
+              ? content.body
+                  .replace(/<table/g, '<div class="prose-table-wrapper"><table')
+                  .replace(/<\/table>/g, "</table></div>")
+              : "";
+            return (
+              <div
+                className="prose prose-neutral max-w-none prose-headings:font-serif prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 hover:prose-a:text-muted-foreground prose-p:leading-relaxed prose-p:text-gray-700"
+                style={{ fontSize: '1.125rem' }}
+                dangerouslySetInnerHTML={{ __html: formattedBody }}
+              />
+            );
+          })()}
 
-            {/* Bottom Call to Action for Downloading PDF */}
-            {content.type !== "BLOG" && (
-              <div className="mt-12 p-8 rounded-[2rem] border border-border bg-surface cinematic-shadow flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div className="max-w-md text-left">
-                  <h3 className="font-serif text-xl font-bold text-text">
-                    Get the Full Guide
-                  </h3>
-                  <p className="mt-2 text-sm text-text-muted">
-                    Download the complete PDF version including grocery lists and meal prep instructions for easy printing and offline reading.
-                  </p>
-                </div>
-                <div className="w-full sm:w-auto flex-shrink-0">
-                  {content.type === "CHEAT_SHEET" ? (
-                    <EmailCaptureForm
-                      source="cheatsheet"
-                      heading="Get the Free PDF"
-                      subheading="Instant download. No spam ever."
-                      buttonText="Download Free PDF"
-                      freebie={content.slug}
-                    />
-                  ) : (
-                    <DownloadGate content={content} />
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 space-y-8">
-              {/* Quick Actions Card */}
-              <div className="rounded-2xl border border-border bg-surface/50 p-6 cinematic-shadow">
-                <h3 className="font-serif text-sm font-semibold text-text mb-4">
-                  Actions
+          {/* Bottom Call to Action for Downloading PDF */}
+          {content.type !== "BLOG" && (
+            <div className="mt-12 p-8 rounded-[2rem] border border-border bg-surface cinematic-shadow flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="max-w-md text-left">
+                <h3 className="font-serif text-xl font-bold text-text">
+                  Get the Full Guide
                 </h3>
-                <div className="space-y-3">
-                  <FavoriteButton 
-                    contentId={content.id} 
-                    initialFavorited={isFavorited}
-                    variant="outline"
-                    className="w-full"
-                  />
-                  <ShareButton 
-                    title={content.title} 
-                    text={content.excerpt} 
-                    variant="ghost"
-                    className="w-full text-muted-foreground hover:bg-secondary/15"
-                  />
-                </div>
+                <p className="mt-2 text-sm text-text-muted">
+                  Download the complete PDF version including grocery lists and meal prep instructions for easy printing and offline reading.
+                </p>
               </div>
-              
+              <div className="w-full sm:w-auto flex-shrink-0">
+                {content.type === "CHEAT_SHEET" ? (
+                  <EmailCaptureForm
+                    source="cheatsheet"
+                    heading="Get the Free PDF"
+                    subheading="Instant download. No spam ever."
+                    buttonText="Download Free PDF"
+                    freebie={content.slug}
+                  />
+                ) : (
+                  <DownloadGate content={content} />
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Ad Component */}
+          {adComponent && (
+            <div className="mt-12 flex justify-center border-t border-border/40 pt-8">
               {adComponent}
             </div>
-          </div>
+          )}
         </div>
 
         {relatedItems && relatedItems.length > 0 && (
