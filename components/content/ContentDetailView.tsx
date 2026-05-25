@@ -32,6 +32,25 @@ export function ContentDetailView({
     // ignore parse errors
   }
 
+  const mediaOverlay = (
+    <div className="absolute top-4 right-4 flex gap-2.5 z-10">
+      <FavoriteButton 
+        contentId={content.id} 
+        initialFavorited={isFavorited}
+        showText={false}
+        variant="ghost"
+        className="h-10 w-10 !p-0 rounded-full bg-white/90 backdrop-blur-md border border-white/20 shadow-md hover:bg-white hover:scale-105 active:scale-95 transition-all duration-300 text-text"
+      />
+      <ShareButton 
+        title={content.title} 
+        text={content.excerpt} 
+        showText={false}
+        variant="ghost"
+        className="h-10 w-10 !p-0 rounded-full bg-white/90 backdrop-blur-md border border-white/20 shadow-md hover:bg-white hover:scale-105 active:scale-95 transition-all duration-300 text-text-muted hover:text-text"
+      />
+    </div>
+  );
+
   return (
     <article className="py-12 lg:py-20">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
@@ -50,22 +69,14 @@ export function ContentDetailView({
           <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
             {content.excerpt}
           </p>
-          
-          {/* Quick Actions Toolbar */}
-          <div className="mt-8 flex justify-center gap-4 border-y border-border/60 py-4 max-w-md mx-auto">
-            <FavoriteButton 
-              contentId={content.id} 
-              initialFavorited={isFavorited}
-              className="rounded-full px-6"
-            />
-            <ShareButton 
-              title={content.title} 
-              text={content.excerpt} 
-              variant="outline"
-              className="rounded-full px-6 text-muted-foreground hover:bg-secondary/15"
-            />
-          </div>
         </div>
+
+        {/* Fallback actions if no cover media exists */}
+        {!content.coverImage && !content.coverVideo && (
+          <div className="mb-8 flex justify-center border-y border-border/60 py-4 max-w-md mx-auto">
+            {mediaOverlay}
+          </div>
+        )}
 
         {/* Cover Media */}
         {content.coverVideo ? (
@@ -78,6 +89,7 @@ export function ContentDetailView({
               playsInline
               className="h-full w-full object-cover"
             />
+            {mediaOverlay}
           </div>
         ) : content.coverImage ? (
           <div className="relative mb-12 aspect-[2/1] overflow-hidden rounded-lg border border-border">
@@ -90,6 +102,7 @@ export function ContentDetailView({
               priority
               unoptimized={content.coverImage?.startsWith('/uploads')}
             />
+            {mediaOverlay}
           </div>
         ) : null}
 
