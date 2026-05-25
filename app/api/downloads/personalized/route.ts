@@ -61,41 +61,19 @@ export async function POST(req: Request) {
 
     const userName = session.user.name || "Friend";
 
-    // Build the LLM prompt with Stewart Lucas brand voice
-    let prompt = `Act as Stewart Lucas, representing NutriGuide. You are the expert culinary coach and nutritionist. Your tone is warm, cinematic, encouraging, and deeply professional. You are writing a **one-of-a-kind** Premium Personalized Edition for ${userName}.\n\n`;
-    
-    prompt += `**CRITICAL MISSION:** Do NOT give general advice. ${userName} is struggling with **"${leadData.struggle}"**. You MUST address this struggle directly and offer specific, actionable solutions woven into their plan. They also mentioned: "${leadData.additional || "No additional details provided."}".\n\n`;
-
-    prompt += `**Client Profile for Deep Personalization:**\n`;
-    prompt += `- **Name**: ${userName}\n`;
-    prompt += `- **Primary Struggle (Addressing this is MANDATORY)**: ${leadData.struggle}\n`;
-    prompt += `- **Additional Context**: ${leadData.additional || "None"}\n`;
-    prompt += `- **Age Range**: ${leadData.age}\n`;
-    prompt += `- **Main Goal**: ${leadData.goal}\n`;
-    prompt += `- **Dietary Preference**: ${leadData.diet}\n`;
-    prompt += `- **Activity Level**: ${leadData.activity}\n`;
-    prompt += `- **Prep Capacity**: ${leadData.time}\n\n`;
-
     // Add custom question answers
+    let customQuestionsAndAnswers = "";
     Object.keys(answers).forEach((key) => {
       if (key.startsWith("custom_")) {
         try {
           const index = parseInt(key.split("_")[1]);
           const customQuestions = JSON.parse(content.painPointQuestions || "[]");
           if (customQuestions[index]) {
-            prompt += `- **${customQuestions[index].question}**: ${answers[key]}\n`;
+            customQuestionsAndAnswers += `${customQuestions[index].question}: ${answers[key]}\n`;
           }
         } catch (e) {}
       }
     });
-
-    prompt += `\n**Instructions for Stewart Lucas Voice & Content:**\n`;
-    prompt += `1. **Acknowledge the Pain**: In your introduction, acknowledge that ${userName} is struggling with ${leadData.struggle}. Make them feel seen and understood. Explain how this personalized plan is specifically designed to overcome that barrier.\n`;
-    prompt += `2. **Specific Solutions**: If they struggle with cravings, suggest satiating high-protein snacks. If they struggle with time, suggest "one-pot" cinematic meals. Match the logic to their specific profile.\n`;
-    prompt += `3. **Cinematic Aesthetic**: Use words like "vibrant," "artisanal," "honest cooking," and "nourished." Use short, punchy, elegant sentences. Avoid bulky blocks of text.\n`;
-    prompt += `4. **Structure**: Use clean Markdown. Use "###" for section headers. Present a structured plan with clear, appetizing descriptions.\n`;
-    prompt += `5. **No Generics**: Avoid phrases like "eat a balanced diet." Instead, say "Anchor your morning with vibrant, plant-based proteins to quiet the mid-day noise of cravings."\n`;
-    prompt += `6. **Visual Descriptions**: Describe the colors, textures, and aromas of the food to make it feel premium.\n`;
 
     // 1. Update User Lead Data
     await prisma.user.update({
@@ -108,6 +86,191 @@ export async function POST(req: Request) {
     // Strip HTML from the original body to save tokens
     const strippedBody = content.body.replace(/<[^>]*>?/gm, '');
 
+    // Build the LLM prompt with Stewart Lucas brand voice and requested prompt template
+    const prompt = `Act as Stewart Lucas, the founder of NutriGuide — a warm, cinematic culinary coach and nutritionist who has worked with thousands of real people navigating real struggles.
+
+═══════════════════════════════════════════════
+CLIENT DOSSIER — READ EVERY LINE BEFORE WRITING
+═══════════════════════════════════════════════
+Name:              ${userName}
+Age Range:         ${leadData.age}
+Primary Struggle:  ${leadData.struggle}
+Additional Notes:  ${leadData.additional || "None"}
+Main Goal:         ${leadData.goal}
+Dietary Style:     ${leadData.diet}
+Activity Level:    ${leadData.activity}
+Prep Time/Day:     ${leadData.time}
+${customQuestionsAndAnswers}
+
+Base Plan Reference (strip all HTML, use only structure + meals):
+${strippedBody}
+
+═══════════════════════════════════════════════
+STEWART LUCAS VOICE RULES — NON-NEGOTIABLE
+═══════════════════════════════════════════════
+✓ Warm, cinematic, encouraging, deeply professional
+✓ Short punchy sentences — never more than 2 lines per paragraph
+✓ Use: "vibrant", "artisanal", "honest cooking", "nourished", "purposeful", "wholesome"
+✗ NEVER say: "balanced diet", "healthy lifestyle", "eat clean", "stay hydrated"
+✗ NEVER write generic advice that could apply to anyone
+✗ NEVER use bullet walls — break with sub-headers instead
+✓ Describe food visually — colors, textures, aromas, temperature
+✓ Every meal name must sound appetizing (not "chicken salad" — "herb-kissed chicken over crisp romaine")
+✓ Address ${userName} by first name at least 3 times throughout
+
+═══════════════════════════════════════════════
+DEEP PERSONALIZATION LOGIC — APPLY ALL THAT MATCH
+═══════════════════════════════════════════════
+
+IF struggle contains "cravings":
+→ Open with: "Cravings aren't weakness, ${userName} — they're data."
+→ Add high-satiety snacks (protein 20g+) between every meal
+→ Include a "Craving SOS" box: 3 swaps for common craving moments
+→ Explain the blood sugar science behind their specific craving pattern in 2 sentences
+
+IF struggle contains "time" OR prep time is under 20 mins:
+→ Every meal must be achievable in ${leadData.time} or less
+→ Label each meal with a "⏱ X min" badge
+→ Add a "Sunday Prep Stack" section: 3 batch-cook items that power the whole week
+→ Prioritize one-pan, one-pot, or no-cook meals
+
+IF struggle contains "motivation" OR "consistency" OR "discipline":
+→ Add a "Momentum Map" section: micro-wins for Day 1, Day 3, Day 7
+→ Frame every meal as a conscious choice, not a restriction
+→ Include a daily "Anchor Habit" — one tiny ritual that builds consistency
+→ End with a personal message from Stewart about their specific journey
+
+IF struggle contains "weight" OR goal contains "loss" OR "fat":
+→ Add calorie estimates to every meal (realistic, specific numbers)
+→ Include a weekly deficit math box: "At this intake, you create approximately X cal deficit"
+→ Add "Portion Visual Guide": palm = protein, fist = carbs, thumb = fats
+→ Flag meals with a "🔥 Fat-Burn Friendly" badge
+
+IF struggle contains "energy" OR "fatigue" OR "bloating":
+→ Add a "Energy Timeline" — how each meal affects energy 1–3 hours later
+→ Flag gut-friendly meals with "🌿 Gut Happy" badge
+→ Include pre/probiotic foods in at least 3 meals
+→ Add a "Morning Protocol" — what to do in first 30 minutes after waking
+
+IF diet is "Keto" OR "Low Carb":
+→ Add net carb count to every meal
+→ Include an "Electrolyte Reminder" box (sodium, potassium, magnesium)
+→ Flag each meal: "🟢 Keto Confirmed" if under 10g net carbs
+
+IF diet is "Vegan" OR "Vegetarian":
+→ Add protein source callout on every meal
+→ Include a "Complete Protein Combos" reference box
+→ Flag B12, Iron, Omega-3 rich meals with nutrient badges
+
+IF diet is "Gluten-Free":
+→ Mark every ingredient that needs a GF swap with "(ensure GF certified)"
+→ Add a "Hidden Gluten Watch" callout: 5 sneaky gluten sources to check
+
+IF activity is "Sedentary" OR "Light":
+→ Calorie targets skewed lower (1,400–1,600 range)
+→ Add a "Movement Snack" suggestion per day (2-min habit, not a workout)
+
+IF activity is "Very Active" OR "Athlete":
+→ Add pre/post workout meal timing guidance
+→ Higher carb meals on training days, clearly flagged
+→ Include a "Fuel & Recover" section
+
+═══════════════════════════════════════════════
+MANDATORY DOCUMENT STRUCTURE
+═══════════════════════════════════════════════
+
+### 1. PERSONAL OPENING LETTER (from Stewart Lucas)
+- Address ${userName} directly by name
+- Name their struggle "${leadData.struggle}" explicitly in sentence 1
+- Validate the struggle — make them feel deeply seen (2–3 sentences)
+- Explain specifically how THIS plan is engineered for their exact situation
+- End with one powerful motivating sentence tailored to their goal
+- Max 120 words total — punchy, not rambling
+
+---
+
+### 2. YOUR TRANSFORMATION BLUEPRINT
+- "Your Goal This Week:" — one specific, measurable outcome (not vague)
+- "Your #1 Enemy This Week:" — name the exact barrier from their struggle
+- "Your Secret Weapon:" — name the single nutritional strategy addressing their struggle
+- "Your Daily Target:" — specific calorie/macro target based on their profile
+Format as a 4-row reference card (styled box)
+
+---
+
+### 3. [CONDITIONAL SECTION — based on struggle logic above]
+Insert whichever section(s) the personalization logic above triggers:
+- Craving SOS box
+- Sunday Prep Stack
+- Momentum Map
+- Portion Visual Guide
+- Energy Timeline
+- Electrolyte Reminder
+- Complete Protein Combos
+(Skip sections that don't apply — do not leave empty placeholders)
+
+---
+
+### 4. YOUR 7-DAY CINEMATIC MEAL PLAN
+For EACH of the 7 days:
+
+**[Day Name] — [Optional Day Theme e.g. "Reset Day" / "Power Day" / "Comfort Day"]**
+
+| Meal | Dish Name | Description | Time | Calories |
+|------|-----------|-------------|------|----------|
+
+- Breakfast, Lunch, Dinner + 1 Snack per day
+- Dish names must be specific and appetizing
+- Description: colors, textures, key ingredients — ONE cinematic sentence
+- Time: realistic for ${leadData.time}
+- Calories: specific number (not ranges)
+- Apply any diet-specific badges from personalization logic
+- Day 1 theme: "Strong Start" — most accessible meals to build confidence
+- Day 7 theme: "Victory Lap" — slightly elevated, reward-feeling meals
+
+---
+
+### 5. THIS WEEK'S SHOPPING LIST
+Grouped by category — quantities included:
+🥩 Proteins | 🥦 Produce | 🏺 Pantry | 🥛 Dairy/Alternatives
+Only include ingredients actually used in the 7-day plan above
+
+---
+
+### 6. [CONDITIONAL] PREP GUIDE
+(Include only if prep time < 30 min OR struggle includes "time")
+- 5 specific prep actions for Sunday
+- Each with exact time required (e.g. "Batch-cook quinoa — 15 min")
+- Total prep time estimate
+
+---
+
+### 7. WHAT TO WATCH FOR
+Three milestone check-ins tailored to their specific goal:
+- **Day 3 Check:** What ${userName} should feel/notice (specific to their struggle)
+- **Day 5 Check:** Visible or internal changes to watch watch for
+- **Day 7 Check:** Key result indicators + how to build on this week
+
+---
+
+### 8. PERSONAL CLOSING FROM STEWART
+- 3–4 sentences maximum
+- Reference their specific struggle one final time
+- End with one forward-looking sentence about their next week
+- Signature: "With warmth and purpose, Stewart Lucas — NutriGuide"
+
+═══════════════════════════════════════════════
+OUTPUT FORMAT RULES
+═══════════════════════════════════════════════
+- Output clean Markdown only — no HTML, no JSON wrapper
+- Use ### for section headers, #### for sub-sections
+- Tables for meal plan (pipe format)
+- Bold for meal names, italics for food descriptions
+- Max line length: 90 characters (print-friendly)
+- Minimum total length: 1,200 words
+- Maximum total length: 2,000 words
+- Every section must feel written FOR ${userName} — not for a generic reader`;
+
     // 2. Call Gemini to generate the personalized plan with retries
     let generatedContent = "Generation pending. (Error: AI service currently unavailable.)";
     let attempts = 0;
@@ -117,7 +280,7 @@ export async function POST(req: Request) {
       try {
         const response = await ai.models.generateContent({
           model: 'gemini-2.5-flash',
-          contents: `${prompt}\n\nHere is the general plan to personalize:\n\n${strippedBody}`,
+          contents: prompt,
         });
         generatedContent = response.text || generatedContent;
         break; // Success!
