@@ -39,14 +39,8 @@ export async function POST(req: Request) {
     const aiResponse = await getGeminiResponse(prompt, true);
     const data = JSON.parse(aiResponse || "{}");
 
-    // 3. Generate Cover Image
+    // 3. Skip image generation (store only the coverImagePrompt in the database)
     let coverImageUrl = null;
-    try {
-      const rawCoverImage = await generateImage(data.coverImagePrompt || `Professional food photography of ${topic}`, 'preview');
-      coverImageUrl = await saveAndCompressImage(rawCoverImage, data.title || topic);
-    } catch (e) {
-      console.error("AI Image generation failed for pending recipe:", e);
-    }
 
     // 4. Clean clean slug
     let cleanSlug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");

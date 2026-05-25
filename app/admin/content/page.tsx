@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { DeleteContentButton } from "@/components/admin/DeleteContentButton";
 import { GenerateRecipeButton } from "@/components/admin/GenerateRecipeButton";
+import { GenerateAllPendingButton } from "@/components/admin/GenerateAllPendingButton";
 import { Pagination } from "@/components/ui/Pagination";
 import { 
   FileText, 
@@ -41,7 +42,7 @@ export default async function AdminContentPage({
   }
 
   // Get total counts for badge indicators
-  const [contentItems, totalCount, pendingCount] = await Promise.all([
+  const [contentItems, totalCount, pendingCount, pendingItemsList] = await Promise.all([
     prisma.content.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -60,7 +61,11 @@ export default async function AdminContentPage({
       }
     }),
     prisma.content.count({ where }),
-    prisma.content.count({ where: { type: "PENDING_RECIPE" } })
+    prisma.content.count({ where: { type: "PENDING_RECIPE" } }),
+    prisma.content.findMany({
+      where: { type: "PENDING_RECIPE" },
+      select: { id: true, title: true }
+    })
   ]);
 
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -79,6 +84,9 @@ export default async function AdminContentPage({
           </p>
         </div>
         <div className="flex items-center gap-3">
+          {activeTab === "pending_recipe" && pendingItemsList.length > 0 && (
+            <GenerateAllPendingButton items={pendingItemsList} />
+          )}
           <Link href="/admin/content/ai-generator" className="inline-flex">
             <Button variant="outline" className="flex items-center gap-2 border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-800 rounded-xl transition-all duration-200 shadow-sm font-bold text-xs sm:text-sm">
               <Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" />
