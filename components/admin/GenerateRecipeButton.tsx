@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/Button";
 interface GenerateRecipeButtonProps {
   id: string;
   title: string;
+  imageMode?: string;
 }
 
-export function GenerateRecipeButton({ id, title }: GenerateRecipeButtonProps) {
+export function GenerateRecipeButton({ id, title, imageMode = "prompt" }: GenerateRecipeButtonProps) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -28,7 +29,7 @@ export function GenerateRecipeButton({ id, title }: GenerateRecipeButtonProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, imageMode }),
       });
 
       const data = await res.json();

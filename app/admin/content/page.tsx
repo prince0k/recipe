@@ -5,6 +5,7 @@ import Link from "next/link";
 import { DeleteContentButton } from "@/components/admin/DeleteContentButton";
 import { GenerateRecipeButton } from "@/components/admin/GenerateRecipeButton";
 import { GenerateAllPendingButton } from "@/components/admin/GenerateAllPendingButton";
+import { ImageModeSelector } from "@/components/admin/ImageModeSelector";
 import { Pagination } from "@/components/ui/Pagination";
 import { 
   FileText, 
@@ -28,6 +29,7 @@ export default async function AdminContentPage({
   const sParams = await searchParams;
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
   const activeTab = typeof sParams.type === 'string' ? sParams.type.toLowerCase() : "all";
+  const imageMode = typeof sParams.imageMode === 'string' ? sParams.imageMode : "prompt";
   const pageSize = 20;
   const skip = (page - 1) * pageSize;
 
@@ -84,8 +86,13 @@ export default async function AdminContentPage({
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {activeTab === "pending_recipe" && pendingItemsList.length > 0 && (
-            <GenerateAllPendingButton items={pendingItemsList} />
+          {activeTab === "pending_recipe" && (
+            <>
+              <ImageModeSelector />
+              {pendingItemsList.length > 0 && (
+                <GenerateAllPendingButton items={pendingItemsList} imageMode={imageMode} />
+              )}
+            </>
           )}
           <Link href="/admin/content/ai-generator" className="inline-flex">
             <Button variant="outline" className="flex items-center gap-2 border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-800 rounded-xl transition-all duration-200 shadow-sm font-bold text-xs sm:text-sm">
@@ -203,7 +210,7 @@ export default async function AdminContentPage({
                     <div className="flex items-center justify-end gap-3.5">
                       {item.type === "PENDING_RECIPE" ? (
                         <>
-                          <GenerateRecipeButton id={item.id} title={item.title} />
+                          <GenerateRecipeButton id={item.id} title={item.title} imageMode={imageMode} />
                           <DeleteContentButton 
                             id={item.id} 
                             title={item.title}

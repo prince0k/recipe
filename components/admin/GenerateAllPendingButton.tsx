@@ -12,9 +12,10 @@ interface PendingItem {
 
 interface GenerateAllPendingButtonProps {
   items: PendingItem[];
+  imageMode?: string;
 }
 
-export function GenerateAllPendingButton({ items }: GenerateAllPendingButtonProps) {
+export function GenerateAllPendingButton({ items, imageMode = "prompt" }: GenerateAllPendingButtonProps) {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
   const router = useRouter();
@@ -44,7 +45,7 @@ export function GenerateAllPendingButton({ items }: GenerateAllPendingButtonProp
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ id: item.id }),
+          body: JSON.stringify({ id: item.id, imageMode }),
         });
 
         const data = await res.json();
