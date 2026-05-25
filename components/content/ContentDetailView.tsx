@@ -96,47 +96,55 @@ export function ContentDetailView({
                 />
               );
             })()}
+
+            {/* Bottom Call to Action for Downloading PDF */}
+            {content.type !== "BLOG" && (
+              <div className="mt-12 p-8 rounded-[2rem] border border-border bg-surface cinematic-shadow flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div className="max-w-md text-left">
+                  <h3 className="font-serif text-xl font-bold text-text">
+                    Get the Full Guide
+                  </h3>
+                  <p className="mt-2 text-sm text-text-muted">
+                    Download the complete PDF version including grocery lists and meal prep instructions for easy printing and offline reading.
+                  </p>
+                </div>
+                <div className="w-full sm:w-auto flex-shrink-0">
+                  {content.type === "CHEAT_SHEET" ? (
+                    <EmailCaptureForm
+                      source="cheatsheet"
+                      heading="Get the Free PDF"
+                      subheading="Instant download. No spam ever."
+                      buttonText="Download Free PDF"
+                      freebie={content.slug}
+                    />
+                  ) : (
+                    <DownloadGate content={content} />
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-8">
-              <div className="rounded-lg border border-border bg-secondary/50 p-6">
-                {content.type !== "BLOG" && (
-                  <>
-                    <h3 className="font-serif text-lg font-semibold text-foreground">
-                      Get the full guide
-                    </h3>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      Download the complete PDF including grocery lists and meal prep instructions.
-                    </p>
-                  </>
-                )}
-                <div className="mt-6 space-y-4">
+              {/* Quick Actions Card */}
+              <div className="rounded-2xl border border-border bg-surface/50 p-6 cinematic-shadow">
+                <h3 className="font-serif text-sm font-semibold text-text mb-4">
+                  Actions
+                </h3>
+                <div className="space-y-3">
                   <FavoriteButton 
                     contentId={content.id} 
                     initialFavorited={isFavorited}
                     variant="outline"
                     className="w-full"
                   />
-                  {content.type === "CHEAT_SHEET" ? (
-                    <div className="pt-2 border-t border-border/20">
-                      <EmailCaptureForm
-                        source="cheatsheet"
-                        heading="Get the Free PDF"
-                        subheading="Instant download. No spam ever."
-                        buttonText="Download Free PDF →"
-                        freebie={content.slug}
-                      />
-                    </div>
-                  ) : (
-                    content.type !== "BLOG" && <DownloadGate content={content} />
-                  )}
                   <ShareButton 
                     title={content.title} 
                     text={content.excerpt} 
                     variant="ghost"
-                    className="w-full text-muted-foreground"
+                    className="w-full text-muted-foreground hover:bg-secondary/15"
                   />
                 </div>
               </div>
