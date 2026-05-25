@@ -29,6 +29,13 @@ export async function POST(req: Request) {
       }
     });
 
+    if (data.type === "DIET_PLAN") {
+      const { processMealPlanDishes } = await import("@/lib/dishes-extractor");
+      processMealPlanDishes(content.id).catch(err => {
+        console.error("Failed to process meal plan dishes in background:", err);
+      });
+    }
+
     return NextResponse.json({ success: true, id: content.id }, { status: 201 });
   } catch (error: any) {
     console.error("Create content error:", error);

@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { DeleteContentButton } from "@/components/admin/DeleteContentButton";
+import { GenerateRecipeButton } from "@/components/admin/GenerateRecipeButton";
 import { Pagination } from "@/components/ui/Pagination";
 import { 
   FileText, 
@@ -12,8 +13,6 @@ import {
   Download, 
   BookOpen, 
   Sparkles,
-  Search,
-  Eye,
   CheckCircle,
   AlertCircle
 } from "lucide-react";
@@ -27,11 +26,24 @@ export default async function AdminContentPage({
 }) {
   const sParams = await searchParams;
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
+  const activeTab = typeof sParams.type === 'string' ? sParams.type.toLowerCase() : "all";
   const pageSize = 20;
   const skip = (page - 1) * pageSize;
 
-  const [contentItems, totalCount] = await Promise.all([
+  // Build query filter
+  const where: any = {};
+  if (activeTab === "all") {
+    where.type = { not: "PENDING_RECIPE" };
+  } else if (activeTab === "pending_recipe") {
+    where.type = "PENDING_RECIPE";
+  } else {
+    where.type = activeTab.toUpperCase();
+  }
+
+  // Get total counts for badge indicators
+  const [contentItems, totalCount, pendingCount] = await Promise.all([
     prisma.content.findMany({
+      where,
       orderBy: { createdAt: "desc" },
       take: pageSize,
       skip: skip,
@@ -47,13 +59,14 @@ export default async function AdminContentPage({
         }
       }
     }),
-    prisma.content.count()
+    prisma.content.count({ where }),
+    prisma.content.count({ where: { type: "PENDING_RECIPE" } })
   ]);
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 animate-fade-in">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 animate-fade-in pb-20">
       
       {/* Top Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-6">
@@ -79,6 +92,40 @@ export default async function AdminContentPage({
             </Button>
           </Link>
         </div>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-100 pb-px">
+        {[
+          { label: "All Content", value: "all" },
+          { label: "Recipes", value: "recipe" },
+          { label: "Diet Plans", value: "diet_plan" },
+          { label: "Cheat Sheets", value: "cheat_sheet" },
+          { label: "Blogs", value: "blog" },
+          { label: "Pending Recipes", value: "pending_recipe", count: pendingCount }
+        ].map(tab => {
+          const isActive = activeTab === tab.value;
+          const href = tab.value === "all" ? "/admin/content" : `/admin/content?type=${tab.value}`;
+          return (
+            <Link key={tab.value} href={href} className="inline-flex">
+              <button
+                type="button"
+                className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 rounded-t-xl flex items-center gap-1.5 ${
+                  isActive 
+                    ? "text-slate-900 border-slate-900 bg-slate-50/50" 
+                    : "text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-50/20"
+                }`}
+              >
+                {tab.label}
+                {tab.count !== undefined && tab.count > 0 && (
+                  <span className={`px-2 py-0.5 text-[9px] font-extrabold rounded-full ${isActive ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            </Link>
+          );
+        })}
       </div>
 
       {/* Main Table Grid Container */}
@@ -107,7 +154,7 @@ export default async function AdminContentPage({
                           {item.title}
                         </div>
                         <div className="text-xs text-slate-400 font-mono mt-1">
-                          /{item.type.toLowerCase()}/{item.slug}
+                          {item.type === "PENDING_RECIPE" ? "(Pending recipe)" : `/${item.type.toLowerCase().replace('_', '-')}/${item.slug}`}
                         </div>
                       </div>
                     </div>
@@ -116,13 +163,19 @@ export default async function AdminContentPage({
                     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase border ${
                       item.type === "RECIPE" 
                         ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
+                        : item.type === "PENDING_RECIPE"
+                        ? "bg-amber-50/40 text-amber-700 border-amber-100/50"
                         : "bg-blue-50 text-blue-700 border-blue-100"
                     }`}>
-                      {item.type}
+                      {item.type.replace('_', ' ')}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {item.published ? (
+                    {item.type === "PENDING_RECIPE" ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-100">
+                        Pending
+                      </span>
+                    ) : item.published ? (
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-green-50 text-green-700 border border-green-100">
                         <CheckCircle className="w-3.5 h-3.5" /> Published
                       </span>
@@ -135,25 +188,40 @@ export default async function AdminContentPage({
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-500">
                     <span className="flex items-center gap-1.5">
                       <Download className="w-4 h-4 text-slate-400" />
-                      {item._count.downloads.toLocaleString()}
+                      {item.type === "PENDING_RECIPE" ? "-" : item._count.downloads.toLocaleString()}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold">
                     <div className="flex items-center justify-end gap-3.5">
-                      <a 
-                        href={`/admin/content/${item.id}`} 
-                        className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all duration-200"
-                        title="Edit Content"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </a>
-                      <DeleteContentButton 
-                        id={item.id} 
-                        title={item.title}
-                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </DeleteContentButton>
+                      {item.type === "PENDING_RECIPE" ? (
+                        <>
+                          <GenerateRecipeButton id={item.id} title={item.title} />
+                          <DeleteContentButton 
+                            id={item.id} 
+                            title={item.title}
+                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </DeleteContentButton>
+                        </>
+                      ) : (
+                        <>
+                          <a 
+                            href={`/admin/content/${item.id}`} 
+                            className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all duration-200"
+                            title="Edit Content"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </a>
+                          <DeleteContentButton 
+                            id={item.id} 
+                            title={item.title}
+                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </DeleteContentButton>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -174,10 +242,8 @@ export default async function AdminContentPage({
       <Pagination 
         currentPage={page} 
         totalPages={totalPages} 
-        baseUrl="/admin/content"
+        baseUrl={activeTab === "all" ? "/admin/content" : `/admin/content?type=${activeTab}`}
       />
     </div>
   );
 }
-
-

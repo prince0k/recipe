@@ -55,6 +55,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       }
     });
 
+    if (content.type === "DIET_PLAN") {
+      const { processMealPlanDishes } = await import("@/lib/dishes-extractor");
+      processMealPlanDishes(content.id).catch(err => {
+        console.error("Failed to process meal plan dishes in background:", err);
+      });
+    }
+
     // Targeted revalidation for performance
     revalidatePath("/admin/content");
     revalidatePath("/recipes");
