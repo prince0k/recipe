@@ -46,3 +46,86 @@
     background: radial-gradient(circle, transparent 50%, rgba(44, 30, 17, 0.2) 100%);
   }
 }
+
+/* ==========================================================================
+   Premium Table Styles (Diet Plans, Meal Grids & Data Sheets)
+   ========================================================================== */
+.prose-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 2.5rem 0;
+  border-radius: 1rem;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 10px 25px -5px rgba(44, 30, 17, 0.08), 0 8px 10px -6px rgba(44, 30, 17, 0.04);
+  background-color: var(--color-surface);
+}
+
+.prose-table-wrapper table {
+  width: 100%;
+  min-width: 850px; /* Forces columns to maintain structure and breathing room */
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.prose-table-wrapper thead {
+  background-color: var(--color-text);
+  color: var(--color-background);
+}
+
+.prose-table-wrapper th {
+  padding: 1.25rem 1.25rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.prose-table-wrapper tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 0.2s ease;
+}
+
+.prose-table-wrapper tbody tr:last-child {
+  border-bottom: none;
+}
+
+.prose-table-wrapper tbody tr:nth-child(even) {
+  background-color: rgba(224, 212, 195, 0.15); /* Light cream tint matching the brand */
+}
+
+.prose-table-wrapper tbody tr:hover {
+  background-color: rgba(224, 212, 195, 0.35); /* Hover highlight */
+}
+
+.prose-table-wrapper td {
+  padding: 1.25rem 1.25rem;
+  vertical-align: top;
+  color: var(--color-text-muted);
+}
+
+/* Bold serif typography for Day column */
+.prose-table-wrapper td:first-child,
+.prose-table-wrapper th:first-child {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--color-text);
+  background-color: rgba(224, 212, 195, 0.25);
+  width: 90px;
+  text-align: center;
+  border-right: 1px solid var(--color-border);
+}
+
+/* Custom styling for Calories/Stats column */
+.prose-table-wrapper td:last-child,
+.prose-table-wrapper th:last-child {
+  font-weight: 600;
+  color: var(--color-primary);
+  text-align: center;
+  width: 100px;
+}
+

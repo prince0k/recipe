@@ -82,11 +82,20 @@ export function ContentDetailView({
         <div className="grid gap-12 lg:grid-cols-3">
           {/* Main Content */}
           <div className="lg:col-span-2">
-            <div
-              className="prose prose-neutral max-w-none prose-headings:font-serif prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 hover:prose-a:text-muted-foreground prose-p:leading-relaxed prose-p:text-gray-700"
-              style={{ fontSize: '1.125rem' }}
-              dangerouslySetInnerHTML={{ __html: content.body }}
-            />
+            {(() => {
+              const formattedBody = typeof content.body === "string"
+                ? content.body
+                    .replace(/<table/g, '<div class="prose-table-wrapper"><table')
+                    .replace(/<\/table>/g, "</table></div>")
+                : "";
+              return (
+                <div
+                  className="prose prose-neutral max-w-none prose-headings:font-serif prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 hover:prose-a:text-muted-foreground prose-p:leading-relaxed prose-p:text-gray-700"
+                  style={{ fontSize: '1.125rem' }}
+                  dangerouslySetInnerHTML={{ __html: formattedBody }}
+                />
+              );
+            })()}
           </div>
 
           {/* Sidebar */}
