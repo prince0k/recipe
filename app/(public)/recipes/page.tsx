@@ -9,6 +9,12 @@ import { Suspense } from "react";
 export const metadata: Metadata = {
   title: "Explore Recipes | Stewart Lucas",
   description: "Browse our collection of cinematic, moody, and budget-friendly home-cooked recipes.",
+  twitter: {
+    card: "summary_large_image",
+    title: "Explore Recipes | Stewart Lucas",
+    description: "Browse our collection of cinematic, moody, and budget-friendly home-cooked recipes.",
+    images: ["https://stewartlucas.com/assets/og-image.jpg"],
+  },
 };
 
 export default async function RecipesPage({

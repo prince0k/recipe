@@ -4,6 +4,12 @@ import { Button } from "@/components/ui/Button";
 export const metadata: Metadata = {
   title: "Contact Us | Stewart Lucas",
   description: "Get in touch with the Stewart Lucas team for collaborations, questions, or just to say hi.",
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Us | Stewart Lucas",
+    description: "Get in touch with the Stewart Lucas team for collaborations, questions, or just to say hi.",
+    images: ["https://stewartlucas.com/assets/og-image.jpg"],
+  },
 };
 
 export default function ContactPage() {

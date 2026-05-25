@@ -2,12 +2,24 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { AdBanner } from "@/components/ui/AdBanner";
+import type { Metadata } from "next";
 
 import { getFeaturedRecipes } from "@/lib/queries";
 import { Testimonials } from "@/components/home/Testimonials";
 import { EmailCaptureForm } from "@/components/ui/EmailCaptureForm";
 
 export const revalidate = 3600; // Revalidate every hour
+
+export const metadata: Metadata = {
+  title: "NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes",
+  description: "Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.",
+  twitter: {
+    card: "summary_large_image",
+    title: "NutriGuide by Stewart Lucas",
+    description: "Free science-backed diet plans and healthy recipes.",
+    images: ["https://stewartlucas.com/assets/og-image.jpg"],
+  },
+};
 
 export default async function Home() {
   const featuredRecipes = await getFeaturedRecipes();
@@ -42,63 +54,52 @@ export default async function Home() {
               Explore a collection of quick, budget-friendly, and healthy meals designed to make your home cooking journey effortless and cinematic.
             </p>
             
-            <div className="flex flex-col gap-6 max-w-md">
-              <Link href="/diet-plan" className="w-full">
-                <Button size="lg" className="w-full h-16 px-8 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-all shadow-xl hover:shadow-emerald-600/20 active:scale-98 text-base tracking-wide cursor-pointer">
-                  Get Your Free Personalized Meal Plan
-                </Button>
-              </Link>
-              
-              <div className="relative group">
-                <input 
-                  type="text" 
-                  placeholder="Or search recipes, ingredients..." 
-                  aria-label="Search recipes and ingredients"
-                  className="w-full h-12 pl-5 pr-14 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-primary transition-all group-hover:bg-white/15 text-sm"
-                  suppressHydrationWarning
-                />
-                <button 
-                  type="button"
-                  aria-label="Search recipes"
-                  className="absolute right-2 top-2 bottom-2 px-3 rounded-lg bg-white/10 hover:bg-white/25 text-white text-xs font-semibold transition-all cursor-pointer"
-                  suppressHydrationWarning
-                >
-                  Search
-                </button>
-              </div>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row max-w-md">
+              <a
+                href="/personalized"
+                className="rounded-xl bg-white px-6 py-3 text-sm font-semibold text-black transition hover:bg-white/90 text-center cursor-pointer shadow-lg active:scale-98"
+              >
+                Get My Free Meal Plan →
+              </a>
+              <a
+                href="/recipes"
+                className="rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10 text-center cursor-pointer active:scale-98"
+              >
+                Browse Recipes
+              </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Personalisation Hero Banner */}
-      <section className="py-20 px-4 border-t border-border/20 bg-surface/50">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          <span className="inline-block px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-xs font-bold tracking-widest uppercase">
-            ✨ AI-Powered — 100% Free
+      {/* AI Personalisation Banner — Browse by Category se pehle */}
+      <section className="border-t border-white/10 py-16 px-4 bg-slate-950 text-white">
+        <div className="mx-auto max-w-4xl text-center">
+          <span className="mb-4 inline-block text-xs font-semibold uppercase tracking-widest text-emerald-400">
+            ✨ Free · AI-Powered
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold font-serif text-text leading-tight">
+          <h2 className="mb-4 text-3xl font-semibold md:text-4xl">
             Your Personalised Meal Plan,<br />Built Around Your Life
           </h2>
-          <p className="text-text-muted text-base max-w-xl mx-auto leading-relaxed">
-            Tell us your goals, dietary needs, and schedule. Our AI builds a complete 
+          <p className="mx-auto mb-8 max-w-xl text-base text-white/60">
+            Tell us your goals, dietary needs, and schedule. Our AI builds a complete
             plan just for you — in under 60 seconds.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 text-xs font-bold text-olive/80">
-            <span className="px-3 py-1.5 rounded-full bg-olive/5 border border-olive/10">✓ Keto & Gluten-Free Friendly</span>
-            <span className="px-3 py-1.5 rounded-full bg-olive/5 border border-olive/10">✓ Budget-Conscious Options</span>
-            <span className="px-3 py-1.5 rounded-full bg-olive/5 border border-olive/10">✓ Ready in 15–30 Mins</span>
-            <span className="px-3 py-1.5 rounded-full bg-olive/5 border border-olive/10">✓ 100% Free</span>
+          <div className="mb-8 flex flex-wrap justify-center gap-6 text-sm text-white/50 font-medium">
+            <span>✓ Keto &amp; Gluten-Free friendly</span>
+            <span>✓ Budget-conscious options</span>
+            <span>✓ 15–30 minute meals</span>
+            <span>✓ 100% free</span>
           </div>
-          <div className="pt-4">
-            <Link href="/diet-plan">
-              <Button size="lg" className="px-10 py-5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-bold transition-all shadow-xl cursor-pointer">
-                Get My Free Personalised Plan →
-              </Button>
-            </Link>
-          </div>
+          <a
+            href="/personalized"
+            className="inline-block rounded-2xl bg-white px-8 py-4 text-sm font-semibold text-black transition hover:bg-white/90 shadow-xl cursor-pointer active:scale-98"
+          >
+            Get My Free Personalised Plan →
+          </a>
         </div>
       </section>
+
 
       {/* Categories Grid */}
       <section className="py-24 bg-background">
@@ -139,16 +140,6 @@ export default async function Home() {
             ))}
           </div>
         </div>
-      </section>
-
-      {/* Email Capture Section */}
-      <section className="py-16 bg-surface/30 px-4">
-        <EmailCaptureForm
-          source="homepage"
-          heading="Get Your Free 7-Day Meal Plan"
-          subheading="Join thousands getting science-backed recipes every week."
-          freebie="7-day-meal-plan"
-        />
       </section>
 
       <AdBanner placement="HOMEPAGE_BANNER" />
@@ -278,6 +269,16 @@ export default async function Home() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Email Capture Section */}
+      <section className="py-16 px-4 bg-slate-950 text-white border-t border-white/10">
+        <EmailCaptureForm
+          source="homepage"
+          heading="Get Your Free 7-Day Meal Plan"
+          subheading="Join thousands of home cooks getting weekly recipes, tips, and diet guides."
+          freebie="7-day-meal-plan"
+        />
       </section>
     </div>
   );

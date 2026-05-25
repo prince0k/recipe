@@ -6,6 +6,12 @@ import { Pagination } from "@/components/ui/Pagination";
 export const metadata: Metadata = {
   title: "Kitchen Stories | Stewart Lucas",
   description: "Articles on home cooking, kitchen techniques, and the cinematic life around the table.",
+  twitter: {
+    card: "summary_large_image",
+    title: "Kitchen Stories | Stewart Lucas",
+    description: "Articles on home cooking, kitchen techniques, and the cinematic life around the table.",
+    images: ["https://stewartlucas.com/assets/og-image.jpg"],
+  },
 };
 
 export default async function BlogPage({

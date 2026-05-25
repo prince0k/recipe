@@ -7,6 +7,12 @@ export const revalidate = 3600; // Revalidate every hour
 export const metadata: Metadata = {
   title: "Diet Plans | Stewart Lucas",
   description: "Structured meal plans for simplified home cooking and healthy living.",
+  twitter: {
+    card: "summary_large_image",
+    title: "Diet Plans | Stewart Lucas",
+    description: "Structured meal plans for simplified home cooking and healthy living.",
+    images: ["https://stewartlucas.com/assets/og-image.jpg"],
+  },
 };
 
 export default async function DietPlansPage() {

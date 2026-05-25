@@ -2,7 +2,7 @@ import React from 'react';
 
 interface RecipeSchemaProps {
   title: string;
-  description: string;
+  description?: string;
   image?: string;
   cookingTime?: string | number; // e.g. "45 mins" or 45
   servings?: number;

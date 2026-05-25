@@ -13,7 +13,7 @@ interface EmailCaptureFormProps {
 export function EmailCaptureForm({
   source = 'homepage',
   heading = 'Get Your Free 7-Day Meal Plan',
-  subheading = 'Join 10,000+ subscribers. Science-backed recipes, straight to your inbox.',
+  subheading = 'Join thousands getting science-backed recipes every week. No spam, ever.',
   buttonText = 'Send My Free Plan →',
   freebie = '7-day-meal-plan',
 }: EmailCaptureFormProps) {
@@ -46,7 +46,7 @@ export function EmailCaptureForm({
       const data = await res.json();
       if (res.ok) {
         setStatus('success');
-        setMessage('Check your inbox! Your free plan is on its way. 🎉');
+        setMessage('Check your inbox — your free plan is on its way!');
         setEmail('');
       } else {
         setStatus('error');
@@ -59,28 +59,26 @@ export function EmailCaptureForm({
   }
 
   return (
-    <div className="w-full max-w-xl mx-auto bg-[#231b15] border border-[#3c2e24] rounded-[2rem] p-8 md:p-10 shadow-2xl text-white">
-      <h3 className="text-2xl font-bold font-serif text-white mb-2">{heading}</h3>
-      <p className="text-sm text-white/70 mb-6 font-serif italic">{subheading}</p>
+    <div className="w-full max-w-xl mx-auto rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8">
+      <h3 className="mb-2 text-xl font-semibold text-white">{heading}</h3>
+      <p className="mb-5 text-sm text-white/60">{subheading}</p>
 
       {status === 'success' ? (
-        <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4 text-emerald-400">
-          <p className="text-sm font-bold text-center">{message}</p>
-        </div>
+        <p className="text-sm font-medium text-green-400">{message}</p>
       ) : (
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email address"
-            className="flex-grow px-5 py-4 rounded-xl bg-[#32271f] border border-[#4e3c2f] text-white placeholder-white/40 text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+            className="flex-1 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 focus:border-white/50 focus:outline-none"
           />
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition duration-200 disabled:opacity-50 whitespace-nowrap shadow-lg shadow-emerald-500/10 cursor-pointer active:scale-98"
+            className="whitespace-nowrap rounded-xl bg-white px-6 py-3 text-sm font-semibold text-black transition hover:bg-white/90 disabled:opacity-50 cursor-pointer"
           >
             {status === 'loading' ? 'Sending...' : buttonText}
           </button>
@@ -88,10 +86,10 @@ export function EmailCaptureForm({
       )}
 
       {status === 'error' && (
-        <p className="text-red-400 text-xs mt-3 font-semibold text-center">{message}</p>
+        <p className="mt-2 text-xs text-red-400">{message}</p>
       )}
 
-      <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold mt-4 text-center">No spam. Unsubscribe anytime.</p>
+      <p className="mt-3 text-xs text-white/30">No spam. Unsubscribe anytime.</p>
     </div>
   );
 }

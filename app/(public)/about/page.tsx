@@ -5,6 +5,12 @@ import { EmailCaptureForm } from "@/components/ui/EmailCaptureForm";
 export const metadata: Metadata = {
   title: "About Stewart Lucas | Home Cooking Simplified",
   description: "The story behind Stewart Lucas - a premium food blog dedicated to cinematic, budget-friendly home cooking.",
+  twitter: {
+    card: "summary_large_image",
+    title: "About Stewart Lucas | Home Cooking Simplified",
+    description: "The story behind Stewart Lucas - a premium food blog dedicated to cinematic, budget-friendly home cooking.",
+    images: ["https://stewartlucas.com/assets/stewart_lucas.png"],
+  },
 };
 
 export default function AboutPage() {
@@ -27,7 +33,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <div className="relative h-[700px] rounded-[3.5rem] overflow-hidden cinematic-shadow">
             <Image 
-              src="/assets/hero.png" 
+              src="/assets/stewart_lucas.png" 
               alt="Stewart Lucas Kitchen" 
               fill 
               className="object-cover"

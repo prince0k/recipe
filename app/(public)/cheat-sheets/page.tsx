@@ -6,6 +6,12 @@ import { Pagination } from "@/components/ui/Pagination";
 export const metadata: Metadata = {
   title: "Cheat Sheets | Stewart Lucas",
   description: "Quick, downloadable guides for simplified home cooking and kitchen mastery.",
+  twitter: {
+    card: "summary_large_image",
+    title: "Cheat Sheets | Stewart Lucas",
+    description: "Quick, downloadable guides for simplified home cooking and kitchen mastery.",
+    images: ["https://stewartlucas.com/assets/og-image.jpg"],
+  },
 };
 
 export default async function CheatSheetsPage({
