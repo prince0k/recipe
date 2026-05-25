@@ -130,7 +130,7 @@ IF struggle contains "cravings":
 
 IF struggle contains "time" OR prep time is under 20 mins:
 → Every meal must be achievable in ${leadData.time} or less
-→ Label each meal with a "⏱ X min" badge
+→ Label each meal with a "[Time] X min" badge
 → Add a "Sunday Prep Stack" section: 3 batch-cook items that power the whole week
 → Prioritize one-pan, one-pot, or no-cook meals
 
@@ -144,18 +144,18 @@ IF struggle contains "weight" OR goal contains "loss" OR "fat":
 → Add calorie estimates to every meal (realistic, specific numbers)
 → Include a weekly deficit math box: "At this intake, you create approximately X cal deficit"
 → Add "Portion Visual Guide": palm = protein, fist = carbs, thumb = fats
-→ Flag meals with a "🔥 Fat-Burn Friendly" badge
+→ Flag meals with a "[Fat-Burn Friendly]" badge
 
 IF struggle contains "energy" OR "fatigue" OR "bloating":
 → Add a "Energy Timeline" — how each meal affects energy 1–3 hours later
-→ Flag gut-friendly meals with "🌿 Gut Happy" badge
+→ Flag gut-friendly meals with "[Gut Happy]" badge
 → Include pre/probiotic foods in at least 3 meals
 → Add a "Morning Protocol" — what to do in first 30 minutes after waking
 
 IF diet is "Keto" OR "Low Carb":
 → Add net carb count to every meal
 → Include an "Electrolyte Reminder" box (sodium, potassium, magnesium)
-→ Flag each meal: "🟢 Keto Confirmed" if under 10g net carbs
+→ Flag each meal: "[Keto Confirmed]" if under 10g net carbs
 
 IF diet is "Vegan" OR "Vegetarian":
 → Add protein source callout on every meal
@@ -232,7 +232,7 @@ For EACH of the 7 days:
 
 ### 5. THIS WEEK'S SHOPPING LIST
 Grouped by category — quantities included:
-🥩 Proteins | 🥦 Produce | 🏺 Pantry | 🥛 Dairy/Alternatives
+Proteins | Produce | Pantry | Dairy/Alternatives
 Only include ingredients actually used in the 7-day plan above
 
 ---
@@ -269,6 +269,7 @@ OUTPUT FORMAT RULES
 - Max line length: 90 characters (print-friendly)
 - Minimum total length: 1,200 words
 - Maximum total length: 2,000 words
+- NEVER use emojis (such as clock, fire, leaves, green dots, meat, or vegetables) anywhere in the output. Keep it strictly textual.
 - Every section must feel written FOR ${userName} — not for a generic reader`;
 
     // 2. Call Gemini to generate the personalized plan with retries

@@ -76,9 +76,9 @@ export default async function Home() {
       <section className="border-t border-white/10 py-16 px-4 bg-slate-950 text-white">
         <div className="mx-auto max-w-4xl text-center">
           <span className="mb-4 inline-block text-xs font-semibold uppercase tracking-widest text-emerald-400">
-            ✨ Free · AI-Powered
+            Free · AI-Powered
           </span>
-          <h2 className="mb-4 text-3xl font-semibold md:text-4xl">
+          <h2 className="mb-4 text-3xl font-semibold md:text-4xl text-white">
             Your Personalised Meal Plan,<br />Built Around Your Life
           </h2>
           <p className="mx-auto mb-8 max-w-xl text-base text-white/60">

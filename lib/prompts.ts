@@ -120,8 +120,8 @@ LAYOUT REQUIREMENTS:
 - Badge labels (inline-block, border-radius: 4px, font-size: 12px):
     ✓ Do → background #D1FAE5, color #065F46
     ✗ Avoid → background #FEE2E2, color #991B1B
-    ⚡ Pro Tip → background #FEF3C7, color #92400E
-    ℹ Info → background #DBEAFE, color #1E40AF
+    Pro Tip → background #FEF3C7, color #92400E
+    Info → background #DBEAFE, color #1E40AF
 - Group items under <h3> sub-headings
 - "Common Mistakes" section: red-left-border (#EF4444), background #FFF5F5, each mistake one line only
 - All bullet points: ONE line maximum — this is a cheat sheet, not an essay
@@ -132,6 +132,7 @@ CRITICAL OUTPUT RULES:
 - Return ONLY a single valid JSON object — no markdown, no explanation, no code fences
 - All HTML must be inside the "body" field as a single escaped string
 - No line breaks or unescaped quotes inside JSON string values
+- Do NOT use any emojis anywhere in the generated HTML or text values
 - Validate that all JSON fields are present before returning
 
 Return this exact JSON structure:
@@ -187,7 +188,7 @@ YOUR GOAL SECTION:
 - Day 7 row gets a subtle highlight: left-border 3px solid #F59E0B (Finish Line indicator)
 
 WEEKLY SHOPPING LIST:
-- Grouped by: 🥩 Proteins | 🥦 Produce | 🏺 Pantry Staples | 🥛 Dairy & Alternatives
+- Grouped by: Proteins | Produce | Pantry Staples | Dairy & Alternatives
 - 2-column CSS grid layout
 - Each item on one line with approximate quantity
 
@@ -203,9 +204,9 @@ WHAT TO AVOID CALLOUT:
 
 PROGRESS CHECK SECTION:
 - Three milestone cards side-by-side (CSS flexbox):
-    🟡 Day 3: What to expect (energy, hunger, digestion)
-    🟠 Day 5: Visible changes and mental clarity signals
-    🟢 Day 7: Key results and how to continue
+    Day 3 Check: What to expect (energy, hunger, digestion)
+    Day 5 Check: Visible changes and mental clarity signals
+    Day 7 Check: Key results and how to continue
 
 FAQ SECTION:
 - 5 questions in <details><summary> accordion format
@@ -221,6 +222,7 @@ CRITICAL OUTPUT RULES:
 - All HTML must be inside the "body" field as a single escaped string
 - No unescaped quotes or raw line breaks inside any JSON string value
 - Calorie numbers must be consistent between the table and any mentions elsewhere
+- Do NOT use any emojis anywhere in the generated HTML or text values
 - Validate all 8 JSON fields are present before returning
 
 Return this exact JSON structure:
