@@ -12,9 +12,9 @@ export function RelatedContent({ items }: { items: any[] }) {
       </h3>
       
       {/* Bookshelf Container */}
-      <div className="bookshelf-container relative pt-10 pb-6">
-        {/* Books Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+      <div className="bookshelf-container relative pt-10 pb-6 overflow-hidden">
+        {/* Books Flex Container (Overlapping Books) */}
+        <div className="bookshelf-flex">
           {items.slice(0, 4).map((item) => (
             <Link 
               key={item.id} 
@@ -37,32 +37,32 @@ export function RelatedContent({ items }: { items: any[] }) {
                       src={item.coverImage}
                       alt={item.title}
                       fill
-                      sizes="(max-width: 768px) 50vw, 250px"
+                      sizes="(max-width: 640px) 110px, 170px"
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                       unoptimized={item.coverImage?.startsWith('/uploads')}
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center bg-primary/10">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-primary">
+                      <span className="text-[9px] uppercase font-bold tracking-widest text-primary">
                         {item.type.replace('_', ' ')}
                       </span>
                     </div>
                   )}
                 </div>
                 
-                {/* Book Cover Label (Bottom part) */}
-                <div className="p-4 flex-grow flex flex-col justify-between bg-surface">
+                {/* Book Cover Label */}
+                <div className="p-2 md:p-4 flex-grow flex flex-col justify-between bg-surface select-none">
                   <div>
-                    <span className="text-[9px] uppercase font-extrabold tracking-widest text-primary block mb-2">
+                    <span className="text-[8px] md:text-[9px] uppercase font-extrabold tracking-widest text-primary block mb-1">
                       {item.type.replace('_', ' ')}
                     </span>
-                    <h4 className="font-serif text-xs md:text-sm font-bold text-text group-hover:text-primary transition-colors line-clamp-3 leading-snug">
+                    <h4 className="font-serif text-[10px] md:text-sm font-bold text-text group-hover:text-primary transition-colors line-clamp-3 leading-tight md:leading-snug">
                       {item.title}
                     </h4>
                   </div>
                   
                   {/* Read indicator */}
-                  <div className="flex justify-end items-center mt-3 pt-2 border-t border-border/20">
+                  <div className="hidden md:flex justify-end items-center mt-2 pt-2 border-t border-border/20">
                     <span className="text-[9px] font-sans text-text-muted italic opacity-60">read guide →</span>
                   </div>
                 </div>
