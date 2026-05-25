@@ -1,7 +1,7 @@
 import { ContentDetailView } from "@/components/content/ContentDetailView";
 import { AdBanner } from "@/components/ui/AdBanner";
 import { prisma } from "@/lib/db";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import type { Metadata } from "next";
 
@@ -49,6 +49,10 @@ export async function generateMetadata(
 export default async function CheatSheetPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
   const session = await auth();
+
+  if (!session || !session.user) {
+    redirect(`/login?callbackUrl=/cheat-sheets/${params.slug}`);
+  }
 
   const content = await prisma.content.findUnique({
     where: { slug: params.slug, type: "CHEAT_SHEET" }

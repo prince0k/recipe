@@ -2,6 +2,8 @@ import { ContentCard } from "@/components/content/ContentCard";
 import { Metadata } from "next";
 import { getAllCheatSheets } from "@/lib/queries";
 import { Pagination } from "@/components/ui/Pagination";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Cheat Sheets | Stewart Lucas",
@@ -19,6 +21,11 @@ export default async function CheatSheetsPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const session = await auth();
+  if (!session || !session.user) {
+    redirect("/login?callbackUrl=/cheat-sheets");
+  }
+
   const sParams = await searchParams;
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
   const pageSize = 9;

@@ -1,8 +1,8 @@
 import { ContentCard } from "@/components/content/ContentCard";
 import { Metadata } from "next";
 import { getAllDietPlans } from "@/lib/queries";
-
-export const revalidate = 3600; // Revalidate every hour
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Diet Plans | Stewart Lucas",
@@ -16,6 +16,11 @@ export const metadata: Metadata = {
 };
 
 export default async function DietPlansPage() {
+  const session = await auth();
+  if (!session || !session.user) {
+    redirect("/login?callbackUrl=/diet-plan");
+  }
+
   const plans = await getAllDietPlans();
 
   return (
