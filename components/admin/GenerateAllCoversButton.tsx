@@ -26,7 +26,7 @@ export function GenerateAllCoversButton({ items }: GenerateAllCoversButtonProps)
     e.stopPropagation();
 
     const confirmed = confirm(
-      `Generate AI cover images for all ${items.length} draft items using Fal.ai Flux? This will process them one by one.`
+      `Generate AI cover images for all ${items.length} items using Fal.ai Flux? This will process them one by one.`
     );
     if (!confirmed) return;
 

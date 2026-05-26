@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { saveAndCompressImage } from "@/lib/image-utils";
+import { getGeminiResponse } from "@/lib/ai";
 
 export async function POST(req: Request) {
   try {
@@ -27,8 +28,42 @@ export async function POST(req: Request) {
 
     const falKey = process.env.FAL_KEY || "587f2f27-3da0-47fd-987e-053572ce7f8f:c41589d005b2f62dbde3b45c468f9cb5";
 
-    // 2. Determine prompt
-    const prompt = content.coverImagePrompt || `Professional food photography of ${content.title}, soft cinematic lighting, depth of field, high resolution`;
+    // 2. Determine prompt (generate dynamically using Gemini if missing)
+    let prompt = content.coverImagePrompt;
+    if (!prompt || prompt.trim() === "") {
+      try {
+        const aiPrompt = `
+          You are a professional art director and AI image prompting expert.
+          Generate a single, detailed, highly descriptive cover image prompt for a ${content.type.toLowerCase().replace('_', ' ')} titled "${content.title}".
+          
+          Here is the description/excerpt of the content:
+          "${content.excerpt || content.body?.substring(0, 500)}"
+          
+          Create a cinematic, warm-toned, premium quality food/wellness photography image prompt.
+          Describe composition, lighting (soft natural light, golden hour, moody shadows), specific ingredients or props matching the theme, background textures, color palette, camera angle, and high-resolution details.
+          
+          Do NOT include any introduction, explanations, formatting or markdown. Output ONLY the raw prompt string.
+          The prompt must be suitable for an image generator (e.g. Flux, Midjourney) and must NOT ask for text overlays.
+        `;
+        console.log(`Generating cover image prompt via Gemini for: "${content.title}"`);
+        const generatedPrompt = await getGeminiResponse(aiPrompt);
+        if (generatedPrompt && generatedPrompt.trim().length > 0) {
+          prompt = generatedPrompt.trim();
+          // Update in DB so it's saved for future reference!
+          await prisma.content.update({
+            where: { id },
+            data: { coverImagePrompt: prompt }
+          });
+          console.log(`Saved generated cover prompt: "${prompt}"`);
+        }
+      } catch (e: any) {
+        console.warn("Failed to generate cover prompt using Gemini, using fallback:", e.message);
+      }
+    }
+
+    if (!prompt) {
+      prompt = `Professional food photography of ${content.title}, soft cinematic lighting, depth of field, high resolution`;
+    }
 
     // 3. Call Fal.ai API
     console.log(`Generating cover image for "${content.title}" using flux/schnell...`);

@@ -44,10 +44,12 @@ export default async function AdminContentPage({
     where.type = "PENDING_RECIPE";
   } else if (activeTab === "pending_image") {
     where.type = { not: "PENDING_RECIPE" };
-    where.published = false;
     where.OR = [
       { coverImage: null },
-      { coverImage: "" }
+      { coverImage: "" },
+      { coverImage: { contains: "unsplash.com" } },
+      { coverImage: { contains: "hero.png" } },
+      { coverImage: { contains: "placeholder" } }
     ];
   } else {
     where.type = activeTab.toUpperCase();
@@ -81,20 +83,24 @@ export default async function AdminContentPage({
     prisma.content.count({
       where: {
         type: { not: "PENDING_RECIPE" },
-        published: false,
         OR: [
           { coverImage: null },
-          { coverImage: "" }
+          { coverImage: "" },
+          { coverImage: { contains: "unsplash.com" } },
+          { coverImage: { contains: "hero.png" } },
+          { coverImage: { contains: "placeholder" } }
         ]
       }
     }),
     prisma.content.findMany({
       where: {
         type: { not: "PENDING_RECIPE" },
-        published: false,
         OR: [
           { coverImage: null },
-          { coverImage: "" }
+          { coverImage: "" },
+          { coverImage: { contains: "unsplash.com" } },
+          { coverImage: { contains: "hero.png" } },
+          { coverImage: { contains: "placeholder" } }
         ]
       },
       select: { id: true, title: true }
