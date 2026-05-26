@@ -61,8 +61,8 @@ const customMarkdownComponents = {
 export function PersonalizedClientView({ request }: PersonalizedClientViewProps) {
   const [activeTab, setActiveTab] = useState(0);
 
-  // Parse markdown into distinct pages
-  const rawSections = (request.generatedContent || "").split(/(?=^(?:###|##|#)?\s*(?:\*\*|__)?\d+[\.:]\s)/m);
+  // Parse markdown into distinct pages based on the 8 main uppercase headings
+  const rawSections = (request.generatedContent || "").split(/(?=^(?:###|##|#)?\s*(?:\*\*|__)?\d+[\.:]\s*(?:\*\*|__)?[^a-z\n]+(?:\*\*|__)?\s*$)/m);
   
   let intro = "";
   let sections: { title: string; content: string }[] = [];
@@ -71,19 +71,24 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
     const trimmed = sec.trim();
     if (!trimmed) return;
 
-    // Check if this part starts with a section number
-    const match = trimmed.match(/^(?:###|##|#)?\s*(?:\*\*|__)?(\d+)[\.:]\s*(.*)/);
+    // Get the first line of the section to verify if it is a main heading
+    const firstLine = trimmed.split("\n")[0].trim();
+    const match = firstLine.match(/^(?:###|##|#)?\s*(?:\*\*|__)?(\d+)[\.:]\s*(?:\*\*|__)?([^a-z]+)(?:\*\*|__)?$/);
+
     if (match) {
       const num = parseInt(match[1]);
-      const titleLine = match[2].split("\n")[0] || "";
-      const cleanTitle = titleLine.replace(/\*|_/g, "").trim();
+      const cleanTitle = match[2].replace(/\*|_/g, "").trim();
       sections.push({
         title: cleanTitle || `Page ${num}`,
         content: trimmed
       });
     } else {
-      // If it doesn't match a section header, it's intro text
-      intro = trimmed;
+      // If it doesn't match a main section header, it's intro text
+      if (sections.length > 0) {
+        sections[sections.length - 1].content += "\n\n" + trimmed;
+      } else {
+        intro = trimmed;
+      }
     }
   });
 
