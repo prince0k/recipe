@@ -67,8 +67,8 @@ export async function POST(req: Request) {
 
     console.log(`[subscribe] New subscriber: ${email} | ${geo.country}/${geo.city} | ${ua.browser} ${ua.browserVersion} | ${ua.deviceType} | IP: ${ip}`);
 
-    // ─── Track Download if it's a cheatsheet ──────────────────────────
-    if (referrer === 'cheatsheet' && pageUrl) {
+    // ─── Track Download if a specific freebie/lead magnet is requested ──────────
+    if (pageUrl) {
       const content = await prisma.content.findUnique({
         where: { slug: pageUrl }
       });
@@ -80,12 +80,12 @@ export async function POST(req: Request) {
             ipAddress: ip,
             userAgent: rawUserAgent,
             isAnon: false,
-            source: 'cheatsheet',
+            source: referrer || 'direct',
           }
         });
-        console.log(`[subscribe] Logged cheatsheet download for user ${user.id}, content ${content.id}`);
+        console.log(`[subscribe] Logged download for user ${user.id}, content ${content.id}, source ${referrer || 'direct'}`);
       } else {
-        console.warn(`[subscribe] Content not found for slug: ${pageUrl}`);
+        console.warn(`[subscribe] Download content not found for slug: ${pageUrl}`);
       }
     }
 

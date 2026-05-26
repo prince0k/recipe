@@ -36,6 +36,9 @@ export async function generateMetadata(
     title,
     description,
     keywords: parsedTags,
+    alternates: {
+      canonical: `/cheat-sheets/${slug}`,
+    },
     openGraph: {
       title: content.title,
       description,

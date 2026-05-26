@@ -23,7 +23,7 @@ export default function AboutPage() {
             <span className="text-primary font-bold tracking-widest uppercase text-xs mb-4 block">Our Story</span>
             <h1 className="text-5xl md:text-6xl font-bold text-text mb-8">Home Cooking <br /><span className="text-primary">for Everyone.</span></h1>
             <p className="text-xl text-text-muted font-serif italic leading-relaxed">
-              "I believe that every meal shared at home is an opportunity to create a cinematic memory, regardless of your budget or skill level."
+              "I believe that every meal shared at home is an opportunity to create a lasting memory, regardless of your budget or skill level."
             </p>
           </div>
         </div>
@@ -43,9 +43,9 @@ export default function AboutPage() {
           </div>
           <div className="space-y-10">
             <div>
-              <h2 className="text-3xl font-bold text-text mb-6">Simple, Honest, & Moody.</h2>
+              <h2 className="text-3xl font-bold text-text mb-6">Simple, Honest, & Authentic.</h2>
               <p className="text-lg text-text-muted leading-relaxed mb-6">
-                Stewart Lucas started in a small kitchen with a big dream: to make home cooking feel as beautiful as it tastes. We focus on real ingredients, simple techniques, and the moody, cinematic lighting that makes every dish look like a piece of art.
+                Stewart Lucas started in a small kitchen with a big dream: to make home cooking feel as beautiful as it tastes. We focus on real ingredients, simple techniques, and the warm, welcoming atmosphere that makes every dish feel like a piece of art.
               </p>
               <p className="text-lg text-text-muted leading-relaxed">
                 Our mission is to empower you to cook delicious, healthy, and budget-friendly meals without the stress. From 15-minute weeknight pasta to slow-cooked Sunday roasts, we're here to guide you every step of the way.

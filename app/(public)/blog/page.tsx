@@ -12,7 +12,7 @@ export async function generateMetadata({
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
 
   let title = "Kitchen Stories | Stewart Lucas";
-  let description = "Articles on home cooking, kitchen techniques, and the cinematic life around the table.";
+  let description = "Articles on home cooking, kitchen techniques, and the simple joy around the table.";
   
   if (page > 1) {
     title += ` - Page ${page}`;
@@ -25,6 +25,9 @@ export async function generateMetadata({
     metadataBase: new URL('https://stewartlucas.com'),
     title,
     description,
+    alternates: {
+      canonical: `/blog${page > 1 ? `?page=${page}` : ""}`,
+    },
     openGraph: {
       title,
       description,

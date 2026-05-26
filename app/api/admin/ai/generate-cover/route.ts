@@ -39,8 +39,8 @@ export async function POST(req: Request) {
           Here is the description/excerpt of the content:
           "${content.excerpt || content.body?.substring(0, 500)}"
           
-          Create a cinematic, warm-toned, premium quality food/wellness photography image prompt.
-          Describe composition, lighting (soft natural light, golden hour, moody shadows), specific ingredients or props matching the theme, background textures, color palette, camera angle, and high-resolution details.
+          Create a professional, warm-toned, premium quality food/wellness photography image prompt.
+          Describe composition, lighting (soft natural light, golden hour, soft shadows), specific ingredients or props matching the theme, background textures, color palette, camera angle, and high-resolution details.
           
           Do NOT include any introduction, explanations, formatting or markdown. Output ONLY the raw prompt string.
           The prompt must be suitable for an image generator (e.g. Flux, Midjourney) and must NOT ask for text overlays.
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
     }
 
     if (!prompt) {
-      prompt = `Professional food photography of ${content.title}, soft cinematic lighting, depth of field, high resolution`;
+      prompt = `Professional food photography of ${content.title}, soft natural lighting, depth of field, high resolution`;
     }
 
     // 3. Call Fal.ai API

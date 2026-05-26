@@ -16,7 +16,7 @@ export async function generateMetadata({
   const category = typeof sParams.category === 'string' ? sParams.category : undefined;
 
   let title = "Explore Recipes | Stewart Lucas";
-  let description = "Browse our collection of cinematic, moody, and budget-friendly home-cooked recipes.";
+  let description = "Browse our collection of healthy, delicious, and budget-friendly home-cooked recipes.";
   
   if (category) {
     const catName = category.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
@@ -35,6 +35,9 @@ export async function generateMetadata({
     metadataBase: new URL('https://stewartlucas.com'),
     title,
     description,
+    alternates: {
+      canonical: `/recipes${category ? `?category=${category}` : ""}${page > 1 ? `${category ? '&' : '?'}page=${page}` : ""}`,
+    },
     openGraph: {
       title,
       description,
@@ -82,7 +85,7 @@ export default async function RecipesPage({
           <span className="text-primary font-bold tracking-widest uppercase text-xs mb-4 block">Handpicked Collection</span>
           <h1 className="text-5xl md:text-6xl font-bold text-text mb-6">Our Recipes</h1>
           <p className="text-xl text-text-muted font-serif italic max-w-2xl mx-auto">
-            From 15-minute quick fixes to slow-roasted weekend feasts. Every recipe is a cinematic experience.
+            From 15-minute quick fixes to slow-roasted weekend feasts. Every recipe is crafted for real life.
           </p>
         </div>
       </div>

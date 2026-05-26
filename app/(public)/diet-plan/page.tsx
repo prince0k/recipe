@@ -26,6 +26,9 @@ export async function generateMetadata({
     metadataBase: new URL('https://stewartlucas.com'),
     title,
     description,
+    alternates: {
+      canonical: `/diet-plan${page > 1 ? `?page=${page}` : ""}`,
+    },
     openGraph: {
       title,
       description,

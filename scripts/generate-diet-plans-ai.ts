@@ -67,7 +67,7 @@ async function main() {
         .replace(/(^-|-$)+/g, "") + "-" + Math.random().toString(36).substring(2, 7);
 
       // Generate cover image via Pollinations first as a placeholder, then we'll localize/compress it!
-      const cleanPrompt = (data.coverImagePrompt || `Professional food photography of ${topic}, cinematic lighting, healthy dining`)
+      const cleanPrompt = (data.coverImagePrompt || `Professional food photography of ${topic}, professional lighting, healthy dining`)
         .replace(/[^a-zA-Z0-9 ,.'\-]/g, "")
         .slice(0, 300);
       const seed = Math.floor(Math.random() * 999999);

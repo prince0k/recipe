@@ -23,6 +23,9 @@ export async function generateMetadata(
     metadataBase: new URL('https://stewartlucas.com'),
     title,
     description,
+    alternates: {
+      canonical: `/blog/${slug}`,
+    },
     openGraph: {
       title: content.title,
       description,

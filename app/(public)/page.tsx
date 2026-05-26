@@ -96,7 +96,7 @@ export default async function Home() {
         <div className="absolute inset-0 z-0">
           <Image
             src="/assets/hero.webp"
-            alt="Cinematic home-cooked meal"
+            alt="Beautiful home-cooked meal"
             fill
             className="object-cover scale-105"
             priority
@@ -132,7 +132,7 @@ export default async function Home() {
                   "Welcome to your personalized workspace. Let's build a customized diet plan tailored to your lifestyle."
                 )
               ) : (
-                "Explore a collection of quick, budget-friendly, and healthy meals designed to make your home cooking journey effortless and cinematic."
+                "Explore a collection of quick, budget-friendly, and healthy meals designed to make your home cooking journey effortless and inspiring."
               )}
             </p>
             
@@ -496,7 +496,7 @@ export default async function Home() {
                 One Simple Meal at a Time.
               </h2>
               <p className="text-lg text-text-muted mb-6 leading-relaxed font-serif italic">
-                "I believe that good food shouldn't be complicated or expensive. NutriGuide by Stewart Lucas is born from a passion for home cooking that celebrates real ingredients and cinematic moments around the table."
+                "I believe that good food shouldn't be complicated or expensive. NutriGuide by Stewart Lucas is born from a passion for home cooking that celebrates real ingredients and memorable moments around the table."
               </p>
               <p className="text-base text-text-muted mb-10 leading-relaxed">
                 Whether you're a busy professional looking for a 15-minute dinner or a home cook wanting to impress with a weekend feast, our recipes are designed to fit your life and your budget.
@@ -513,9 +513,10 @@ export default async function Home() {
       <section className="py-16 px-4 bg-slate-950 text-white border-t border-white/10">
         <EmailCaptureForm
           source="homepage"
-          heading="Get Your Free 7-Day Meal Plan"
-          subheading="Join thousands of home cooks getting weekly recipes, tips, and diet guides."
-          freebie="7-day-meal-plan"
+          heading="Download the Anti-Inflammatory Meal Prep & Grocery Guide (PDF)"
+          subheading="Get Stewart's science-backed 7-day anti-inflammatory diet plan, kitchen hacks, and printable grocery checklist sent directly to your inbox."
+          buttonText="Download Free Guide (PDF)"
+          freebie="anti-inflammatory-grocery-list"
         />
       </section>
     </div>
