@@ -7,11 +7,32 @@ const CATEGORIES = ["Quick Recipes", "Healthy Eating", "Budget Friendly", "Break
 const TIMES = ["Under 15 mins", "15-30 mins", "30-60 mins", "1 hour+"];
 const DIETARY = ["Vegetarian", "Vegan", "Gluten Free", "Dairy Free"];
 
+const CATEGORY_MAP: Record<string, string> = {
+  "quick-recipes": "Quick Recipes",
+  "healthy-eating": "Healthy Eating",
+  "budget-friendly": "Budget Friendly",
+  "dinner-ideas": "Dinner",
+  "dinner": "Dinner",
+  "breakfast": "Breakfast",
+  "lunch": "Lunch",
+};
+
+const toSlug = (name: string) => {
+  return name.toLowerCase().replace(/\s+/g, "-");
+};
+
+const getCategoryDisplayName = (slug: string | null) => {
+  if (!slug) return "";
+  return CATEGORY_MAP[slug] || slug;
+};
+
 export function RecipeFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "");
+  const [selectedCategory, setSelectedCategory] = useState(
+    getCategoryDisplayName(searchParams.get("category"))
+  );
   const [selectedTime, setSelectedTime] = useState(searchParams.get("time") || "");
   const [selectedDietary, setSelectedDietary] = useState<string[]>(
     searchParams.get("dietary")?.split(",") || []
@@ -19,7 +40,7 @@ export function RecipeFilters() {
 
   // Sync state with URL when it changes
   useEffect(() => {
-    setSelectedCategory(searchParams.get("category") || "");
+    setSelectedCategory(getCategoryDisplayName(searchParams.get("category")));
     setSelectedTime(searchParams.get("time") || "");
     setSelectedDietary(searchParams.get("dietary")?.split(",") || []);
   }, [searchParams]);
@@ -65,7 +86,7 @@ export function RecipeFilters() {
                 onChange={() => {
                   const val = selectedCategory === cat ? "" : cat;
                   setSelectedCategory(val);
-                  updateFilters({ category: val });
+                  updateFilters({ category: val ? toSlug(val) : null });
                 }}
                 className="w-4 h-4 rounded-full border-border text-primary focus:ring-primary mr-3" 
               />

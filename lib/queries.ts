@@ -36,16 +36,141 @@ export const getFeaturedRecipes = unstable_cache(
   { revalidate: 3600, tags: ["content", "recipes"] }
 );
 
+
+function getCategoryFilter(category: string): any {
+  const catLower = category.toLowerCase();
+  
+  if (catLower === "quick-recipes" || catLower === "quick recipes") {
+    return {
+      OR: [
+        { tags: { contains: "quick" } },
+        { tags: { contains: "easy" } },
+        { tags: { contains: "one-pan" } },
+        { tags: { contains: "sheet-pan" } },
+        { tags: { contains: "breakfast" } },
+        { tags: { contains: "meal-prep" } },
+        { tags: { contains: "fast" } }
+      ]
+    };
+  }
+  
+  if (catLower === "healthy-eating" || catLower === "healthy eating") {
+    return {
+      OR: [
+        { tags: { contains: "healthy" } },
+        { tags: { contains: "nutrition" } },
+        { tags: { contains: "plant-based" } },
+        { tags: { contains: "vegan" } },
+        { tags: { contains: "vegetarian" } },
+        { tags: { contains: "gluten-free" } },
+        { tags: { contains: "low-carb" } },
+        { tags: { contains: "sugar-free" } },
+        { tags: { contains: "fiber" } },
+        { tags: { contains: "wellness" } },
+        { tags: { contains: "gut-health" } },
+        { tags: { contains: "biohacking" } }
+      ]
+    };
+  }
+  
+  if (catLower === "budget-friendly" || catLower === "budget friendly" || catLower === "budget") {
+    return {
+      OR: [
+        { tags: { contains: "budget" } },
+        { tags: { contains: "inflation-proof" } },
+        { tags: { contains: "cheap" } },
+        { tags: { contains: "pantry" } }
+      ]
+    };
+  }
+  
+  if (catLower === "dinner-ideas" || catLower === "dinner ideas" || catLower === "dinner") {
+    return {
+      OR: [
+        { tags: { contains: "dinner" } },
+        { tags: { contains: "roast" } },
+        { tags: { contains: "bowl" } },
+        { tags: { contains: "skillet" } },
+        { tags: { contains: "main" } },
+        { tags: { contains: "lunch" } },
+        { tags: { contains: "meal" } }
+      ]
+    };
+  }
+
+  if (catLower === "breakfast") {
+    return {
+      OR: [
+        { tags: { contains: "breakfast" } },
+        { tags: { contains: "smoothie" } },
+        { tags: { contains: "loaf" } },
+        { tags: { contains: "baking" } },
+        { tags: { contains: "skillet" } }
+      ]
+    };
+  }
+
+  if (catLower === "lunch") {
+    return {
+      OR: [
+        { tags: { contains: "lunch" } },
+        { tags: { contains: "bowl" } },
+        { tags: { contains: "skillet" } },
+        { tags: { contains: "salad" } },
+        { tags: { contains: "soup" } }
+      ]
+    };
+  }
+  
+  return { tags: { contains: category } };
+}
+
+function getDietaryFilter(diet: string): any {
+  const dLower = diet.toLowerCase();
+  if (dLower === "gluten free" || dLower === "gluten-free") {
+    return {
+      OR: [
+        { tags: { contains: "gluten free" } },
+        { tags: { contains: "gluten-free" } }
+      ]
+    };
+  }
+  if (dLower === "dairy free" || dLower === "dairy-free") {
+    return {
+      OR: [
+        { tags: { contains: "dairy free" } },
+        { tags: { contains: "dairy-free" } }
+      ]
+    };
+  }
+  if (dLower === "vegan") {
+    return {
+      OR: [
+        { tags: { contains: "vegan" } }
+      ]
+    };
+  }
+  if (dLower === "vegetarian") {
+    return {
+      OR: [
+        { tags: { contains: "vegetarian" } },
+        { tags: { contains: "plant-based" } }
+      ]
+    };
+  }
+  return { tags: { contains: diet } };
+}
+
 export const getAllRecipes = unstable_cache(
   async (category?: string, page: number = 1, pageSize: number = 12) => {
     const skip = (page - 1) * pageSize;
-    
+
     const [data, totalCount] = await Promise.all([
       prisma.content.findMany({
         where: { 
           type: "RECIPE",
           published: true,
-          ...(category ? { tags: { contains: category } } : {}),
+          ...(category ? getCategoryFilter(category) : {}),
         },
         orderBy: { createdAt: "desc" },
         take: pageSize,
@@ -66,7 +191,7 @@ export const getAllRecipes = unstable_cache(
         where: { 
           type: "RECIPE",
           published: true,
-          ...(category ? { tags: { contains: category } } : {}),
+          ...(category ? getCategoryFilter(category) : {}),
         }
       })
     ]);
@@ -91,9 +216,16 @@ export async function getCachedRecipes(
   sort: string = 'newest'
 ) {
   const fetcher = unstable_cache(
-    async (cat?: string, p: number = 1, ps: number = 12, t?: string, diet?: string | string[], s: string = 'newest') => {
+    async (
+      cat?: string,
+      p: number = 1,
+      ps: number = 12,
+      t?: string,
+      diet?: string | string[],
+      s: string = 'newest'
+    ) => {
       const skip = (p - 1) * ps;
-      
+
       // Build filters
       const where: any = { 
         type: "RECIPE",
@@ -102,23 +234,19 @@ export async function getCachedRecipes(
 
       // Category filter
       if (cat) {
-        where.tags = { contains: cat };
+        Object.assign(where, getCategoryFilter(cat));
       }
 
       // Dietary filter (can be multiple)
       const diets = Array.isArray(diet) ? diet : diet ? [diet] : [];
       if (diets.length > 0) {
-        where.AND = diets.map(d => ({
-          tags: { contains: d }
-        }));
+        where.AND = diets.map(d => getDietaryFilter(d));
       }
 
       // Time filter (simplified mapping for now)
       if (t) {
         if (t === "Under 15 mins") where.cookingTime = { contains: "1" }; // Matches 10, 15 etc. brittle but works for now
         else if (t === "15-30 mins") where.cookingTime = { contains: "2" }; 
-        // Note: This is brittle. A better way is numeric field.
-        // For now, let's at least try to match tags or generic strings
       }
 
       // Sorting
@@ -132,21 +260,21 @@ export async function getCachedRecipes(
           orderBy,
           take: ps,
           skip: skip,
-            select: {
-              id: true,
-              title: true,
-              slug: true,
-              excerpt: true,
-              coverImage: true,
-              tags: true,
-              cookingTime: true,
-              difficulty: true,
-              type: true,
-              reviews: {
-                where: { isApproved: true },
-                select: { rating: true },
-              },
-            }
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            excerpt: true,
+            coverImage: true,
+            tags: true,
+            cookingTime: true,
+            difficulty: true,
+            type: true,
+            reviews: {
+              where: { isApproved: true },
+              select: { rating: true },
+            },
+          }
         }),
         prisma.content.count({ where })
       ]);
