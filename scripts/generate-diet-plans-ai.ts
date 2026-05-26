@@ -8,7 +8,7 @@ dotenv.config();
 
 const prisma = new PrismaClient();
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || "AIzaSyAXIx2fJ2WUJy04mYqKqAitxALJlKMTEO4",
+  apiKey: process.env.GEMINI_API_KEY,
 });
 
 const topics = [
