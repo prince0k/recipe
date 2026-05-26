@@ -32,6 +32,7 @@ export async function generateMetadata({
   const url = `https://stewartlucas.com/recipes${page > 1 ? `?page=${page}` : ""}`;
 
   return {
+    metadataBase: new URL('https://stewartlucas.com'),
     title,
     description,
     openGraph: {
@@ -41,7 +42,7 @@ export async function generateMetadata({
       url,
       images: [
         {
-          url: "https://stewartlucas.com/assets/og-image.jpg",
+          url: "/assets/og-image.jpg",
           width: 1200,
           height: 630,
           alt: "Stewart Lucas Recipes",
@@ -52,7 +53,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: ["https://stewartlucas.com/assets/og-image.jpg"],
+      images: ["/assets/og-image.jpg"],
     },
   };
 }

@@ -25,27 +25,26 @@ export async function generateMetadata(
   const title = content.seoTitle || `${content.title} | NutriGuide by Stewart Lucas`;
   const description = content.seoDesc || content.excerpt?.slice(0, 155) || 'Discover this delicious recipe from NutriGuide.';
 
-  const imageUrl = content.coverImage
-    ? (content.coverImage.startsWith('http')
-        ? content.coverImage
-        : `https://stewartlucas.com${content.coverImage}`)
-    : 'https://stewartlucas.com/assets/og-image.jpg';
+  const cleanCover = content.coverImage
+    ? content.coverImage.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/g, '')
+    : '/assets/og-image.jpg';
 
   return {
+    metadataBase: new URL('https://stewartlucas.com'),
     title,
     description,
     keywords: parsedTags,
     openGraph: {
       title: content.title,
       description,
-      images: [{ url: imageUrl }],
+      images: [{ url: cleanCover }],
       type: 'article',
     },
     twitter: {
       card: 'summary_large_image',
       title: content.title,
       description,
-      images: [imageUrl],
+      images: [cleanCover],
     },
   };
 }
@@ -136,11 +135,13 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     return undefined;
   })();
 
-  const baseImageUrl = recipe.coverImage
-    ? (recipe.coverImage.startsWith('http')
-        ? recipe.coverImage
-        : `https://stewartlucas.com${recipe.coverImage}`)
-    : 'https://stewartlucas.com/assets/og-image.jpg';
+  const cleanRecipeCover = recipe.coverImage
+    ? recipe.coverImage.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/g, '')
+    : '/assets/og-image.jpg';
+
+  const baseImageUrl = cleanRecipeCover.startsWith('http')
+    ? cleanRecipeCover
+    : `https://stewartlucas.com${cleanRecipeCover}`;
 
   let schemaJson = null;
   if (recipe.schema) {

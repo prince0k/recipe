@@ -15,26 +15,25 @@ export async function generateMetadata(
   const title = content.seoTitle || `${content.title} | Free Diet Plans by Stewart Lucas`;
   const description = content.seoDesc || content.excerpt?.slice(0, 155) || 'Free science-backed diet plan from NutriGuide.';
 
-  const imageUrl = content.coverImage
-    ? (content.coverImage.startsWith('http')
-        ? content.coverImage
-        : `https://stewartlucas.com${content.coverImage}`)
-    : 'https://stewartlucas.com/assets/og-image.jpg';
+  const cleanCover = content.coverImage
+    ? content.coverImage.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/g, '')
+    : '/assets/og-image.jpg';
 
   return {
+    metadataBase: new URL('https://stewartlucas.com'),
     title,
     description,
     openGraph: {
       title: content.title,
       description,
-      images: [{ url: imageUrl }],
+      images: [{ url: cleanCover }],
       type: 'article',
     },
     twitter: {
       card: 'summary_large_image',
       title: content.title,
       description,
-      images: [imageUrl],
+      images: [cleanCover],
     },
   };
 }
