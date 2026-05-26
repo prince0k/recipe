@@ -55,6 +55,35 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/blog/:slug*(kings-island|kfc|cincinnati|weather|greenland|frost-bank)",
+        destination: "/blog",
+        permanent: true,
+      },
+      {
+        source: "/blog/:slug*-kings-island",
+        destination: "/blog",
+        permanent: true,
+      },
+      {
+        source: "/blog/:slug*-kfc",
+        destination: "/blog",
+        permanent: true,
+      },
+      {
+        source: "/blog/:slug*-cincinnati",
+        destination: "/blog",
+        permanent: true,
+      },
+      {
+        source: "/blog/:slug*-weather",
+        destination: "/blog",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
