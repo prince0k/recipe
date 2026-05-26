@@ -67,6 +67,28 @@ export async function POST(req: Request) {
 
     console.log(`[subscribe] New subscriber: ${email} | ${geo.country}/${geo.city} | ${ua.browser} ${ua.browserVersion} | ${ua.deviceType} | IP: ${ip}`);
 
+    // ─── Track Download if it's a cheatsheet ──────────────────────────
+    if (referrer === 'cheatsheet' && pageUrl) {
+      const content = await prisma.content.findUnique({
+        where: { slug: pageUrl }
+      });
+      if (content) {
+        await prisma.download.create({
+          data: {
+            userId: user.id,
+            contentId: content.id,
+            ipAddress: ip,
+            userAgent: rawUserAgent,
+            isAnon: false,
+            source: 'cheatsheet',
+          }
+        });
+        console.log(`[subscribe] Logged cheatsheet download for user ${user.id}, content ${content.id}`);
+      } else {
+        console.warn(`[subscribe] Content not found for slug: ${pageUrl}`);
+      }
+    }
+
     // ─── Fire welcome email (async, non-blocking) ─────────────────────
     sendWelcomeEmail(email, name || "").catch((err) =>
       console.error("[subscribe] Welcome email fire-and-forget error:", err)

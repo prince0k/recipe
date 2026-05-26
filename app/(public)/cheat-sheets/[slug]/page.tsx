@@ -27,6 +27,12 @@ export async function generateMetadata(
   const title = content.seoTitle || `${content.title} | Cheat Sheets by Stewart Lucas`;
   const description = content.seoDesc || content.excerpt?.slice(0, 155) || 'Free downloadable cheat sheet from NutriGuide.';
 
+  const imageUrl = content.coverImage
+    ? (content.coverImage.startsWith('http')
+        ? content.coverImage
+        : `https://stewartlucas.com${content.coverImage}`)
+    : 'https://stewartlucas.com/assets/og-image.jpg';
+
   return {
     title,
     description,
@@ -34,14 +40,14 @@ export async function generateMetadata(
     openGraph: {
       title: content.title,
       description,
-      images: content.coverImage ? [{ url: content.coverImage }] : [],
+      images: [{ url: imageUrl }],
       type: 'article',
     },
     twitter: {
       card: 'summary_large_image',
       title: content.title,
       description,
-      images: content.coverImage ? [content.coverImage] : [],
+      images: [imageUrl],
     },
   };
 }
@@ -49,10 +55,6 @@ export async function generateMetadata(
 export default async function CheatSheetPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
   const session = await auth();
-
-  if (!session || !session.user) {
-    redirect(`/login?callbackUrl=/cheat-sheets/${params.slug}`);
-  }
 
   const content = await prisma.content.findUnique({
     where: { slug: params.slug, type: "CHEAT_SHEET" }

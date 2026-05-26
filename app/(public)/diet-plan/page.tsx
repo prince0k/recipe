@@ -4,16 +4,49 @@ import { getAllDietPlans } from "@/lib/queries";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Diet Plans | Stewart Lucas",
-  description: "Structured meal plans for simplified home cooking and healthy living.",
-  twitter: {
-    card: "summary_large_image",
-    title: "Diet Plans | Stewart Lucas",
-    description: "Structured meal plans for simplified home cooking and healthy living.",
-    images: ["https://stewartlucas.com/assets/og-image.jpg"],
-  },
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}): Promise<Metadata> {
+  const sParams = await searchParams;
+  const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
+
+  let title = "Diet Plans | Stewart Lucas";
+  let description = "Structured meal plans for simplified home cooking and healthy living.";
+  
+  if (page > 1) {
+    title += ` - Page ${page}`;
+    description += ` (Page ${page})`;
+  }
+
+  const url = `https://stewartlucas.com/diet-plan${page > 1 ? `?page=${page}` : ""}`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url,
+      images: [
+        {
+          url: "https://stewartlucas.com/assets/og-image.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Diet Plans | Stewart Lucas",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["https://stewartlucas.com/assets/og-image.jpg"],
+    },
+  };
+}
 
 export default async function DietPlansPage() {
   const session = await auth();

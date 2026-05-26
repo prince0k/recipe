@@ -81,6 +81,7 @@ model Download {
   ipAddress String
   userAgent String?
   isAnon    Boolean  @default(true)
+  source    String?
   createdAt DateTime @default(now())
   content   Content  @relation(fields: [contentId], references: [id])
   user      User?    @relation(fields: [userId], references: [id])

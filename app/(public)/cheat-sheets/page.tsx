@@ -5,16 +5,49 @@ import { Pagination } from "@/components/ui/Pagination";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Cheat Sheets | Stewart Lucas",
-  description: "Quick, downloadable guides for simplified home cooking and kitchen mastery.",
-  twitter: {
-    card: "summary_large_image",
-    title: "Cheat Sheets | Stewart Lucas",
-    description: "Quick, downloadable guides for simplified home cooking and kitchen mastery.",
-    images: ["https://stewartlucas.com/assets/og-image.jpg"],
-  },
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}): Promise<Metadata> {
+  const sParams = await searchParams;
+  const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
+
+  let title = "Cheat Sheets | Stewart Lucas";
+  let description = "Quick, downloadable guides for simplified home cooking and kitchen mastery.";
+  
+  if (page > 1) {
+    title += ` - Page ${page}`;
+    description += ` (Page ${page})`;
+  }
+
+  const url = `https://stewartlucas.com/cheat-sheets${page > 1 ? `?page=${page}` : ""}`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url,
+      images: [
+        {
+          url: "https://stewartlucas.com/assets/og-image.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Cheat Sheets | Stewart Lucas",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["https://stewartlucas.com/assets/og-image.jpg"],
+    },
+  };
+}
 
 export default async function CheatSheetsPage({
   searchParams,

@@ -46,8 +46,13 @@ export function EmailCaptureForm({
       const data = await res.json();
       if (res.ok) {
         setStatus('success');
-        setMessage('Check your inbox — your free plan is on its way!');
+        setMessage('Subscription successful! Preparing your download...');
         setEmail('');
+        if (source === 'cheatsheet') {
+          setTimeout(() => {
+            window.print();
+          }, 800);
+        }
       } else {
         setStatus('error');
         setMessage(data.error || 'Something went wrong. Please try again.');

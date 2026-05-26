@@ -25,6 +25,12 @@ export async function generateMetadata(
   const title = content.seoTitle || `${content.title} | NutriGuide by Stewart Lucas`;
   const description = content.seoDesc || content.excerpt?.slice(0, 155) || 'Discover this delicious recipe from NutriGuide.';
 
+  const imageUrl = content.coverImage
+    ? (content.coverImage.startsWith('http')
+        ? content.coverImage
+        : `https://stewartlucas.com${content.coverImage}`)
+    : 'https://stewartlucas.com/assets/og-image.jpg';
+
   return {
     title,
     description,
@@ -32,14 +38,14 @@ export async function generateMetadata(
     openGraph: {
       title: content.title,
       description,
-      images: content.coverImage ? [{ url: content.coverImage }] : [],
+      images: [{ url: imageUrl }],
       type: 'article',
     },
     twitter: {
       card: 'summary_large_image',
       title: content.title,
       description,
-      images: content.coverImage ? [content.coverImage] : [],
+      images: [imageUrl],
     },
   };
 }
@@ -52,7 +58,6 @@ import { ShareButton } from "@/components/content/ShareButton";
 import { Reviews } from "@/components/content/Reviews";
 import { auth } from "@/lib/auth";
 import { AdBanner } from "@/components/ui/AdBanner";
-import { RecipeSchema } from "@/components/content/RecipeSchema";
 import { ShareButtons } from "@/components/ui/ShareButtons";
 
 export default async function RecipeDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -121,31 +126,80 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     return [recipe.excerpt || "Follow instructions on page."];
   })();
 
+  // Construct JSON-LD schema dynamically
+  const durationMinutes = (() => {
+    if (typeof recipe.cookingTime === 'number') return recipe.cookingTime;
+    if (typeof recipe.cookingTime === 'string') {
+      const match = recipe.cookingTime.match(/\d+/);
+      return match ? parseInt(match[0], 10) : undefined;
+    }
+    return undefined;
+  })();
+
+  const baseImageUrl = recipe.coverImage
+    ? (recipe.coverImage.startsWith('http')
+        ? recipe.coverImage
+        : `https://stewartlucas.com${recipe.coverImage}`)
+    : 'https://stewartlucas.com/assets/og-image.jpg';
+
+  let schemaJson = null;
+  if (recipe.schema) {
+    try {
+      schemaJson = JSON.parse(recipe.schema);
+    } catch (e) {
+      console.warn("Failed to parse recipe schema override:", e);
+    }
+  }
+
+  if (!schemaJson) {
+    schemaJson = {
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      "name": recipe.title,
+      "description": recipe.excerpt || "A delicious healthy recipe from Stewart Lucas.",
+      "author": {
+        "@type": "Person",
+        "name": "Stewart Lucas",
+        "url": "https://stewartlucas.com/about"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "NutriGuide by Stewart Lucas",
+        "url": "https://stewartlucas.com"
+      },
+      "image": [baseImageUrl],
+      "datePublished": recipe.createdAt?.toISOString(),
+      ...(durationMinutes && {
+        "totalTime": `PT${durationMinutes}M`,
+        "cookTime": `PT${durationMinutes}M`
+      }),
+      ...(recipe.servings && { "recipeYield": `${recipe.servings} servings` }),
+      ...(ingredientsList.length > 0 && { "recipeIngredient": ingredientsList }),
+      ...(instructionsList.length > 0 && {
+        "recipeInstructions": instructionsList.map((step: string, i: number) => ({
+          "@type": "HowToStep",
+          "position": i + 1,
+          "text": step
+        }))
+      }),
+      ...((recipe.calories || recipe.protein || recipe.fat || recipe.carbs) && {
+        "nutrition": {
+          "@type": "NutritionInformation",
+          ...(recipe.calories && { "calories": `${recipe.calories} calories` }),
+          ...(recipe.protein && { "proteinContent": recipe.protein }),
+          ...(recipe.fat && { "fatContent": recipe.fat }),
+          ...(recipe.carbs && { "carbohydrateContent": recipe.carbs })
+        }
+      })
+    };
+  }
+
   return (
     <>
-      {recipe.schema ? (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: recipe.schema }}
-        />
-      ) : (
-        <RecipeSchema
-          title={recipe.title}
-          description={recipe.excerpt || "A delicious recipe from Stewart Lucas."}
-          image={recipe.coverImage || undefined}
-          cookingTime={recipe.cookingTime || undefined}
-          servings={recipe.servings || undefined}
-          ingredients={ingredientsList}
-          instructions={instructionsList}
-          nutrition={{
-            calories: recipe.calories ? String(recipe.calories) : undefined,
-            protein: recipe.protein || undefined,
-            fat: recipe.fat || undefined,
-            carbs: recipe.carbs || undefined,
-          }}
-          datePublished={recipe.createdAt?.toISOString()}
-        />
-      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaJson) }}
+      />
       <div className="bg-background min-h-screen">
       {/* Cinematic Hero Header */}
       <div className="relative h-[60vh] min-h-[400px] w-full bg-black" id="video-player">

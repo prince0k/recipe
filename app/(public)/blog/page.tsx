@@ -3,16 +3,49 @@ import { Metadata } from "next";
 import { getAllBlogPosts } from "@/lib/queries";
 import { Pagination } from "@/components/ui/Pagination";
 
-export const metadata: Metadata = {
-  title: "Kitchen Stories | Stewart Lucas",
-  description: "Articles on home cooking, kitchen techniques, and the cinematic life around the table.",
-  twitter: {
-    card: "summary_large_image",
-    title: "Kitchen Stories | Stewart Lucas",
-    description: "Articles on home cooking, kitchen techniques, and the cinematic life around the table.",
-    images: ["https://stewartlucas.com/assets/og-image.jpg"],
-  },
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}): Promise<Metadata> {
+  const sParams = await searchParams;
+  const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
+
+  let title = "Kitchen Stories | Stewart Lucas";
+  let description = "Articles on home cooking, kitchen techniques, and the cinematic life around the table.";
+  
+  if (page > 1) {
+    title += ` - Page ${page}`;
+    description += ` (Page ${page})`;
+  }
+
+  const url = `https://stewartlucas.com/blog${page > 1 ? `?page=${page}` : ""}`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url,
+      images: [
+        {
+          url: "https://stewartlucas.com/assets/og-image.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Kitchen Stories | Stewart Lucas",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["https://stewartlucas.com/assets/og-image.jpg"],
+    },
+  };
+}
 
 export default async function BlogPage({
   searchParams,

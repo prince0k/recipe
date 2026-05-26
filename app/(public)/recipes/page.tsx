@@ -6,16 +6,56 @@ import { RecipeFilters, RecipeSort } from "@/components/content/RecipeFilters";
 import { getCachedRecipes } from "@/lib/queries";
 import { Suspense } from "react";
 
-export const metadata: Metadata = {
-  title: "Explore Recipes | Stewart Lucas",
-  description: "Browse our collection of cinematic, moody, and budget-friendly home-cooked recipes.",
-  twitter: {
-    card: "summary_large_image",
-    title: "Explore Recipes | Stewart Lucas",
-    description: "Browse our collection of cinematic, moody, and budget-friendly home-cooked recipes.",
-    images: ["https://stewartlucas.com/assets/og-image.jpg"],
-  },
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}): Promise<Metadata> {
+  const sParams = await searchParams;
+  const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
+  const category = typeof sParams.category === 'string' ? sParams.category : undefined;
+
+  let title = "Explore Recipes | Stewart Lucas";
+  let description = "Browse our collection of cinematic, moody, and budget-friendly home-cooked recipes.";
+  
+  if (category) {
+    const catName = category.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+    title = `${catName} Recipes | Stewart Lucas`;
+    description = `Explore our collection of handpicked ${catName} recipes, curated for wellness and flavor.`;
+  }
+  
+  if (page > 1) {
+    title += ` - Page ${page}`;
+    description += ` (Page ${page} of collection)`;
+  }
+
+  const url = `https://stewartlucas.com/recipes${page > 1 ? `?page=${page}` : ""}`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url,
+      images: [
+        {
+          url: "https://stewartlucas.com/assets/og-image.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Stewart Lucas Recipes",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["https://stewartlucas.com/assets/og-image.jpg"],
+    },
+  };
+}
 
 export default async function RecipesPage({
   searchParams,
