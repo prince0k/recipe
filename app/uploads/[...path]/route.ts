@@ -63,10 +63,23 @@ export async function GET(
     }
 
     // Default: Serve full file
-    const fileStream = fs.createReadStream(filePath);
-    const webStream = Readable.toWeb(fileStream);
+    // For video files, we stream to support range requests. For images/PDFs, read directly to memory buffer to minimize TTFB
+    const isVideo = ext === ".mp4" || ext === ".webm";
+    if (isVideo) {
+      const fileStream = fs.createReadStream(filePath);
+      const webStream = Readable.toWeb(fileStream);
 
-    return new NextResponse(webStream as any, {
+      return new NextResponse(webStream as any, {
+        headers: {
+          "Content-Type": contentType,
+          "Content-Length": stat.size.toString(),
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      });
+    }
+
+    const buffer = await fs.promises.readFile(filePath);
+    return new NextResponse(buffer, {
       headers: {
         "Content-Type": contentType,
         "Content-Length": stat.size.toString(),

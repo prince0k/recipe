@@ -95,7 +95,7 @@ export default async function Home() {
       <section className="relative h-[85vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/assets/hero.png"
+            src="/assets/hero.webp"
             alt="Cinematic home-cooked meal"
             fill
             className="object-cover scale-105"
@@ -481,7 +481,7 @@ export default async function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="relative h-[600px] rounded-[3rem] overflow-hidden cinematic-shadow">
               <Image 
-                src="/assets/hero.png" 
+                src="/assets/hero.webp" 
                 alt="Stewart Lucas Kitchen" 
                 fill 
                 className="object-cover"

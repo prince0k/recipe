@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { uploadsLoader } from "@/lib/image-loader";
 
 export function RelatedContent({ items, title = "You Might Also Like" }: { items: any[], title?: string }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -102,7 +103,8 @@ export function RelatedContent({ items, title = "You Might Also Like" }: { items
                           fill
                           sizes="(max-width: 768px) 160px, 200px"
                           className="object-cover pointer-events-none"
-                          unoptimized={item.coverImage?.startsWith('/uploads')}
+                          loader={item.coverImage.startsWith('/uploads/images/') && item.coverImage.endsWith('.webp') ? uploadsLoader : undefined}
+                          unoptimized={!item.coverImage.startsWith('/uploads/images/') && item.coverImage.startsWith('/uploads')}
                         />
                       ) : (
                         <div className="flex h-full items-center justify-center bg-primary/10">

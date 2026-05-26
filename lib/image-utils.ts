@@ -73,3 +73,6 @@ export async function saveAndCompressImage(
     return "/assets/placeholder-image.jpg"; 
   }
 }
+
+export { uploadsLoader } from "./image-loader";
+

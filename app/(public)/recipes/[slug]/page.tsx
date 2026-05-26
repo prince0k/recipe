@@ -160,7 +160,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
           />
         ) : (
           <Image
-            src={recipe.coverImage || "/assets/hero.png"}
+            src={recipe.coverImage || "/assets/hero.webp"}
             alt={recipe.title}
             fill
             className="object-cover"

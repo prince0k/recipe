@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "About Stewart Lucas | Home Cooking Simplified",
     description: "The story behind Stewart Lucas - a premium food blog dedicated to cinematic, budget-friendly home cooking.",
-    images: ["https://stewartlucas.com/assets/stewart_lucas.png"],
+    images: ["https://stewartlucas.com/assets/stewart_lucas.webp"],
   },
 };
 
@@ -33,7 +33,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <div className="relative h-[700px] rounded-[3.5rem] overflow-hidden cinematic-shadow">
             <Image 
-              src="/assets/stewart_lucas.png" 
+              src="/assets/stewart_lucas.webp" 
               alt="Stewart Lucas Kitchen" 
               fill 
               className="object-cover"
@@ -73,7 +73,7 @@ export default function AboutPage() {
 
       <section className="py-24 bg-primary text-white rounded-[4rem] mx-4 lg:mx-8 mb-24 overflow-hidden relative">
         <div className="absolute inset-0 opacity-10">
-          <Image src="/assets/hero.png" alt="Background" fill className="object-cover" sizes="100vw" />
+          <Image src="/assets/hero.webp" alt="Background" fill className="object-cover" sizes="100vw" />
         </div>
         <div className="max-w-4xl mx-auto px-4 relative z-10 text-center">
           <EmailCaptureForm

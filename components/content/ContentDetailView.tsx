@@ -7,6 +7,7 @@ import { RelatedContent } from "./RelatedContent";
 import { FavoriteButton } from "./FavoriteButton";
 import { ShareButton } from "./ShareButton";
 import { Reviews } from "./Reviews";
+import { uploadsLoader } from "@/lib/image-loader";
 
 export function ContentDetailView({ 
   content, 
@@ -100,7 +101,8 @@ export function ContentDetailView({
               sizes="(max-width: 1024px) 100vw, 1024px"
               className="object-cover"
               priority
-              unoptimized={content.coverImage?.startsWith('/uploads')}
+              loader={content.coverImage.startsWith('/uploads/images/') && content.coverImage.endsWith('.webp') ? uploadsLoader : undefined}
+              unoptimized={!content.coverImage.startsWith('/uploads/images/') && content.coverImage.startsWith('/uploads')}
             />
             {mediaOverlay}
           </div>

@@ -48,7 +48,7 @@ export default async function AdminContentPage({
       { coverImage: null },
       { coverImage: "" },
       { coverImage: { contains: "unsplash.com" } },
-      { coverImage: { contains: "hero.png" } },
+      { coverImage: { contains: "hero.webp" } },
       { coverImage: { contains: "placeholder" } },
       { coverImage: { contains: "pollinations.ai" } },
       { coverImage: { contains: "prompt" } }
@@ -89,7 +89,7 @@ export default async function AdminContentPage({
           { coverImage: null },
           { coverImage: "" },
           { coverImage: { contains: "unsplash.com" } },
-          { coverImage: { contains: "hero.png" } },
+          { coverImage: { contains: "hero.webp" } },
           { coverImage: { contains: "placeholder" } },
           { coverImage: { contains: "pollinations.ai" } },
           { coverImage: { contains: "prompt" } }
@@ -103,7 +103,7 @@ export default async function AdminContentPage({
           { coverImage: null },
           { coverImage: "" },
           { coverImage: { contains: "unsplash.com" } },
-          { coverImage: { contains: "hero.png" } },
+          { coverImage: { contains: "hero.webp" } },
           { coverImage: { contains: "placeholder" } },
           { coverImage: { contains: "pollinations.ai" } },
           { coverImage: { contains: "prompt" } }
