@@ -126,6 +126,15 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
   })();
 
   // Construct JSON-LD schema dynamically
+  const prepTimeMinutes = (() => {
+    if (typeof recipe.prepTime === 'number') return recipe.prepTime;
+    if (typeof recipe.prepTime === 'string') {
+      const match = recipe.prepTime.match(/\d+/);
+      return match ? parseInt(match[0], 10) : undefined;
+    }
+    return undefined;
+  })();
+
   const durationMinutes = (() => {
     if (typeof recipe.cookingTime === 'number') return recipe.cookingTime;
     if (typeof recipe.cookingTime === 'string') {
@@ -170,9 +179,17 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
       },
       "image": [baseImageUrl],
       "datePublished": recipe.createdAt?.toISOString(),
-      ...(durationMinutes && {
-        "totalTime": `PT${durationMinutes}M`,
-        "cookTime": `PT${durationMinutes}M`
+      ...(prepTimeMinutes && { "prepTime": `PT${prepTimeMinutes}M` }),
+      ...(durationMinutes && { "cookTime": `PT${durationMinutes}M` }),
+      ...((prepTimeMinutes || durationMinutes) && {
+        "totalTime": `PT${(prepTimeMinutes || 0) + (durationMinutes || 0)}M`
+      }),
+      ...(reviewCount > 0 && {
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": avgRating.toFixed(1),
+          "reviewCount": reviewCount
+        }
       }),
       ...(recipe.servings && { "recipeYield": `${recipe.servings} servings` }),
       ...(ingredientsList.length > 0 && { "recipeIngredient": ingredientsList }),
