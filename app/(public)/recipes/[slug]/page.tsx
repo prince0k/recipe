@@ -282,35 +282,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
             </section>
 
             {relatedItems.length > 0 && (
-              <section className="mt-16 pt-8 border-t border-border">
-                <h3 className="text-2xl font-bold text-text mb-6 font-serif italic">You Might Also Like</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  {relatedItems.map((r) => (
-                    <Link
-                      key={r.slug}
-                      href={`/recipes/${r.slug}`}
-                      className="group rounded-[2rem] overflow-hidden border border-border bg-white hover:cinematic-shadow transition-all duration-300 flex flex-col"
-                    >
-                      {r.coverImage && (
-                        <div className="relative h-36 w-full overflow-hidden">
-                          <Image src={r.coverImage} alt={r.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
-                        </div>
-                      )}
-                      <div className="p-4 flex-grow flex flex-col justify-between">
-                        <p className="text-sm font-bold text-text group-hover:text-primary transition-colors line-clamp-2 leading-snug">
-                          {r.title}
-                        </p>
-                        {r.cookingTime && (
-                          <p className="text-xs text-text-muted mt-2 flex items-center gap-1">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            {r.cookingTime}
-                          </p>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </section>
+              <RelatedContent items={relatedItems} />
             )}
           </div>
 
@@ -341,7 +313,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
                 </div>
               </div>
 
-              <RelatedContent items={relatedItems} />
+
               
               <AdBanner placement="RECIPES_SIDEBAR" />
             </div>
