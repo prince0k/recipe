@@ -49,7 +49,9 @@ export default async function AdminContentPage({
       { coverImage: "" },
       { coverImage: { contains: "unsplash.com" } },
       { coverImage: { contains: "hero.png" } },
-      { coverImage: { contains: "placeholder" } }
+      { coverImage: { contains: "placeholder" } },
+      { coverImage: { contains: "pollinations.ai" } },
+      { coverImage: { contains: "prompt" } }
     ];
   } else {
     where.type = activeTab.toUpperCase();
@@ -88,7 +90,9 @@ export default async function AdminContentPage({
           { coverImage: "" },
           { coverImage: { contains: "unsplash.com" } },
           { coverImage: { contains: "hero.png" } },
-          { coverImage: { contains: "placeholder" } }
+          { coverImage: { contains: "placeholder" } },
+          { coverImage: { contains: "pollinations.ai" } },
+          { coverImage: { contains: "prompt" } }
         ]
       }
     }),
@@ -100,7 +104,9 @@ export default async function AdminContentPage({
           { coverImage: "" },
           { coverImage: { contains: "unsplash.com" } },
           { coverImage: { contains: "hero.png" } },
-          { coverImage: { contains: "placeholder" } }
+          { coverImage: { contains: "placeholder" } },
+          { coverImage: { contains: "pollinations.ai" } },
+          { coverImage: { contains: "prompt" } }
         ]
       },
       select: { id: true, title: true }
