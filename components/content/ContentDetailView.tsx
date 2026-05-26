@@ -159,7 +159,7 @@ export function ContentDetailView({
         </div>
 
         {relatedItems && relatedItems.length > 0 && (
-          <RelatedContent items={relatedItems} />
+          <RelatedContent items={relatedItems} title="Explore More" />
         )}
 
         <div className="mt-20 border-t border-border pt-12">
