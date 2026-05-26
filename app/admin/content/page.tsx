@@ -8,6 +8,7 @@ import { GenerateAllPendingButton } from "@/components/admin/GenerateAllPendingB
 import { ImageModeSelector } from "@/components/admin/ImageModeSelector";
 import { GenerateCoverButton } from "@/components/admin/GenerateCoverButton";
 import { GenerateAllCoversButton } from "@/components/admin/GenerateAllCoversButton";
+import { BulkPublishButton } from "@/components/admin/BulkPublishButton";
 import { Pagination } from "@/components/ui/Pagination";
 import { 
   FileText, 
@@ -102,6 +103,17 @@ export default async function AdminContentPage({
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
+  const showBulkPublish = ["all", "recipe", "diet_plan", "cheat_sheet", "blog"].includes(activeTab);
+  const draftIdsForTab = showBulkPublish
+    ? (await prisma.content.findMany({
+        where: {
+          ...where,
+          published: false,
+        },
+        select: { id: true }
+      })).map(item => item.id)
+    : [];
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 animate-fade-in pb-20">
       
@@ -126,6 +138,12 @@ export default async function AdminContentPage({
           )}
           {activeTab === "pending_image" && pendingImageItemsList.length > 0 && (
             <GenerateAllCoversButton items={pendingImageItemsList} />
+          )}
+          {showBulkPublish && draftIdsForTab.length > 0 && (
+            <BulkPublishButton 
+              ids={draftIdsForTab} 
+              label={activeTab === "all" ? "drafts" : `${activeTab.replace('_', ' ')} drafts`} 
+            />
           )}
           <Link href="/admin/content/ai-generator" className="inline-flex">
             <Button variant="outline" className="flex items-center gap-2 border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-800 rounded-xl transition-all duration-200 shadow-sm font-bold text-xs sm:text-sm">
