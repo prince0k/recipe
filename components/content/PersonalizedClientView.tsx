@@ -111,7 +111,7 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
           nav, footer, .subscribe-popup, .back-link, .print-hide, .botpress-chat, #bp-web-widget, [id^="bp-"], .bp-web-widget-container { display: none !important; opacity: 0 !important; visibility: hidden !important; }
           body { background: white !important; padding: 0 !important; margin: 0 !important; color: #1a1a1a !important; }
           .min-h-screen { min-height: 0 !important; padding: 0 !important; overflow: visible !important; }
-          .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; overflow: visible !important; }
+          .max-w-6xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; overflow: visible !important; }
           .shadow-2xl, .shadow-sm { box-shadow: none !important; }
           .border { border: none !important; }
           .rounded-[2.5rem], .rounded-full { border-radius: 0 !important; }
@@ -127,7 +127,7 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
         }
       `}} />
 
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Print-only Header */}
         <div className="hidden print:block mb-12 pb-8 border-b-2 border-primary/30">
           <div className="flex justify-between items-start">

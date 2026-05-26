@@ -63,7 +63,7 @@
 
 .prose-table-wrapper table {
   width: 100%;
-  min-width: 850px; /* Forces columns to maintain structure and breathing room */
+  min-width: 100%; /* Adapts to container width to avoid scrollbars */
   border-collapse: collapse;
   font-size: 0.95rem;
   line-height: 1.6;
