@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Users, Mail, Shield, Download, Calendar, Check, X, ArrowLeft, FileDown } from "lucide-react";
+import { RoleDropdown } from "@/components/admin/RoleDropdown";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -164,15 +165,7 @@ export default async function AdminLeadsPage({
                         </div>
                       </td>
                       <td className="py-4 px-6">
-                        {user.role === "ADMIN" ? (
-                          <Badge variant="warning" className="font-bold border border-yellow-200/50">
-                            ADMIN
-                          </Badge>
-                        ) : (
-                          <Badge variant="default" className="font-bold bg-slate-100 text-slate-700 border border-slate-200/50">
-                            USER
-                          </Badge>
-                        )}
+                        <RoleDropdown userId={user.id} initialRole={user.role} userEmail={user.email} />
                       </td>
                       <td className="py-4 px-6 text-center">
                         <span className="inline-flex items-center gap-1.5 font-bold text-sm text-slate-750 bg-slate-100/80 px-2.5 py-1 rounded-lg border border-slate-200/40">
