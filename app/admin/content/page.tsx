@@ -6,6 +6,8 @@ import { DeleteContentButton } from "@/components/admin/DeleteContentButton";
 import { GenerateRecipeButton } from "@/components/admin/GenerateRecipeButton";
 import { GenerateAllPendingButton } from "@/components/admin/GenerateAllPendingButton";
 import { ImageModeSelector } from "@/components/admin/ImageModeSelector";
+import { GenerateCoverButton } from "@/components/admin/GenerateCoverButton";
+import { GenerateAllCoversButton } from "@/components/admin/GenerateAllCoversButton";
 import { Pagination } from "@/components/ui/Pagination";
 import { 
   FileText, 
@@ -39,12 +41,19 @@ export default async function AdminContentPage({
     where.type = { not: "PENDING_RECIPE" };
   } else if (activeTab === "pending_recipe") {
     where.type = "PENDING_RECIPE";
+  } else if (activeTab === "pending_image") {
+    where.type = { not: "PENDING_RECIPE" };
+    where.published = false;
+    where.OR = [
+      { coverImage: null },
+      { coverImage: "" }
+    ];
   } else {
     where.type = activeTab.toUpperCase();
   }
 
   // Get total counts for badge indicators
-  const [contentItems, totalCount, pendingCount, pendingItemsList] = await Promise.all([
+  const [contentItems, totalCount, pendingCount, pendingItemsList, pendingImageCount, pendingImageItemsList] = await Promise.all([
     prisma.content.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -66,6 +75,27 @@ export default async function AdminContentPage({
     prisma.content.count({ where: { type: "PENDING_RECIPE" } }),
     prisma.content.findMany({
       where: { type: "PENDING_RECIPE" },
+      select: { id: true, title: true }
+    }),
+    prisma.content.count({
+      where: {
+        type: { not: "PENDING_RECIPE" },
+        published: false,
+        OR: [
+          { coverImage: null },
+          { coverImage: "" }
+        ]
+      }
+    }),
+    prisma.content.findMany({
+      where: {
+        type: { not: "PENDING_RECIPE" },
+        published: false,
+        OR: [
+          { coverImage: null },
+          { coverImage: "" }
+        ]
+      },
       select: { id: true, title: true }
     })
   ]);
@@ -94,6 +124,9 @@ export default async function AdminContentPage({
               )}
             </>
           )}
+          {activeTab === "pending_image" && pendingImageItemsList.length > 0 && (
+            <GenerateAllCoversButton items={pendingImageItemsList} />
+          )}
           <Link href="/admin/content/ai-generator" className="inline-flex">
             <Button variant="outline" className="flex items-center gap-2 border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-800 rounded-xl transition-all duration-200 shadow-sm font-bold text-xs sm:text-sm">
               <Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" />
@@ -117,7 +150,8 @@ export default async function AdminContentPage({
           { label: "Diet Plans", value: "diet_plan" },
           { label: "Cheat Sheets", value: "cheat_sheet" },
           { label: "Blogs", value: "blog" },
-          { label: "Pending Recipes", value: "pending_recipe", count: pendingCount }
+          { label: "Pending Recipes", value: "pending_recipe", count: pendingCount },
+          { label: "Pending Images", value: "pending_image", count: pendingImageCount }
         ].map(tab => {
           const isActive = activeTab === tab.value;
           const href = tab.value === "all" ? "/admin/content" : `/admin/content?type=${tab.value}`;
@@ -208,7 +242,25 @@ export default async function AdminContentPage({
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold">
                     <div className="flex items-center justify-end gap-3.5">
-                      {item.type === "PENDING_RECIPE" ? (
+                      {activeTab === "pending_image" ? (
+                        <>
+                          <GenerateCoverButton id={item.id} title={item.title} />
+                          <a 
+                            href={`/admin/content/${item.id}`} 
+                            className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all duration-200"
+                            title="Edit Content"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </a>
+                          <DeleteContentButton 
+                            id={item.id} 
+                            title={item.title}
+                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </DeleteContentButton>
+                        </>
+                      ) : item.type === "PENDING_RECIPE" ? (
                         <>
                           <GenerateRecipeButton id={item.id} title={item.title} imageMode={imageMode} />
                           <DeleteContentButton 
