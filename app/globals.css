@@ -76,7 +76,7 @@
 }
 
 .prose-table-wrapper th {
-  padding: 1.25rem 1.25rem;
+  padding: 0.75rem 1rem;
   font-family: var(--font-sans);
   font-weight: 600;
   text-transform: uppercase;
@@ -103,7 +103,7 @@
 }
 
 .prose-table-wrapper td {
-  padding: 1.25rem 1.25rem;
+  padding: 0.75rem 1rem;
   vertical-align: top;
   color: var(--color-text-muted);
 }

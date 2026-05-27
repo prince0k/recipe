@@ -31,11 +31,50 @@ interface PersonalizedClientViewProps {
   request: any;
 }
 
+const getChildrenText = (children: any): string => {
+  if (typeof children === "string") return children;
+  if (Array.isArray(children)) return children.map(getChildrenText).join("");
+  if (children && children.props && children.props.children) return getChildrenText(children.props.children);
+  return "";
+};
+
 const customMarkdownComponents = {
   h1: ({ node, ...props }: any) => <h1 className="font-serif italic text-3xl md:text-4xl mb-6 text-text font-bold" {...props} />,
   h2: ({ node, ...props }: any) => <h2 className="font-serif italic text-2xl md:text-3xl mt-10 mb-5 text-text font-bold" {...props} />,
-  h3: ({ node, ...props }: any) => <h3 className="font-serif italic text-xl md:text-2xl mt-8 mb-4 text-primary font-bold" {...props} />,
-  p: ({ node, ...props }: any) => <p className="leading-relaxed text-gray-750 text-sm md:text-base mb-6" {...props} />,
+  h3: ({ node, children, ...props }: any) => {
+    const text = getChildrenText(children);
+    const matchDayOthers = text.match(/^Day\s+([2-9]|\d{2,})\b/i);
+    const className = `font-serif italic text-xl md:text-2xl mt-8 mb-4 text-primary font-bold ${matchDayOthers ? "print-page-break" : ""}`;
+    return <h3 className={className} {...props}>{children}</h3>;
+  },
+  h4: ({ node, children, ...props }: any) => {
+    const text = getChildrenText(children);
+    const matchDayOthers = text.match(/^Day\s+([2-9]|\d{2,})\b/i);
+    const className = `font-serif italic text-lg md:text-xl mt-6 mb-3 text-text font-bold ${matchDayOthers ? "print-page-break" : ""}`;
+    return <h4 className={className} {...props}>{children}</h4>;
+  },
+  p: ({ node, children, ...props }: any) => {
+    const text = getChildrenText(children);
+    const matchDay1 = text.match(/^Day\s+1\b/i);
+    const matchDayOthers = text.match(/^Day\s+([2-9]|\d{2,})\b/i);
+
+    if (matchDay1) {
+      return (
+        <h3 className="font-serif italic text-xl md:text-2xl mt-8 mb-4 text-primary font-bold" {...props}>
+          {children}
+        </h3>
+      );
+    }
+    if (matchDayOthers) {
+      return (
+        <h3 className="font-serif italic text-xl md:text-2xl mt-8 mb-4 text-primary font-bold print-page-break" {...props}>
+          {children}
+        </h3>
+      );
+    }
+
+    return <p className="leading-relaxed text-gray-755 text-sm md:text-base mb-6" {...props}>{children}</p>;
+  },
   ul: ({ node, ...props }: any) => <ul className="space-y-3 mb-6 pl-4" {...props} />,
   li: ({ node, ...props }: any) => (
     <li className="flex items-start gap-3 text-gray-700 text-sm md:text-base mb-2">
@@ -75,11 +114,14 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
     const firstLine = trimmed.split("\n")[0].trim();
     const match = firstLine.match(/^(?:###|##|#)?\s*(?:\*\*|__)?(?:(\d+)[\.:]\s*(?:\*\*|__)?)?([^a-z]+)(?:\*\*|__)?$/);
 
-    if (match && (match[1] || match[2].includes("LETTER FROM STEWART") || match[2].includes("PERSONAL OPENING"))) {
+    if (match && (match[1] || match[2].includes("LETTER FROM STEWART") || match[2].includes("PERSONAL OPENING") || match[2].includes("CINEMATIC MEAL PLAN"))) {
       const num = match[1] ? parseInt(match[1]) : 1;
       let cleanTitle = match[2].replace(/\*|_/g, "").trim();
       if (cleanTitle.toUpperCase().includes("PERSONAL OPENING LETTER") || cleanTitle.toUpperCase().includes("OPENING LETTER")) {
         cleanTitle = "LETTER FROM STEWART LUCAS";
+      }
+      if (cleanTitle.toUpperCase().includes("CINEMATIC MEAL PLAN")) {
+        cleanTitle = "YOUR 7-DAY MEAL PLAN";
       }
       sections.push({
         title: cleanTitle || `Page ${num}`,
@@ -109,9 +151,16 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
     const isOpeningLetter = sec.title.toUpperCase().includes("LETTER FROM STEWART LUCAS") || 
                            sec.title.toUpperCase().includes("PERSONAL OPENING LETTER");
 
+    // Clean any robotic headers/buzzwords inside content
+    let displayContent = sec.content
+      .replace(/YOUR 7-DAY CINEMATIC MEAL PLAN/gi, "YOUR 7-DAY MEAL PLAN")
+      .replace(/CINEMATIC MEAL PLAN/gi, "MEAL PLAN")
+      .replace(/1\.\s+PERSONAL OPENING LETTER/gi, "LETTER FROM STEWART LUCAS")
+      .replace(/PERSONAL OPENING LETTER/gi, "LETTER FROM STEWART LUCAS");
+
     if (isOpeningLetter) {
       // Extract body content by skipping the first line (header)
-      const contentLines = sec.content.split("\n");
+      const contentLines = displayContent.split("\n");
       const bodyContent = contentLines.slice(1).join("\n").trim();
 
       return (
@@ -143,7 +192,7 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
               components={{
                 ...customMarkdownComponents,
                 // Make paragraphs in opening letter look more like a cozy letter
-                p: ({ node, ...props }: any) => <p className="leading-relaxed text-gray-750 mb-6 font-serif italic text-lg" {...props} />
+                p: ({ node, ...props }: any) => <p className="leading-relaxed text-gray-755 mb-6 font-serif italic text-lg" {...props} />
               }}
             >
               {bodyContent}
@@ -174,7 +223,7 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
         remarkPlugins={[remarkGfm]} 
         components={customMarkdownComponents}
       >
-        {sec.content}
+        {displayContent}
       </ReactMarkdown>
     );
   };
@@ -201,6 +250,7 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
           h3 { font-size: 14pt !important; margin-top: 20pt !important; }
           p { margin-bottom: 12pt !important; }
           .page-break { page-break-before: always; }
+          .print-page-break { page-break-before: always !important; break-before: page !important; }
         }
       `}} />
 
