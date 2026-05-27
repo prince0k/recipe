@@ -158,30 +158,23 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
       .replace(/1\.\s+PERSONAL OPENING LETTER/gi, "LETTER FROM STEWART LUCAS")
       .replace(/PERSONAL OPENING LETTER/gi, "LETTER FROM STEWART LUCAS");
 
-    if (isOpeningLetter) {
-      // Extract body content by skipping the first line (header)
-      const contentLines = displayContent.split("\n");
-      const bodyContent = contentLines.slice(1).join("\n").trim();
+    // Extract body content by skipping the first line (header)
+    const contentLines = displayContent.split("\n");
+    const bodyContent = contentLines.slice(1).join("\n").trim();
 
+    if (isOpeningLetter) {
       return (
         <div className="w-full">
-          {/* Letter Page Branding Header */}
-          <div className="border-b border-gray-100 pb-6 mb-8 flex flex-col sm:flex-row justify-between items-center gap-6">
-            <div className="text-center sm:text-left">
+          {/* Letter Page Centered Branding Header */}
+          <div className="border-b border-gray-100 pb-6 mb-8 flex flex-col items-center text-center gap-4">
+            <img
+              src="/assets/stewart_lucas.webp"
+              alt="Stewart Lucas"
+              className="w-20 h-20 rounded-full object-cover border-2 border-primary/20 shadow-md"
+            />
+            <div>
               <h2 className="font-serif italic text-3xl md:text-4xl text-text font-bold mb-2">Letter from Stewart Lucas</h2>
               <p className="text-xs text-primary font-bold tracking-widest uppercase">Founder & Head Nutritionist, NutriGuide</p>
-            </div>
-            <div className="flex-shrink-0 flex items-center gap-3 bg-gray-50/50 p-3 rounded-2xl border border-gray-100">
-              <img
-                src="/assets/stewart_lucas.webp"
-                alt="Stewart Lucas"
-                className="w-14 h-14 rounded-full object-cover border-2 border-primary/20 shadow-sm"
-              />
-              <div className="text-left">
-                <h4 className="font-serif font-bold text-sm text-text">Stewart Lucas</h4>
-                <p className="text-[10px] text-text-muted">Master of Culinary Nutrition</p>
-                <p className="text-[10px] text-primary font-semibold">stewartlucas.com</p>
-              </div>
             </div>
           </div>
 
@@ -219,12 +212,25 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
     }
 
     return (
-      <ReactMarkdown 
-        remarkPlugins={[remarkGfm]} 
-        components={customMarkdownComponents}
-      >
-        {displayContent}
-      </ReactMarkdown>
+      <div className="w-full">
+        {/* Centered Heading without Numbering */}
+        <div className="text-center mb-10">
+          <h2 className="font-serif italic text-3xl md:text-4xl text-text font-bold mb-2">
+            {sec.title}
+          </h2>
+          <div className="w-12 h-1 bg-primary/20 mx-auto mt-4 rounded-full print-hide"></div>
+        </div>
+
+        {/* Section Body */}
+        <div className="prose prose-lg prose-olive max-w-none">
+          <ReactMarkdown 
+            remarkPlugins={[remarkGfm]} 
+            components={customMarkdownComponents}
+          >
+            {bodyContent}
+          </ReactMarkdown>
+        </div>
+      </div>
     );
   };
 
