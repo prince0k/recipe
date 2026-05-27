@@ -114,15 +114,29 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
     const firstLine = trimmed.split("\n")[0].trim();
     const match = firstLine.match(/^(?:###|##|#)?\s*(?:\*\*|__)?(?:(\d+)[\.:]\s*(?:\*\*|__)?)?([^a-z]+)(?:\*\*|__)?$/);
 
-    if (match && (match[1] || match[2].includes("LETTER FROM STEWART") || match[2].includes("PERSONAL OPENING") || match[2].includes("CINEMATIC MEAL PLAN"))) {
+    if (match && (match[1] || match[2].includes("LETTER FROM STEWART") || match[2].includes("PERSONAL OPENING") || match[2].includes("CINEMATIC MEAL PLAN") || match[2].toUpperCase().includes("BLUEPRINT") || match[2].toUpperCase().includes("SUPPORT SYSTEM") || match[2].toUpperCase().includes("SHOPPING LIST") || match[2].toUpperCase().includes("PREP GUIDE") || match[2].toUpperCase().includes("WATCH FOR") || match[2].toUpperCase().includes("CLOSING"))) {
       const num = match[1] ? parseInt(match[1]) : 1;
       let cleanTitle = match[2].replace(/\*|_/g, "").trim();
-      if (cleanTitle.toUpperCase().includes("PERSONAL OPENING LETTER") || cleanTitle.toUpperCase().includes("OPENING LETTER")) {
+      const upperTitle = cleanTitle.toUpperCase();
+
+      if (upperTitle.includes("PERSONAL OPENING") || upperTitle.includes("OPENING LETTER") || upperTitle.includes("LETTER FROM STEWART")) {
         cleanTitle = "LETTER FROM STEWART LUCAS";
-      }
-      if (cleanTitle.toUpperCase().includes("CINEMATIC MEAL PLAN")) {
+      } else if (upperTitle.includes("TRANSFORMATION BLUEPRINT") || upperTitle.includes("BLUEPRINT")) {
+        cleanTitle = "YOUR WEEKLY BLUEPRINT";
+      } else if (upperTitle.includes("POWERFUL SUPPORT SYSTEM") || upperTitle.includes("SUPPORT SYSTEM")) {
+        cleanTitle = "DAILY SOS & SUPPORT STRATEGIES";
+      } else if (upperTitle.includes("CINEMATIC MEAL PLAN") || upperTitle.includes("7-DAY MEAL PLAN") || upperTitle.includes("MEAL PLAN")) {
         cleanTitle = "YOUR 7-DAY MEAL PLAN";
+      } else if (upperTitle.includes("SHOPPING LIST")) {
+        cleanTitle = "YOUR WEEKLY GROCERY LIST";
+      } else if (upperTitle.includes("PREP GUIDE")) {
+        cleanTitle = "SUNDAY MEAL PREP GUIDE";
+      } else if (upperTitle.includes("WHAT TO WATCH FOR") || upperTitle.includes("WATCH FOR")) {
+        cleanTitle = "TRACKING YOUR BODY'S SIGNALS";
+      } else if (upperTitle.includes("PERSONAL CLOSING") || upperTitle.includes("CLOSING FROM STEWART") || upperTitle.includes("CLOSING FROM")) {
+        cleanTitle = "A FINAL NOTE FROM STEWART";
       }
+
       sections.push({
         title: cleanTitle || `Page ${num}`,
         content: trimmed
