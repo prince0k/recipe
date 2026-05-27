@@ -188,7 +188,7 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
             />
             <div>
               <h2 className="font-serif italic text-3xl md:text-4xl text-text font-bold mb-2">Letter from Stewart Lucas</h2>
-              <p className="text-xs text-primary font-bold tracking-widest uppercase">Founder & Head Nutritionist, NutriGuide</p>
+              <p className="text-xs text-primary font-bold tracking-widest uppercase">Head Nutritionist, NutriGuide</p>
             </div>
           </div>
 
@@ -213,7 +213,7 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
               <div className="font-serif text-3xl text-primary font-bold italic tracking-wide my-1">
                 Stewart Lucas
               </div>
-              <p className="text-xs text-text-muted uppercase tracking-widest mt-1">Founder, NutriGuide</p>
+              <p className="text-xs text-text-muted uppercase tracking-widest mt-1">Head Nutritionist, NutriGuide</p>
             </div>
             <div className="max-w-xs text-left p-4 bg-primary/5 rounded-2xl border border-primary/10">
               <p className="text-xs text-primary font-serif italic leading-relaxed">
