@@ -11,7 +11,7 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }): Promise<Metadata> {
-  const sParams = await searchParams;
+  const sParams = (await searchParams) || {};
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
   const category = typeof sParams.category === 'string' ? sParams.category : undefined;
 
@@ -36,7 +36,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: {
-      canonical: `/recipes${category ? `?category=${category}` : ""}${page > 1 ? `${category ? '&' : '?'}page=${page}` : ""}`,
+      canonical: `https://stewartlucas.com/recipes${category ? `?category=${category}` : ""}${page > 1 ? `${category ? '&' : '?'}page=${page}` : ""}`,
     },
     openGraph: {
       title,
@@ -71,7 +71,7 @@ export default async function RecipesPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const sParams = await searchParams;
+  const sParams = (await searchParams) || {};
   const category = typeof sParams.category === 'string' ? sParams.category : undefined;
   const time = typeof sParams.time === 'string' ? sParams.time : undefined;
   const dietary = typeof sParams.dietary === 'string' ? sParams.dietary.split(',') : (Array.isArray(sParams.dietary) ? sParams.dietary : undefined);

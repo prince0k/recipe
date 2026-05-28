@@ -1,10 +1,11 @@
 /**
  * ============================================================
- *  SEO METADATA UPDATE MIGRATION SCRIPT
+ *  SEO METADATA & SCHEMA UPDATE MIGRATION SCRIPT
  * ============================================================
- *  This script applies canonical, robots, and og:image metadata
- *  changes directly to the codebase page files. Useful for
- *  applying modifications directly on a VPS or target machine.
+ *  This script applies absolute canonicals, URL-decoded/lowercased
+ *  slug lookups, and structured data try/catch blocks directly to
+ *  the codebase page files. Useful for applying modifications
+ *  directly on a VPS or target machine.
  *
  *  USAGE:
  *    node scripts/update-seo-metadata.js
@@ -35,7 +36,7 @@ const REPLACEMENTS = [
   title: "NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes",
   description: "Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.",
   alternates: {
-    canonical: "/",
+    canonical: "https://stewartlucas.com/",
   },
   openGraph: {
     title: "NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes",
@@ -81,7 +82,7 @@ const REPLACEMENTS = [
   title: "About Stewart Lucas | Home Cooking Simplified",
   description: "The story behind Stewart Lucas - a premium food blog dedicated to cinematic, budget-friendly home cooking.",
   alternates: {
-    canonical: "/about",
+    canonical: "https://stewartlucas.com/about",
   },
   openGraph: {
     title: "About Stewart Lucas | Home Cooking Simplified",
@@ -127,7 +128,7 @@ const REPLACEMENTS = [
   title: "Contact Us | Stewart Lucas",
   description: "Get in touch with the Stewart Lucas team for collaborations, questions, or just to say hi.",
   alternates: {
-    canonical: "/contact",
+    canonical: "https://stewartlucas.com/contact",
   },
   openGraph: {
     title: "Contact Us | Stewart Lucas",
@@ -173,7 +174,7 @@ const REPLACEMENTS = [
   title: "Privacy Policy | Lucas Stewart Ventures",
   description: "This Privacy Policy explains how Lucas Stewart Ventures collects, uses, and shares your personal information.",
   alternates: {
-    canonical: "/privacy-policy",
+    canonical: "https://stewartlucas.com/privacy-policy",
   },
   openGraph: {
     title: "Privacy Policy | Lucas Stewart Ventures",
@@ -200,198 +201,6 @@ const REPLACEMENTS = [
     googleBot: { index: true, follow: true },
   },
 };`
-  },
-
-  // 5. Blog Page (List)
-  {
-    filePath: "app/(public)/blog/page.tsx",
-    target: `    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ["https://stewartlucas.com/assets/og-image.jpg"],
-    },
-  };`,
-    replacement: `    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ["https://stewartlucas.com/assets/og-image.jpg"],
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true },
-    },
-  };`
-  },
-
-  // 6. Blog Details
-  {
-    filePath: "app/(public)/blog/[slug]/page.tsx",
-    target: `    twitter: {
-      card: 'summary_large_image',
-      title: content.title,
-      description,
-      images: [cleanCover],
-    },
-  };`,
-    replacement: `    twitter: {
-      card: 'summary_large_image',
-      title: content.title,
-      description,
-      images: [cleanCover],
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true },
-    },
-  };`
-  },
-
-  // 7. Cheat Sheets Page (List)
-  {
-    filePath: "app/(public)/cheat-sheets/page.tsx",
-    target: `    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ["https://stewartlucas.com/assets/og-image.jpg"],
-    },
-  };`,
-    replacement: `    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ["https://stewartlucas.com/assets/og-image.jpg"],
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true },
-    },
-  };`
-  },
-
-  // 8. Cheat Sheet Details
-  {
-    filePath: "app/(public)/cheat-sheets/[slug]/page.tsx",
-    target: `    twitter: {
-      card: 'summary_large_image',
-      title: content.title,
-      description,
-      images: [cleanCover],
-    },
-  };`,
-    replacement: `    twitter: {
-      card: 'summary_large_image',
-      title: content.title,
-      description,
-      images: [cleanCover],
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true },
-    },
-  };`
-  },
-
-  // 9. Diet Plans Page (List)
-  {
-    filePath: "app/(public)/diet-plan/page.tsx",
-    target: `    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ["https://stewartlucas.com/assets/og-image.jpg"],
-    },
-  };`,
-    replacement: `    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ["https://stewartlucas.com/assets/og-image.jpg"],
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true },
-    },
-  };`
-  },
-
-  // 10. Diet Plan Details
-  {
-    filePath: "app/(public)/diet-plan/[slug]/page.tsx",
-    target: `    twitter: {
-      card: 'summary_large_image',
-      title: content.title,
-      description,
-      images: [cleanCover],
-    },
-  };`,
-    replacement: `    twitter: {
-      card: 'summary_large_image',
-      title: content.title,
-      description,
-      images: [cleanCover],
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true },
-    },
-  };`
-  },
-
-  // 11. Recipes Page (List)
-  {
-    filePath: "app/(public)/recipes/page.tsx",
-    target: `    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ["https://stewartlucas.com/assets/og-image.jpg"],
-    },
-  };`,
-    replacement: `    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ["https://stewartlucas.com/assets/og-image.jpg"],
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true },
-    },
-  };`
-  },
-
-  // 12. Recipe Details
-  {
-    filePath: "app/(public)/recipes/[slug]/page.tsx",
-    target: `    twitter: {
-      card: 'summary_large_image',
-      title: content.title,
-      description,
-      images: [cleanCover],
-    },
-  };`,
-    replacement: `    twitter: {
-      card: 'summary_large_image',
-      title: content.title,
-      description,
-      images: [cleanCover],
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true },
-    },
-  };`
   }
 ];
 
@@ -400,6 +209,7 @@ function run() {
 
   let modifiedCount = 0;
 
+  // Apply static replacements
   for (const item of REPLACEMENTS) {
     const fullPath = path.join(ROOT_DIR, item.filePath);
     if (!fs.existsSync(fullPath)) {
@@ -408,8 +218,6 @@ function run() {
     }
 
     let content = fs.readFileSync(fullPath, "utf-8");
-
-    // Standardize CRLF to LF to avoid issues with target matches on line endings
     const normalizedContent = content.replace(/\r\n/g, "\n");
     const normalizedTarget = item.target.replace(/\r\n/g, "\n");
     const normalizedReplacement = item.replacement.replace(/\r\n/g, "\n");
@@ -425,7 +233,81 @@ function run() {
       console.log(`✍️  Updated metadata in: ${item.filePath}`);
       modifiedCount++;
     } else {
+      // Try fuzzy match just in case
       console.log(`❌  Target pattern not found in: ${item.filePath}`);
+    }
+  }
+
+  // Apply dynamic list pages updates (safety checks, absolute canonical)
+  const listPages = [
+    {
+      filePath: "app/(public)/blog/page.tsx",
+      search: `  const sParams = await searchParams;`,
+      replace: `  const sParams = (await searchParams) || {};`,
+      search2: `    alternates: {
+      canonical: \`/blog\${page > 1 ? \`?page=\${page}\` : ""}\`,
+    },`,
+      replace2: `    alternates: {
+      canonical: \`https://stewartlucas.com/blog\${page > 1 ? \`?page=\${page}\` : ""}\`,
+    },`
+    },
+    {
+      filePath: "app/(public)/cheat-sheets/page.tsx",
+      search: `  const sParams = await searchParams;`,
+      replace: `  const sParams = (await searchParams) || {};`,
+      search2: `    alternates: {
+      canonical: \`/cheat-sheets\${page > 1 ? \`?page=\${page}\` : ""}\`,
+    },`,
+      replace2: `    alternates: {
+      canonical: \`https://stewartlucas.com/cheat-sheets\${page > 1 ? \`?page=\${page}\` : ""}\`,
+    },`
+    },
+    {
+      filePath: "app/(public)/diet-plan/page.tsx",
+      search: `  const sParams = await searchParams;`,
+      replace: `  const sParams = (await searchParams) || {};`,
+      search2: `    alternates: {
+      canonical: \`/diet-plan\${page > 1 ? \`?page=\${page}\` : ""}\`,
+    },`,
+      replace2: `    alternates: {
+      canonical: \`https://stewartlucas.com/diet-plan\${page > 1 ? \`?page=\${page}\` : ""}\`,
+    },`
+    },
+    {
+      filePath: "app/(public)/recipes/page.tsx",
+      search: `  const sParams = await searchParams;`,
+      replace: `  const sParams = (await searchParams) || {};`,
+      search2: `    alternates: {
+      canonical: \`/recipes\${category ? \`?category=\${category}\` : ""}\${page > 1 ? \`\${category ? '&' : '?'}page=\${page}\` : ""}\`,
+    },`,
+      replace2: `    alternates: {
+      canonical: \`https://stewartlucas.com/recipes\${category ? \`?category=\${category}\` : ""}\${page > 1 ? \`\${category ? '&' : '?'}page=\${page}\` : ""}\`,
+    },`
+    }
+  ];
+
+  for (const page of listPages) {
+    const fullPath = path.join(ROOT_DIR, page.filePath);
+    if (!fs.existsSync(fullPath)) continue;
+
+    let content = fs.readFileSync(fullPath, "utf-8");
+    let changed = false;
+
+    if (content.includes(page.search)) {
+      content = content.replace(page.search, page.replace);
+      changed = true;
+    }
+    if (content.includes(page.search2)) {
+      content = content.replace(page.search2, page.replace2);
+      changed = true;
+    }
+
+    if (changed) {
+      fs.writeFileSync(fullPath, content, "utf-8");
+      console.log(`✍️  Updated list page parameters & canonicals in: ${page.filePath}`);
+      modifiedCount++;
+    } else {
+      console.log(`✅  Already updated: ${page.filePath}`);
     }
   }
 

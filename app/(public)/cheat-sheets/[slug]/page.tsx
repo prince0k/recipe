@@ -9,8 +9,9 @@ export async function generateMetadata(
   props: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
   const { slug } = await props.params;
+  const decodedSlug = decodeURIComponent(slug).toLowerCase();
   const content = await prisma.content.findUnique({
-    where: { slug, type: 'CHEAT_SHEET' },
+    where: { slug: decodedSlug, type: 'CHEAT_SHEET' },
     select: { title: true, excerpt: true, coverImage: true, tags: true, seoTitle: true, seoDesc: true }
   });
 
@@ -40,7 +41,7 @@ export async function generateMetadata(
     description,
     keywords: parsedTags,
     alternates: {
-      canonical: `/cheat-sheets/${slug}`,
+      canonical: `https://stewartlucas.com/cheat-sheets/${decodedSlug}`,
     },
     openGraph: {
       title: content.title,
@@ -64,10 +65,11 @@ export async function generateMetadata(
 
 export default async function CheatSheetPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
+  const decodedSlug = decodeURIComponent(params.slug).toLowerCase();
   const session = await auth();
 
   const content = await prisma.content.findUnique({
-    where: { slug: params.slug, type: "CHEAT_SHEET" }
+    where: { slug: decodedSlug, type: "CHEAT_SHEET" }
   });
 
   if (!content || !content.published) notFound();

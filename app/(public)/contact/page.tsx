@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Contact Us | Stewart Lucas",
   description: "Get in touch with the Stewart Lucas team for collaborations, questions, or just to say hi.",
   alternates: {
-    canonical: "/contact",
+    canonical: "https://stewartlucas.com/contact",
   },
   openGraph: {
     title: "Contact Us | Stewart Lucas",

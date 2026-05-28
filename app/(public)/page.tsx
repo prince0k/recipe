@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   title: "NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes",
   description: "Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.",
   alternates: {
-    canonical: "/",
+    canonical: "https://stewartlucas.com/",
   },
   openGraph: {
     title: "NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes",

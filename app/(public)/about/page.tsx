@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "About Stewart Lucas | Home Cooking Simplified",
   description: "The story behind Stewart Lucas - a premium food blog dedicated to cinematic, budget-friendly home cooking.",
   alternates: {
-    canonical: "/about",
+    canonical: "https://stewartlucas.com/about",
   },
   openGraph: {
     title: "About Stewart Lucas | Home Cooking Simplified",
