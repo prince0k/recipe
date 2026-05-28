@@ -19,6 +19,9 @@ const newsreader = Newsreader({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://stewartlucas.com'),
+  alternates: {
+    canonical: 'https://stewartlucas.com',
+  },
   title: {
     default: 'NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes',
     template: '%s | NutriGuide by Stewart Lucas',

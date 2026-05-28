@@ -43,12 +43,12 @@ export default function AboutPage() {
           </div>
           <div className="space-y-10">
             <div>
-              <h2 className="text-3xl font-bold text-text mb-6">Simple, Honest, & Authentic.</h2>
+              <h2 className="text-3xl font-bold text-text mb-6">Simple, Honest, & Science-Backed.</h2>
               <p className="text-lg text-text-muted leading-relaxed mb-6">
-                Stewart Lucas started in a small kitchen with a big dream: to make home cooking feel as beautiful as it tastes. We focus on real ingredients, simple techniques, and the warm, welcoming atmosphere that makes every dish feel like a piece of art.
+                Stewart Lucas is a Certified Nutritionist and culinary consultant with over a decade of clinical experience. After years of working with clients to navigate insulin resistance, hormone balance, and sustainable wellness, Stewart founded NutriGuide to bridge the gap between science-backed diet plans and beautiful, easy home cooking.
               </p>
               <p className="text-lg text-text-muted leading-relaxed">
-                Our mission is to empower you to cook delicious, healthy, and budget-friendly meals without the stress. From 15-minute weeknight pasta to slow-cooked Sunday roasts, we're here to guide you every step of the way.
+                Our mission is to empower you to cook meals that are not only nutritionally optimized for wellness but also simple, affordable, and delicious. From 15-minute blood-sugar-balancing quick fixes to slow-cooked Sunday feasts, every recipe is crafted to feed both your body and your soul.
               </p>
             </div>
 

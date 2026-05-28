@@ -86,7 +86,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           select: { emailVerified: true }
         });
 
-        if (!dbUser?.emailVerified) {
+        if (dbUser && !dbUser.emailVerified) {
           await prisma.user.update({
             where: { email: user.email },
             data: { emailVerified: new Date() }

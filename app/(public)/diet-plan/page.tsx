@@ -53,11 +53,6 @@ export async function generateMetadata({
 }
 
 export default async function DietPlansPage() {
-  const session = await auth();
-  if (!session || !session.user) {
-    redirect("/login?callbackUrl=/diet-plan");
-  }
-
   const plans = await getAllDietPlans();
 
   return (

@@ -58,11 +58,6 @@ export default async function CheatSheetsPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const session = await auth();
-  if (!session || !session.user) {
-    redirect("/login?callbackUrl=/cheat-sheets");
-  }
-
   const sParams = await searchParams;
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
   const pageSize = 9;

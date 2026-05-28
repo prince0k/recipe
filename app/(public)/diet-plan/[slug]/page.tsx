@@ -49,10 +49,6 @@ export default async function DietPlanPage(props: { params: Promise<{ slug: stri
   const params = await props.params;
   const session = await auth();
 
-  if (!session || !session.user) {
-    redirect(`/login?callbackUrl=/diet-plan/${params.slug}`);
-  }
-
   const content = await prisma.content.findUnique({
     where: { slug: params.slug, type: "DIET_PLAN" }
   });
