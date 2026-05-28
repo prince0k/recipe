@@ -5,11 +5,32 @@ import { EmailCaptureForm } from "@/components/ui/EmailCaptureForm";
 export const metadata: Metadata = {
   title: "About Stewart Lucas | Home Cooking Simplified",
   description: "The story behind Stewart Lucas - a premium food blog dedicated to cinematic, budget-friendly home cooking.",
+  alternates: {
+    canonical: "/about",
+  },
+  openGraph: {
+    title: "About Stewart Lucas | Home Cooking Simplified",
+    description: "The story behind Stewart Lucas - a premium food blog dedicated to cinematic, budget-friendly home cooking.",
+    url: "https://stewartlucas.com/about",
+    images: [
+      {
+        url: "https://stewartlucas.com/assets/stewart_lucas.webp",
+        width: 1200,
+        height: 630,
+        alt: "About Stewart Lucas",
+      },
+    ],
+  },
   twitter: {
     card: "summary_large_image",
     title: "About Stewart Lucas | Home Cooking Simplified",
     description: "The story behind Stewart Lucas - a premium food blog dedicated to cinematic, budget-friendly home cooking.",
     images: ["https://stewartlucas.com/assets/stewart_lucas.webp"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
   },
 };
 

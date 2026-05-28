@@ -54,6 +54,11 @@ export async function generateMetadata(
       description,
       images: [cleanCover],
     },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true },
+    },
   };
 }
 

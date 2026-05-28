@@ -4,11 +4,32 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Privacy Policy | Lucas Stewart Ventures",
   description: "This Privacy Policy explains how Lucas Stewart Ventures collects, uses, and shares your personal information.",
+  alternates: {
+    canonical: "/privacy-policy",
+  },
+  openGraph: {
+    title: "Privacy Policy | Lucas Stewart Ventures",
+    description: "This Privacy Policy explains how Lucas Stewart Ventures collects, uses, and shares your personal information.",
+    url: "https://stewartlucas.com/privacy-policy",
+    images: [
+      {
+        url: "https://stewartlucas.com/assets/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Privacy Policy | Lucas Stewart Ventures",
+      },
+    ],
+  },
   twitter: {
     card: "summary_large_image",
     title: "Privacy Policy | Lucas Stewart Ventures",
     description: "This Privacy Policy explains how Lucas Stewart Ventures collects, uses, and shares your personal information.",
     images: ["https://stewartlucas.com/assets/og-image.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
   },
 };
 

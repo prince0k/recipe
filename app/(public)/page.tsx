@@ -13,11 +13,32 @@ import { prisma } from "@/lib/db";
 export const metadata: Metadata = {
   title: "NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes",
   description: "Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes",
+    description: "Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.",
+    url: "https://stewartlucas.com/",
+    images: [
+      {
+        url: "https://stewartlucas.com/assets/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "NutriGuide by Stewart Lucas",
+      },
+    ],
+  },
   twitter: {
     card: "summary_large_image",
     title: "NutriGuide by Stewart Lucas",
     description: "Free science-backed diet plans and healthy recipes.",
     images: ["https://stewartlucas.com/assets/og-image.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
   },
 };
 

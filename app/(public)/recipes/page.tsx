@@ -58,6 +58,11 @@ export async function generateMetadata({
       description,
       images: ["https://stewartlucas.com/assets/og-image.jpg"],
     },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true },
+    },
   };
 }
 
