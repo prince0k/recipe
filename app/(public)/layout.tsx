@@ -5,8 +5,6 @@ import { SubscribePopup } from "@/components/ui/SubscribePopup";
 import { VerificationPopup } from "@/components/VerificationPopup";
 import { AdBanner } from "@/components/ui/AdBanner";
 
-export const dynamic = "force-dynamic";
-
 export default function PublicLayout({
   children,
 }: {

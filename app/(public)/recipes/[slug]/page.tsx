@@ -178,6 +178,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
       "@type": "Recipe",
       "name": recipe.title,
       "description": recipe.excerpt || "A delicious healthy recipe from Stewart Lucas.",
+      "url": `https://stewartlucas.com/recipes/${recipe.slug}`,
       "author": {
         "@type": "Person",
         "name": "Stewart Lucas",
@@ -186,10 +187,18 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
       "publisher": {
         "@type": "Organization",
         "name": "NutriGuide by Stewart Lucas",
-        "url": "https://stewartlucas.com"
+        "url": "https://stewartlucas.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://stewartlucas.com/assets/og-image.jpg"
+        }
       },
       "image": [baseImageUrl],
       "datePublished": recipe.createdAt?.toISOString(),
+      "dateModified": recipe.updatedAt?.toISOString(),
+      "keywords": tags.join(", "),
+      "recipeCategory": tags.find((t: string) => ["Breakfast", "Lunch", "Dinner", "Snack", "Dessert"].includes(t)) || "Main Course",
+      "recipeCuisine": "Healthy",
       ...(prepTimeMinutes && { "prepTime": `PT${prepTimeMinutes}M` }),
       ...(durationMinutes && { "cookTime": `PT${durationMinutes}M` }),
       ...((prepTimeMinutes || durationMinutes) && {
@@ -199,7 +208,9 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
         "aggregateRating": {
           "@type": "AggregateRating",
           "ratingValue": avgRating.toFixed(1),
-          "reviewCount": reviewCount
+          "ratingCount": reviewCount,
+          "bestRating": "5",
+          "worstRating": "1"
         }
       }),
       ...(recipe.servings && { "recipeYield": `${recipe.servings} servings` }),
