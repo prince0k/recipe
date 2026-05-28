@@ -27,9 +27,12 @@ export async function generateMetadata(
   const title = content.seoTitle || `${content.title} | Cheat Sheets by Stewart Lucas`;
   const description = content.seoDesc || content.excerpt?.slice(0, 155) || 'Free downloadable cheat sheet from NutriGuide.';
 
-  const cleanCover = content.coverImage
-    ? content.coverImage.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/g, '')
-    : '/assets/og-image.jpg';
+  const cleanCover = (() => {
+    if (!content.coverImage) return 'https://stewartlucas.com/assets/og-image.jpg';
+    const path = content.coverImage.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/g, '');
+    if (path.startsWith('http')) return path;
+    return `https://stewartlucas.com${path.startsWith('/') ? '' : '/'}${path}`;
+  })();
 
   return {
     metadataBase: new URL('https://stewartlucas.com'),

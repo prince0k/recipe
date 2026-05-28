@@ -35,7 +35,7 @@ export async function generateMetadata({
       url,
       images: [
         {
-          url: "/assets/og-image.jpg",
+          url: "https://stewartlucas.com/assets/og-image.jpg",
           width: 1200,
           height: 630,
           alt: "Kitchen Stories | Stewart Lucas",
@@ -46,7 +46,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: ["/assets/og-image.jpg"],
+      images: ["https://stewartlucas.com/assets/og-image.jpg"],
     },
   };
 }
