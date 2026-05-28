@@ -5,9 +5,8 @@ export async function generateMetadata(
   props: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const decodedSlug = decodeURIComponent(slug).toLowerCase();
   const content = await prisma.content.findUnique({
-    where: { slug: decodedSlug, type: 'BLOG' },
+    where: { slug, type: 'BLOG' },
     select: { title: true, excerpt: true, coverImage: true, seoTitle: true, seoDesc: true }
   });
 
@@ -28,7 +27,7 @@ export async function generateMetadata(
     title,
     description,
     alternates: {
-      canonical: `https://stewartlucas.com/blog/${decodedSlug}`,
+      canonical: `/blog/${slug}`,
     },
     openGraph: {
       title: content.title,
@@ -56,11 +55,10 @@ import { auth } from "@/lib/auth";
 
 export default async function BlogPostPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
-  const decodedSlug = decodeURIComponent(params.slug).toLowerCase();
   const session = await auth();
 
   const content = await prisma.content.findUnique({
-    where: { slug: decodedSlug, type: "BLOG" }
+    where: { slug: params.slug, type: "BLOG" }
   });
 
   if (!content || !content.published) notFound();

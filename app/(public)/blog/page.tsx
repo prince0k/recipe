@@ -8,7 +8,7 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }): Promise<Metadata> {
-  const sParams = (await searchParams) || {};
+  const sParams = await searchParams;
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
 
   let title = "Kitchen Stories | Stewart Lucas";
@@ -26,7 +26,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: {
-      canonical: `https://stewartlucas.com/blog${page > 1 ? `?page=${page}` : ""}`,
+      canonical: `/blog${page > 1 ? `?page=${page}` : ""}`,
     },
     openGraph: {
       title,
@@ -61,7 +61,7 @@ export default async function BlogPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const sParams = (await searchParams) || {};
+  const sParams = await searchParams;
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
   const pageSize = 9;
   

@@ -10,7 +10,7 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }): Promise<Metadata> {
-  const sParams = (await searchParams) || {};
+  const sParams = await searchParams;
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
 
   let title = "Cheat Sheets | Stewart Lucas";
@@ -28,7 +28,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: {
-      canonical: `https://stewartlucas.com/cheat-sheets${page > 1 ? `?page=${page}` : ""}`,
+      canonical: `/cheat-sheets${page > 1 ? `?page=${page}` : ""}`,
     },
     openGraph: {
       title,
@@ -63,7 +63,7 @@ export default async function CheatSheetsPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const sParams = (await searchParams) || {};
+  const sParams = await searchParams;
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
   const pageSize = 9;
 

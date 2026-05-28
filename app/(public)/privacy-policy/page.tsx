@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Privacy Policy | Lucas Stewart Ventures",
   description: "This Privacy Policy explains how Lucas Stewart Ventures collects, uses, and shares your personal information.",
   alternates: {
-    canonical: "https://stewartlucas.com/privacy-policy",
+    canonical: "/privacy-policy",
   },
   openGraph: {
     title: "Privacy Policy | Lucas Stewart Ventures",

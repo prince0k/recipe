@@ -7,9 +7,8 @@ export async function generateMetadata(
   props: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const decodedSlug = decodeURIComponent(slug).toLowerCase();
   const content = await prisma.content.findUnique({
-    where: { slug: decodedSlug },
+    where: { slug },
     select: { title: true, excerpt: true, coverImage: true, tags: true, seoTitle: true, seoDesc: true }
   });
 
@@ -39,7 +38,7 @@ export async function generateMetadata(
     description,
     keywords: parsedTags,
     alternates: {
-      canonical: `https://stewartlucas.com/recipes/${decodedSlug}`,
+      canonical: `/recipes/${slug}`,
     },
     openGraph: {
       title: content.title,
@@ -73,11 +72,10 @@ import { ShareButtons } from "@/components/ui/ShareButtons";
 
 export default async function RecipeDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const decodedSlug = decodeURIComponent(slug).toLowerCase();
   const session = await auth();
 
   const recipe = await prisma.content.findUnique({
-    where: { slug: decodedSlug },
+    where: { slug },
     include: {
       reviews: {
         where: { isApproved: true },
@@ -225,21 +223,12 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     };
   }
 
-  let schemaScript = null;
-  try {
-    schemaScript = (
+  return (
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaJson) }}
       />
-    );
-  } catch (e) {
-    console.error("Failed to render recipe JSON-LD schema:", e);
-  }
-
-  return (
-    <>
-      {schemaScript}
       <div className="bg-background min-h-screen">
       {/* Cinematic Hero Header */}
       <div className="relative h-[60vh] min-h-[400px] w-full bg-black" id="video-player">

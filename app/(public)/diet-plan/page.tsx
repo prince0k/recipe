@@ -9,7 +9,7 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }): Promise<Metadata> {
-  const sParams = (await searchParams) || {};
+  const sParams = await searchParams;
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
 
   let title = "Diet Plans | Stewart Lucas";
@@ -27,7 +27,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: {
-      canonical: `https://stewartlucas.com/diet-plan${page > 1 ? `?page=${page}` : ""}`,
+      canonical: `/diet-plan${page > 1 ? `?page=${page}` : ""}`,
     },
     openGraph: {
       title,
