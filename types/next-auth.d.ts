@@ -8,10 +8,12 @@ declare module "next-auth" {
     user: {
       id: string
       role: string
+      emailVerified: Date | string | null
     } & DefaultSession["user"]
   }
 
   interface User {
     role: string
+    emailVerified?: Date | string | null
   }
 }

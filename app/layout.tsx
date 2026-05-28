@@ -70,6 +70,7 @@ export const viewport: Viewport = {
 };
 
 import { SignupTracker } from "@/components/ui/SignupTracker";
+import { EmailVerificationOverlay } from "@/components/ui/EmailVerificationOverlay";
 import { BotpressChat } from "@/components/ui/BotpressChatWrapper";
 
 export default function RootLayout({
@@ -101,6 +102,7 @@ export default function RootLayout({
         </Script>
         <SessionProvider>
           <SignupTracker />
+          <EmailVerificationOverlay />
           <BotpressChat />
           {children}
         </SessionProvider>

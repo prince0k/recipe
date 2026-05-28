@@ -79,21 +79,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       }
 
-      // 2. OAuth flow (Google/Yahoo): Auto-verify if needed
-      if (account?.provider !== "credentials" && user.email) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: user.email },
-          select: { emailVerified: true }
-        });
-
-        if (dbUser && !dbUser.emailVerified) {
-          await prisma.user.update({
-            where: { email: user.email },
-            data: { emailVerified: new Date() }
-          });
-        }
-      }
-
       return true;
     },
     jwt({ token, user }) {
@@ -103,10 +88,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return token;
     },
-    session({ session, token }) {
+    async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+
+        // Fetch latest verification status directly from DB to bypass JWT caching
+        const dbUser = await prisma.user.findUnique({
+          where: { id: session.user.id },
+          select: { emailVerified: true }
+        });
+        session.user.emailVerified = dbUser?.emailVerified || null;
       }
       return session;
     }
@@ -115,9 +107,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   events: {
-    async signIn({ user, isNewUser }) {
+    async signIn({ user, isNewUser, account }) {
       if (isNewUser && user.email) {
         console.log(`[auth] New user signed in: ${user.email}. Triggering smart tracking.`);
+        
+        // Force verification for OAuth users by clearing the auto-set emailVerified field on first login
+        if (account?.provider !== "credentials") {
+          await prisma.user.update({
+            where: { email: user.email },
+            data: { emailVerified: null }
+          });
+          console.log(`[auth] Cleared emailVerified for new OAuth user: ${user.email}`);
+        }
       }
     }
   }
