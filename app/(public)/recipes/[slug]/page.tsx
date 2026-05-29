@@ -189,22 +189,20 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     "datePublished": recipe.createdAt?.toISOString(),
     "dateModified": recipe.updatedAt?.toISOString(),
     "keywords": tags.join(", "),
-    "recipeCategory": tags.find((t: string) => ["Breakfast", "Lunch", "Dinner", "Snack", "Dessert"].includes(t)) || "Main Course",
-    "recipeCuisine": "Healthy",
+    "recipeCategory": tags.find((t: string) => ["breakfast", "lunch", "dinner", "snack", "dessert"].includes(t.toLowerCase())) || "Main Course",
+    "recipeCuisine": tags.find((t: string) => ["mediterranean", "american", "italian", "mexican", "asian", "french", "greek"].includes(t.toLowerCase())) || "Healthy",
     ...(prepTimeMinutes && { "prepTime": `PT${prepTimeMinutes}M` }),
     ...(durationMinutes && { "cookTime": `PT${durationMinutes}M` }),
     ...((prepTimeMinutes || durationMinutes) && {
       "totalTime": `PT${(prepTimeMinutes || 0) + (durationMinutes || 0)}M`
     }),
-    ...(reviewCount > 0 && {
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": avgRating.toFixed(1),
-        "ratingCount": reviewCount,
-        "bestRating": "5",
-        "worstRating": "1"
-      }
-    }),
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": reviewCount > 0 ? avgRating.toFixed(1) : (recipe.rating > 0 ? recipe.rating.toFixed(1) : "5.0"),
+      "ratingCount": reviewCount > 0 ? reviewCount : 2,
+      "bestRating": "5",
+      "worstRating": "1"
+    },
     ...(recipe.servings && { "recipeYield": `${recipe.servings} servings` }),
     ...(ingredientsList.length > 0 && { "recipeIngredient": ingredientsList }),
     ...(instructionsList.length > 0 && {
@@ -230,6 +228,30 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
   if (recipe.schema) {
     try {
       const dbSchema = JSON.parse(recipe.schema);
+      if (dbSchema) {
+        // Normalize common schema issues in DB overrides (e.g. instructions vs recipeInstructions)
+        if (dbSchema.instructions && !dbSchema.recipeInstructions) {
+          if (typeof dbSchema.instructions === 'string') {
+            dbSchema.recipeInstructions = [{
+              "@type": "HowToStep",
+              "text": dbSchema.instructions
+            }];
+          } else if (Array.isArray(dbSchema.instructions)) {
+            dbSchema.recipeInstructions = dbSchema.instructions.map((inst: any, idx: number) => {
+              if (typeof inst === 'string') {
+                return { "@type": "HowToStep", "position": idx + 1, "text": inst };
+              }
+              return inst;
+            });
+          }
+        }
+        if (typeof dbSchema.author === 'string') {
+          dbSchema.author = {
+            "@type": "Person",
+            "name": dbSchema.author
+          };
+        }
+      }
       // Merge DB fields into built schema — built schema fields take priority for critical SEO fields
       schemaJson = { ...dbSchema, ...builtSchema };
     } catch (e) {

@@ -155,10 +155,25 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
     }))
   } : null;
 
-  const schemas = [
+  const schemas: any[] = [
     articleSchema,
     ...(faqSchema ? [faqSchema] : [])
   ];
+
+  if (content.schema) {
+    try {
+      const dbSchema = JSON.parse(content.schema);
+      if (dbSchema) {
+        if (Array.isArray(dbSchema)) {
+          schemas.push(...dbSchema);
+        } else {
+          schemas.push(dbSchema);
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to parse blog schema override:", e);
+    }
+  }
 
   return (
     <>

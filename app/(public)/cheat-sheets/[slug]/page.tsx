@@ -164,10 +164,25 @@ export default async function CheatSheetPage(props: { params: Promise<{ slug: st
     }
   };
 
-  const schemas = [
+  const schemas: any[] = [
     articleSchema,
     ...(faqSchema ? [faqSchema] : [])
   ];
+
+  if (content.schema) {
+    try {
+      const dbSchema = JSON.parse(content.schema);
+      if (dbSchema) {
+        if (Array.isArray(dbSchema)) {
+          schemas.push(...dbSchema);
+        } else {
+          schemas.push(dbSchema);
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to parse cheat sheet schema override:", e);
+    }
+  }
 
   return (
     <>
