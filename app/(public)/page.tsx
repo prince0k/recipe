@@ -11,13 +11,13 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = {
-  title: "NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes",
+  title: "NutriGuide — Free Diet Plans & Healthy Recipes | Stewart Lucas",
   description: "Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes",
+    title: "NutriGuide — Free Diet Plans & Healthy Recipes | Stewart Lucas",
     description: "Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.",
     url: "https://stewartlucas.com/",
     images: [
@@ -41,6 +41,38 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true },
   },
 };
+
+// Organization + WebSite JSON-LD for Google Knowledge Panel
+const homepageJsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "NutriGuide by Stewart Lucas",
+    "url": "https://stewartlucas.com",
+    "logo": "https://stewartlucas.com/assets/og-image.jpg",
+    "description": "Free science-backed diet plans, healthy recipes, and meal prep guides.",
+    "founder": {
+      "@type": "Person",
+      "name": "Stewart Lucas",
+      "url": "https://stewartlucas.com/about"
+    },
+    "sameAs": [
+      "https://instagram.com/nutriguide.stewartlucas",
+      "https://pinterest.com/nutriguide_stewartlucas"
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "NutriGuide by Stewart Lucas",
+    "url": "https://stewartlucas.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://stewartlucas.com/recipes?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+];
 
 export default async function Home() {
   const session = await auth();
@@ -111,6 +143,11 @@ export default async function Home() {
   }
 
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageJsonLd) }}
+      />
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <section className="relative h-[85vh] flex items-center overflow-hidden">
@@ -541,6 +578,7 @@ export default async function Home() {
         />
       </section>
     </div>
+    </>
   );
 }
 

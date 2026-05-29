@@ -95,12 +95,91 @@ export default async function CheatSheetPage(props: { params: Promise<{ slug: st
     orderBy: { createdAt: "desc" }
   });
 
+  // Parse FAQs dynamically from content body
+  const faqs: { question: string; answer: string }[] = [];
+  const htmlStr = content.body || "";
+  const detailsRegex = /<details[^>]*>\s*<summary[^>]*>([\s\S]*?)<\/summary>\s*([\s\S]*?)<\/details>/gi;
+  let match;
+  while ((match = detailsRegex.exec(htmlStr)) !== null) {
+    const question = match[1].replace(/<[^>]*>?/gm, '').trim();
+    const answer = match[2].replace(/<[^>]*>?/gm, '').trim();
+    if (question && answer) {
+      faqs.push({ question, answer });
+    }
+  }
+  if (faqs.length === 0) {
+    const qRegex = /<(h3|h4)[^>]*>([^<]*?\?[^<]*?)<\/\1>\s*<p[^>]*>([\s\S]*?)<\/p>/gi;
+    let qMatch;
+    while ((qMatch = qRegex.exec(htmlStr)) !== null) {
+      const question = qMatch[2].replace(/<[^>]*>?/gm, '').trim();
+      const answer = qMatch[3].replace(/<[^>]*>?/gm, '').trim();
+      if (question && answer) {
+        faqs.push({ question, answer });
+      }
+    }
+  }
+
+  const faqSchema = faqs.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  } : null;
+
+  const cleanCover = content.coverImage
+    ? (content.coverImage.startsWith('http') ? content.coverImage : `https://stewartlucas.com${content.coverImage.startsWith('/') ? '' : '/'}${content.coverImage}`)
+    : 'https://stewartlucas.com/assets/og-image.jpg';
+
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": content.title,
+    "description": content.excerpt || 'A free science-backed cheat sheet from NutriGuide.',
+    "image": [cleanCover],
+    "datePublished": content.createdAt?.toISOString(),
+    "dateModified": content.updatedAt?.toISOString(),
+    "author": {
+      "@type": "Person",
+      "name": "Stewart Lucas",
+      "url": "https://stewartlucas.com/about"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "NutriGuide by Stewart Lucas",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://stewartlucas.com/assets/og-image.jpg"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://stewartlucas.com/cheat-sheets/${params.slug}`
+    }
+  };
+
+  const schemas = [
+    articleSchema,
+    ...(faqSchema ? [faqSchema] : [])
+  ];
+
   return (
-    <ContentDetailView 
-      content={content} 
-      relatedItems={relatedItems} 
-      isFavorited={isFavorited} 
-      adComponent={<AdBanner placement="BLOG_SIDEBAR" />}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
+      />
+      <ContentDetailView 
+        content={content} 
+        relatedItems={relatedItems} 
+        isFavorited={isFavorited} 
+        adComponent={<AdBanner placement="BLOG_SIDEBAR" />}
+      />
+    </>
   );
 }

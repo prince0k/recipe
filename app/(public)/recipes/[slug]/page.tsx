@@ -163,75 +163,77 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     ? cleanRecipeCover
     : `https://stewartlucas.com${cleanRecipeCover}`;
 
-  let schemaJson = null;
+  // Always build the enhanced schema from code
+  const builtSchema: Record<string, any> = {
+    "@context": "https://schema.org",
+    "@type": "Recipe",
+    "name": recipe.title,
+    "description": recipe.excerpt || "A delicious healthy recipe from Stewart Lucas.",
+    "url": `https://stewartlucas.com/recipes/${recipe.slug}`,
+    "author": {
+      "@type": "Person",
+      "name": "Stewart Lucas",
+      "url": "https://stewartlucas.com/about"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "NutriGuide by Stewart Lucas",
+      "url": "https://stewartlucas.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://stewartlucas.com/assets/og-image.jpg"
+      }
+    },
+    "image": [baseImageUrl],
+    "datePublished": recipe.createdAt?.toISOString(),
+    "dateModified": recipe.updatedAt?.toISOString(),
+    "keywords": tags.join(", "),
+    "recipeCategory": tags.find((t: string) => ["Breakfast", "Lunch", "Dinner", "Snack", "Dessert"].includes(t)) || "Main Course",
+    "recipeCuisine": "Healthy",
+    ...(prepTimeMinutes && { "prepTime": `PT${prepTimeMinutes}M` }),
+    ...(durationMinutes && { "cookTime": `PT${durationMinutes}M` }),
+    ...((prepTimeMinutes || durationMinutes) && {
+      "totalTime": `PT${(prepTimeMinutes || 0) + (durationMinutes || 0)}M`
+    }),
+    ...(reviewCount > 0 && {
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": avgRating.toFixed(1),
+        "ratingCount": reviewCount,
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+    }),
+    ...(recipe.servings && { "recipeYield": `${recipe.servings} servings` }),
+    ...(ingredientsList.length > 0 && { "recipeIngredient": ingredientsList }),
+    ...(instructionsList.length > 0 && {
+      "recipeInstructions": instructionsList.map((step: string, i: number) => ({
+        "@type": "HowToStep",
+        "position": i + 1,
+        "text": step
+      }))
+    }),
+    ...((recipe.calories || recipe.protein || recipe.fat || recipe.carbs) && {
+      "nutrition": {
+        "@type": "NutritionInformation",
+        ...(recipe.calories && { "calories": `${recipe.calories} calories` }),
+        ...(recipe.protein && { "proteinContent": recipe.protein }),
+        ...(recipe.fat && { "fatContent": recipe.fat }),
+        ...(recipe.carbs && { "carbohydrateContent": recipe.carbs })
+      }
+    })
+  };
+
+  // Merge any DB-stored schema overrides on top (but never let it remove our enhanced fields)
+  let schemaJson = builtSchema;
   if (recipe.schema) {
     try {
-      schemaJson = JSON.parse(recipe.schema);
+      const dbSchema = JSON.parse(recipe.schema);
+      // Merge DB fields into built schema — built schema fields take priority for critical SEO fields
+      schemaJson = { ...dbSchema, ...builtSchema };
     } catch (e) {
       console.warn("Failed to parse recipe schema override:", e);
     }
-  }
-
-  if (!schemaJson) {
-    schemaJson = {
-      "@context": "https://schema.org",
-      "@type": "Recipe",
-      "name": recipe.title,
-      "description": recipe.excerpt || "A delicious healthy recipe from Stewart Lucas.",
-      "url": `https://stewartlucas.com/recipes/${recipe.slug}`,
-      "author": {
-        "@type": "Person",
-        "name": "Stewart Lucas",
-        "url": "https://stewartlucas.com/about"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "NutriGuide by Stewart Lucas",
-        "url": "https://stewartlucas.com",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://stewartlucas.com/assets/og-image.jpg"
-        }
-      },
-      "image": [baseImageUrl],
-      "datePublished": recipe.createdAt?.toISOString(),
-      "dateModified": recipe.updatedAt?.toISOString(),
-      "keywords": tags.join(", "),
-      "recipeCategory": tags.find((t: string) => ["Breakfast", "Lunch", "Dinner", "Snack", "Dessert"].includes(t)) || "Main Course",
-      "recipeCuisine": "Healthy",
-      ...(prepTimeMinutes && { "prepTime": `PT${prepTimeMinutes}M` }),
-      ...(durationMinutes && { "cookTime": `PT${durationMinutes}M` }),
-      ...((prepTimeMinutes || durationMinutes) && {
-        "totalTime": `PT${(prepTimeMinutes || 0) + (durationMinutes || 0)}M`
-      }),
-      ...(reviewCount > 0 && {
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": avgRating.toFixed(1),
-          "ratingCount": reviewCount,
-          "bestRating": "5",
-          "worstRating": "1"
-        }
-      }),
-      ...(recipe.servings && { "recipeYield": `${recipe.servings} servings` }),
-      ...(ingredientsList.length > 0 && { "recipeIngredient": ingredientsList }),
-      ...(instructionsList.length > 0 && {
-        "recipeInstructions": instructionsList.map((step: string, i: number) => ({
-          "@type": "HowToStep",
-          "position": i + 1,
-          "text": step
-        }))
-      }),
-      ...((recipe.calories || recipe.protein || recipe.fat || recipe.carbs) && {
-        "nutrition": {
-          "@type": "NutritionInformation",
-          ...(recipe.calories && { "calories": `${recipe.calories} calories` }),
-          ...(recipe.protein && { "proteinContent": recipe.protein }),
-          ...(recipe.fat && { "fatContent": recipe.fat }),
-          ...(recipe.carbs && { "carbohydrateContent": recipe.carbs })
-        }
-      })
-    };
   }
 
   return (

@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Newsreader } from "next/font/google";
-import SessionProvider from "@/components/auth/SessionProvider";
 import Script from "next/script";
 import "./globals.css";
+import { ClientProviders } from "@/components/auth/ClientProviders";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -69,10 +69,6 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-import { SignupTracker } from "@/components/ui/SignupTracker";
-import { EmailVerificationOverlay } from "@/components/ui/EmailVerificationOverlay";
-import { BotpressChat } from "@/components/ui/BotpressChatWrapper";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -82,6 +78,10 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${newsreader.variable} bg-background`} suppressHydrationWarning>
       <head />
       <body className="min-h-screen flex flex-col" suppressHydrationWarning>
+        {/* Skip Navigation Link for Accessibility */}
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-bold">
+          Skip to main content
+        </a>
         <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6909933688780427"
           crossOrigin="anonymous"
@@ -100,12 +100,9 @@ export default function RootLayout({
             gtag('config', 'G-STTYDWMM79');
           `}
         </Script>
-        <SessionProvider>
-          <SignupTracker />
-          <EmailVerificationOverlay />
-          <BotpressChat />
+        <ClientProviders>
           {children}
-        </SessionProvider>
+        </ClientProviders>
       </body>
     </html>
   );

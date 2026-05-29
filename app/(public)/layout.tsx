@@ -16,7 +16,7 @@ export default function PublicLayout({
       <Suspense fallback={null}>
         <VerificationPopup />
       </Suspense>
-      <main className="flex-grow">{children}</main>
+      <main id="main-content" className="flex-grow">{children}</main>
       <SubscribePopup />
       <AdBanner placement="GLOBAL_FOOTER" />
       <Footer />

@@ -110,6 +110,37 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
     }
   }
 
+  const cleanCover = content.coverImage
+    ? (content.coverImage.startsWith('http') ? content.coverImage : `https://stewartlucas.com${content.coverImage.startsWith('/') ? '' : '/'}${content.coverImage}`)
+    : 'https://stewartlucas.com/assets/og-image.jpg';
+
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": content.title,
+    "description": content.excerpt || 'A blog post from Stewart Lucas.',
+    "image": [cleanCover],
+    "datePublished": content.createdAt?.toISOString(),
+    "dateModified": content.updatedAt?.toISOString(),
+    "author": {
+      "@type": "Person",
+      "name": "Stewart Lucas",
+      "url": "https://stewartlucas.com/about"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "NutriGuide by Stewart Lucas",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://stewartlucas.com/assets/og-image.jpg"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://stewartlucas.com/blog/${params.slug}`
+    }
+  };
+
   const faqSchema = faqs.length > 0 ? {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -123,14 +154,17 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
     }))
   } : null;
 
+  const schemas = [
+    articleSchema,
+    ...(faqSchema ? [faqSchema] : [])
+  ];
+
   return (
     <>
-      {faqSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
+      />
       <ContentDetailView 
         content={content} 
         relatedItems={relatedItems} 
