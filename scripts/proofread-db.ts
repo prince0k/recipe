@@ -126,7 +126,65 @@ async function main() {
   // Track slugs to ensure uniqueness
   const slugRegistry = new Set<string>();
 
+  // First pass: Identify all unchanged records and reserve their slugs
+  const unchangedRecords = allContent.filter(item => {
+    const newTitle = cleanText(item.title);
+    const newExcerpt = cleanText(item.excerpt);
+    const newBody = cleanText(item.body);
+    const newSeoTitle = cleanText(item.seoTitle || '');
+    const newSeoDesc = cleanText(item.seoDesc || '');
+    const newSchema = cleanText(item.schema || '');
+    const newTags = cleanText(item.tags || '[]');
+    const cleanBaseSlug = generateCleanSlug(newTitle);
+
+    const hasTitleChange = item.title !== newTitle;
+    const hasExcerptChange = item.excerpt !== newExcerpt;
+    const hasBodyChange = item.body !== newBody;
+    const hasSeoTitleChange = (item.seoTitle || '') !== newSeoTitle;
+    const hasSeoDescChange = (item.seoDesc || '') !== newSeoDesc;
+    const hasSchemaChange = (item.schema || '') !== newSchema;
+    const hasTagsChange = (item.tags || '[]') !== newTags;
+    const hasSlugChange = item.slug !== cleanBaseSlug;
+
+    const needsUpdate = hasTitleChange || hasExcerptChange || hasBodyChange || 
+                        hasSeoTitleChange || hasSeoDescChange || hasSchemaChange || 
+                        hasTagsChange || hasSlugChange;
+    return !needsUpdate;
+  });
+
+  // Reserve the slugs of all unchanged records
+  for (const item of unchangedRecords) {
+    slugRegistry.add(item.slug);
+  }
+
+  interface PendingUpdate {
+    id: string;
+    originalSlug: string;
+    targetSlug: string;
+    newTitle: string;
+    newExcerpt: string;
+    newBody: string;
+    newSeoTitle: string | null;
+    newSeoDesc: string | null;
+    newSchema: string | null;
+    newTags: string;
+    type: string;
+    hasTitleChange: boolean;
+    hasExcerptChange: boolean;
+    hasBodyChange: boolean;
+    hasSeoTitleChange: boolean;
+    hasSeoDescChange: boolean;
+    hasSlugChange: boolean;
+    hasSchemaChange: boolean;
+    hasTagsChange: boolean;
+  }
+
+  const pendingUpdates: PendingUpdate[] = [];
+
   for (const item of allContent) {
+    const isUnchanged = unchangedRecords.some(r => r.id === item.id);
+    if (isUnchanged) continue;
+
     const originalTitle = item.title;
     const originalExcerpt = item.excerpt;
     const originalBody = item.body;
@@ -166,42 +224,96 @@ async function main() {
     const hasSchemaChange = originalSchema !== newSchema;
     const hasTagsChange = originalTags !== newTags;
 
-    if (hasTitleChange || hasExcerptChange || hasBodyChange || hasSeoTitleChange || hasSeoDescChange || hasSlugChange || hasSchemaChange || hasTagsChange) {
-      changeCount++;
-      console.log(`----------------------------------------------------------------------`);
-      console.log(`Content ID: ${item.id} [${item.type}]`);
-      
-      if (hasTitleChange) {
-        console.log(`  Title: OLD: "${originalTitle}" -> NEW: "${newTitle}"`);
-      }
-      if (hasSlugChange) {
-        console.log(`  Slug:  OLD: "${originalSlug}" -> NEW: "${targetSlug}"`);
-      }
-      if (hasSchemaChange) {
-        console.log(`  Schema override cleaned (typos/AI terms removed)`);
-      }
-      if (hasTagsChange) {
-        console.log(`  Tags cleaned: OLD: "${originalTags}" -> NEW: "${newTags}"`);
-      }
+    const needsUpdate = hasTitleChange || hasExcerptChange || hasBodyChange || 
+                        hasSeoTitleChange || hasSeoDescChange || hasSlugChange || 
+                        hasSchemaChange || hasTagsChange;
 
-      if (writeMode) {
+    if (needsUpdate) {
+      changeCount++;
+      pendingUpdates.push({
+        id: item.id,
+        originalSlug,
+        targetSlug,
+        newTitle,
+        newExcerpt,
+        newBody,
+        newSeoTitle: newSeoTitle || null,
+        newSeoDesc: newSeoDesc || null,
+        newSchema: newSchema || null,
+        newTags,
+        type: item.type,
+        hasTitleChange,
+        hasExcerptChange,
+        hasBodyChange,
+        hasSeoTitleChange,
+        hasSeoDescChange,
+        hasSlugChange,
+        hasSchemaChange,
+        hasTagsChange
+      });
+    }
+  }
+
+  // Print proposed updates
+  for (const update of pendingUpdates) {
+    console.log(`----------------------------------------------------------------------`);
+    console.log(`Content ID: ${update.id} [${update.type}]`);
+    if (update.hasTitleChange) {
+      console.log(`  Title: OLD: "${allContent.find(c => c.id === update.id)!.title}" -> NEW: "${update.newTitle}"`);
+    }
+    if (update.hasSlugChange) {
+      console.log(`  Slug:  OLD: "${update.originalSlug}" -> NEW: "${update.targetSlug}"`);
+    }
+    if (update.hasExcerptChange) {
+      console.log(`  Excerpt cleaned (typos/AI terms removed)`);
+    }
+    if (update.hasBodyChange) {
+      console.log(`  Body cleaned (typos/AI terms removed)`);
+    }
+    if (update.hasSeoTitleChange) {
+      console.log(`  SEO Title: OLD: "${allContent.find(c => c.id === update.id)!.seoTitle || ''}" -> NEW: "${update.newSeoTitle}"`);
+    }
+    if (update.hasSeoDescChange) {
+      console.log(`  SEO Desc cleaned (typos/AI terms removed)`);
+    }
+    if (update.hasSchemaChange) {
+      console.log(`  Schema override cleaned (typos/AI terms removed)`);
+    }
+    if (update.hasTagsChange) {
+      console.log(`  Tags cleaned: OLD: "${allContent.find(c => c.id === update.id)!.tags}" -> NEW: "${update.newTags}"`);
+    }
+  }
+
+  // Phase 1: Temporarily update changing slugs to free up unique constraint indices
+  if (writeMode && pendingUpdates.length > 0) {
+    console.log(`\n⏳ Phase 1: Freeing up slug constraints...`);
+    for (const update of pendingUpdates) {
+      if (update.originalSlug !== update.targetSlug) {
         await prisma.content.update({
-          where: { id: item.id },
-          data: {
-            title: newTitle,
-            slug: targetSlug,
-            excerpt: newExcerpt,
-            body: newBody,
-            seoTitle: newSeoTitle || null,
-            seoDesc: newSeoDesc || null,
-            schema: newSchema || null,
-            tags: newTags
-          }
+          where: { id: update.id },
+          data: { slug: `${update.originalSlug}-temp-${update.id}` }
         });
       }
-    } else {
-      slugRegistry.add(originalSlug);
     }
+    console.log(`✅ Phase 1 complete. slug constraints cleared.`);
+
+    console.log(`\n⏳ Phase 2: Writing final updates...`);
+    for (const update of pendingUpdates) {
+      await prisma.content.update({
+        where: { id: update.id },
+        data: {
+          title: update.newTitle,
+          slug: update.targetSlug,
+          excerpt: update.newExcerpt,
+          body: update.newBody,
+          seoTitle: update.newSeoTitle,
+          seoDesc: update.newSeoDesc,
+          schema: update.newSchema,
+          tags: update.newTags
+        }
+      });
+    }
+    console.log(`✅ Phase 2 complete. All contents updated.`);
   }
 
   console.log(`\nScanning PersonalizedRequest table...`);
