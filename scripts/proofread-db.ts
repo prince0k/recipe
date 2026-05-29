@@ -133,6 +133,8 @@ async function main() {
     const originalSeoTitle = item.seoTitle || '';
     const originalSeoDesc = item.seoDesc || '';
     const originalSlug = item.slug;
+    const originalSchema = item.schema || '';
+    const originalTags = item.tags || '[]';
 
     // Clean text fields
     const newTitle = cleanText(originalTitle);
@@ -140,15 +142,11 @@ async function main() {
     const newBody = cleanText(originalBody);
     const newSeoTitle = cleanText(originalSeoTitle);
     const newSeoDesc = cleanText(originalSeoDesc);
+    const newSchema = cleanText(originalSchema);
+    const newTags = cleanText(originalTags);
 
     // Slug cleanup: generate clean slug from new title and resolve conflicts
     let baseSlug = generateCleanSlug(newTitle);
-    
-    // Check if the original slug had a suffix, e.g. -17bx1d or -54glx or -w201p
-    // We want to remove any random 5-6 character alphanumeric suffix that was added for DB uniqueness/import,
-    // BUT we must not remove actual parts of words.
-    // Our generateCleanSlug from newTitle automatically creates a clean base slug without any random suffix!
-    // So we can use that baseSlug as our new starting point.
     let targetSlug = baseSlug;
     let counter = 1;
     
@@ -165,37 +163,25 @@ async function main() {
     const hasSeoTitleChange = originalSeoTitle !== newSeoTitle;
     const hasSeoDescChange = originalSeoDesc !== newSeoDesc;
     const hasSlugChange = originalSlug !== targetSlug;
+    const hasSchemaChange = originalSchema !== newSchema;
+    const hasTagsChange = originalTags !== newTags;
 
-    if (hasTitleChange || hasExcerptChange || hasBodyChange || hasSeoTitleChange || hasSeoDescChange || hasSlugChange) {
+    if (hasTitleChange || hasExcerptChange || hasBodyChange || hasSeoTitleChange || hasSeoDescChange || hasSlugChange || hasSchemaChange || hasTagsChange) {
       changeCount++;
       console.log(`----------------------------------------------------------------------`);
-      console.log(`Item ID: ${item.id} [${item.type}]`);
+      console.log(`Content ID: ${item.id} [${item.type}]`);
       
       if (hasTitleChange) {
-        console.log(`  Title:`);
-        console.log(`    OLD: "${originalTitle}"`);
-        console.log(`    NEW: "${newTitle}"`);
+        console.log(`  Title: OLD: "${originalTitle}" -> NEW: "${newTitle}"`);
       }
       if (hasSlugChange) {
-        console.log(`  Slug:`);
-        console.log(`    OLD: "${originalSlug}"`);
-        console.log(`    NEW: "${targetSlug}"`);
+        console.log(`  Slug:  OLD: "${originalSlug}" -> NEW: "${targetSlug}"`);
       }
-      if (hasExcerptChange) {
-        console.log(`  Excerpt: Changed (Stwart/AI terms fixed)`);
+      if (hasSchemaChange) {
+        console.log(`  Schema override cleaned (typos/AI terms removed)`);
       }
-      if (hasBodyChange) {
-        console.log(`  Body: Changed (Stwart/AI terms fixed)`);
-      }
-      if (hasSeoTitleChange) {
-        console.log(`  SEO Title:`);
-        console.log(`    OLD: "${originalSeoTitle}"`);
-        console.log(`    NEW: "${newSeoTitle}"`);
-      }
-      if (hasSeoDescChange) {
-        console.log(`  SEO Desc:`);
-        console.log(`    OLD: "${originalSeoDesc}"`);
-        console.log(`    NEW: "${newSeoDesc}"`);
+      if (hasTagsChange) {
+        console.log(`  Tags cleaned: OLD: "${originalTags}" -> NEW: "${newTags}"`);
       }
 
       if (writeMode) {
@@ -207,25 +193,53 @@ async function main() {
             excerpt: newExcerpt,
             body: newBody,
             seoTitle: newSeoTitle || null,
-            seoDesc: newSeoDesc || null
+            seoDesc: newSeoDesc || null,
+            schema: newSchema || null,
+            tags: newTags
           }
         });
       }
     } else {
-      // Just register the slug if no changes
       slugRegistry.add(originalSlug);
     }
   }
 
+  console.log(`\nScanning PersonalizedRequest table...`);
+  const allReqs = await prisma.personalizedRequest.findMany();
+  let reqChangeCount = 0;
+
+  for (const item of allReqs) {
+    const originalPrompt = item.generatedPrompt || '';
+    const originalContent = item.generatedContent || '';
+    
+    const newPrompt = cleanText(originalPrompt);
+    const newContent = cleanText(originalContent);
+
+    if (originalPrompt !== newPrompt || originalContent !== newContent) {
+      reqChangeCount++;
+      console.log(`PersonalizedRequest ID: ${item.id} (typos/AI terms cleaned)`);
+      
+      if (writeMode) {
+        await prisma.personalizedRequest.update({
+          where: { id: item.id },
+          data: {
+            generatedPrompt: newPrompt,
+            generatedContent: newContent
+          }
+        });
+      }
+    }
+  }
+
   console.log(`\n======================================================================`);
-  console.log(`Total items checked: ${allContent.length}`);
-  console.log(`Total items requiring changes: ${changeCount}`);
+  console.log(`Total Content checked: ${allContent.length} (Requires changes: ${changeCount})`);
+  console.log(`Total PersonalizedRequests checked: ${allReqs.length} (Requires changes: ${reqChangeCount})`);
   
-  if (changeCount > 0 && !writeMode) {
+  if ((changeCount > 0 || reqChangeCount > 0) && !writeMode) {
     console.log(`\n💡 To apply these changes to the database, run:`);
     console.log(`   npx tsx scripts/proofread-db.ts --write`);
-  } else if (changeCount > 0 && writeMode) {
-    console.log(`\n✅ Successfully updated ${changeCount} items in the database!`);
+  } else if ((changeCount > 0 || reqChangeCount > 0) && writeMode) {
+    console.log(`\n✅ Successfully updated database!`);
   } else {
     console.log(`\n✅ Database is clean! No changes needed.`);
   }

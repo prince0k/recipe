@@ -27,13 +27,14 @@ export async function generateMetadata(
     title,
     description,
     alternates: {
-      canonical: `/blog/${slug}`,
+      canonical: `https://stewartlucas.com/blog/${slug}`,
     },
     openGraph: {
       title: content.title,
       description,
       images: [{ url: cleanCover }],
       type: 'article',
+      url: `https://stewartlucas.com/blog/${slug}`,
     },
     twitter: {
       card: 'summary_large_image',

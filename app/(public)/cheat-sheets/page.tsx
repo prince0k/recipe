@@ -28,7 +28,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: {
-      canonical: `/cheat-sheets${page > 1 ? `?page=${page}` : ""}`,
+      canonical: `https://stewartlucas.com/cheat-sheets${page > 1 ? `?page=${page}` : ""}`,
     },
     openGraph: {
       title,

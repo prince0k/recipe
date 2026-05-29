@@ -26,7 +26,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: {
-      canonical: `/blog${page > 1 ? `?page=${page}` : ""}`,
+      canonical: `https://stewartlucas.com/blog${page > 1 ? `?page=${page}` : ""}`,
     },
     openGraph: {
       title,

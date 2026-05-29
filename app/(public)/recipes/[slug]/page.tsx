@@ -38,13 +38,14 @@ export async function generateMetadata(
     description,
     keywords: parsedTags,
     alternates: {
-      canonical: `/recipes/${slug}`,
+      canonical: `https://stewartlucas.com/recipes/${slug}`,
     },
     openGraph: {
       title: content.title,
       description,
       images: [{ url: cleanCover }],
       type: 'article',
+      url: `https://stewartlucas.com/recipes/${slug}`,
     },
     twitter: {
       card: 'summary_large_image',

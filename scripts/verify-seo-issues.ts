@@ -16,7 +16,9 @@ async function verify() {
       { name: 'excerpt', val: item.excerpt },
       { name: 'body', val: item.body },
       { name: 'seoTitle', val: item.seoTitle || '' },
-      { name: 'seoDesc', val: item.seoDesc || '' }
+      { name: 'seoDesc', val: item.seoDesc || '' },
+      { name: 'schema', val: item.schema || '' },
+      { name: 'tags', val: item.tags || '[]' }
     ];
 
     // 1. Check for Stwart typos

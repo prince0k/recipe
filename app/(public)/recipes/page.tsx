@@ -36,7 +36,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: {
-      canonical: `/recipes${category ? `?category=${category}` : ""}${page > 1 ? `${category ? '&' : '?'}page=${page}` : ""}`,
+      canonical: `https://stewartlucas.com/recipes${category ? `?category=${category}` : ""}${page > 1 ? `${category ? '&' : '?'}page=${page}` : ""}`,
     },
     openGraph: {
       title,
