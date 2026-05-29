@@ -25,6 +25,8 @@ export const getFeaturedRecipes = unstable_cache(
         cookingTime: true,
         difficulty: true,
         tags: true,
+        excerpt: true,
+        createdAt: true,
         reviews: {
           where: { isApproved: true },
           select: { rating: true },

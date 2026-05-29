@@ -9,6 +9,7 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { EmailCaptureForm } from "@/components/ui/EmailCaptureForm";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { ContentCard } from "@/components/content/ContentCard";
 
 export const metadata: Metadata = {
   title: "NutriGuide — Free Diet Plans & Healthy Recipes | Stewart Lucas",
@@ -453,7 +454,18 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {featuredRecipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} />
+              <ContentCard
+                key={recipe.id}
+                type="RECIPE"
+                title={recipe.title}
+                slug={recipe.slug}
+                excerpt={recipe.excerpt}
+                coverImage={recipe.coverImage}
+                tags={JSON.parse(recipe.tags || "[]")}
+                hrefPrefix="recipes"
+                reviews={recipe.reviews}
+                createdAt={recipe.createdAt}
+              />
             ))}
             
             {featuredRecipes.length === 0 && (
@@ -582,67 +594,3 @@ export default async function Home() {
   );
 }
 
-function RecipeCard({ recipe }: { recipe: any }) {
-  const tags = JSON.parse(recipe.tags || "[]");
-  return (
-    <div className="group bg-white rounded-[2.5rem] p-4 cinematic-shadow transition-all duration-500 hover:-translate-y-2">
-      <div className="relative h-64 rounded-[2rem] overflow-hidden mb-6">
-        <Image 
-          src={recipe.coverImage || "https://images.unsplash.com/photo-1495195129352-aec325b55b65?auto=format&fit=crop&q=80&w=1000"} 
-          alt={recipe.title} 
-          fill 
-          className="object-cover transition-transform duration-700 group-hover:scale-110" 
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-        <div className="absolute top-4 right-4 flex gap-2">
-          {(() => {
-            try {
-              const tags = typeof recipe.tags === 'string' ? JSON.parse(recipe.tags) : recipe.tags;
-              return (Array.isArray(tags) ? tags : []).slice(0, 2).map((tag: string) => (
-                <span key={tag} className="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-text">
-                  {tag}
-                </span>
-              ));
-            } catch (e) {
-              return null;
-            }
-          })()}
-        </div>
-      </div>
-      <div className="px-4 pb-4">
-        <div className="flex items-center gap-4 mb-3">
-          <span className="text-olive text-xs font-bold flex items-center">
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            {recipe.cookingTime || '45m'}
-          </span>
-          <span className="text-secondary text-xs font-bold flex items-center">
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-            {recipe.difficulty || 'Medium'}
-          </span>
-        </div>
-        <h3 className="text-2xl font-bold text-text mb-2 group-hover:text-primary transition-colors leading-tight line-clamp-2">{recipe.title}</h3>
-        {(() => {
-          const approvedReviews = recipe.reviews || [];
-          const reviewCount = approvedReviews.length;
-          const avgRating = reviewCount > 0 
-            ? approvedReviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviewCount 
-            : 0;
-          if (reviewCount === 0) return null;
-          return (
-            <div className="flex items-center gap-0.5 mb-4">
-              {[1, 2, 3, 4, 5].map((s) => (
-                <span key={s} className={s <= Math.round(avgRating) ? 'text-amber-400' : 'text-gray-200'} style={{ fontSize: '13px' }}>
-                  ★
-                </span>
-              ))}
-              <span className="text-[10px] font-bold text-text-muted ml-1">({reviewCount})</span>
-            </div>
-          );
-        })()}
-        <Link href={`/recipes/${recipe.slug}`} className="text-sm font-bold text-primary flex items-center group-hover:translate-x-2 transition-transform">
-          View Recipe <span className="ml-1">→</span>
-        </Link>
-      </div>
-    </div>
-  );
-}
