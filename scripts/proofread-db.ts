@@ -62,16 +62,36 @@ function cleanText(text: string): string {
   cleaned = cleaned.replace(/\bHonest, Stunning\b/g, 'Expert, Practical');
   cleaned = cleaned.replace(/\bartistry in honest eating\b/gi, 'the art of healthy eating');
   cleaned = cleaned.replace(/\bArtistry in Honest Eating\b/g, 'The Art of Healthy Eating');
+  cleaned = cleaned.replace(/\bhonest ingredients\b/gi, 'simple ingredients');
+  cleaned = cleaned.replace(/\bHonest ingredients\b/gi, 'Simple ingredients');
+  cleaned = cleaned.replace(/\bHonest Ingredients\b/g, 'Simple Ingredients');
+  cleaned = cleaned.replace(/\bhonest cooking\b/gi, 'healthy cooking');
+  cleaned = cleaned.replace(/\bHonest cooking\b/gi, 'Healthy cooking');
+  cleaned = cleaned.replace(/\bHonest Cooking\b/g, 'Healthy Cooking');
+  cleaned = cleaned.replace(/\bhonest delights\b/gi, 'healthy delights');
+  cleaned = cleaned.replace(/\bHonest Delights\b/g, 'Healthy Delights');
+  cleaned = cleaned.replace(/\bhonest science\b/gi, 'reliable science');
+  cleaned = cleaned.replace(/\bHonest Science\b/g, 'Reliable Science');
+  cleaned = cleaned.replace(/\bhonest recovery\b/gi, 'optimal recovery');
+  cleaned = cleaned.replace(/\bHonest Recovery\b/g, 'Optimal Recovery');
+  cleaned = cleaned.replace(/\bhonest, whole\b/gi, 'fresh, whole');
+  cleaned = cleaned.replace(/\bHonest, whole\b/g, 'Fresh, whole');
+  cleaned = cleaned.replace(/\bhonest\b/gi, 'simple');
+  cleaned = cleaned.replace(/\bHonest\b/g, 'Simple');
 
   // "stunning" replacements
+  cleaned = cleaned.replace(/\ba stunning\b/gi, 'a great');
+  cleaned = cleaned.replace(/\bA stunning\b/g, 'A great');
   cleaned = cleaned.replace(/\bstunning morning ritual\b/gi, 'healthy morning ritual');
   cleaned = cleaned.replace(/\bStunning Morning Ritual\b/g, 'Healthy Morning Ritual');
   cleaned = cleaned.replace(/\bstunning tips\b/gi, 'expert tips');
   cleaned = cleaned.replace(/\bStunning Tips\b/g, 'Expert Tips');
   cleaned = cleaned.replace(/\bstunning feast\b/gi, 'delicious feast');
   cleaned = cleaned.replace(/\bStunning Feast\b/g, 'Delicious Feast');
-  cleaned = cleaned.replace(/\bstunning\b/gi, 'expert');
-  cleaned = cleaned.replace(/\bStunning\b/g, 'Expert');
+  cleaned = cleaned.replace(/\bstunningally\b/gi, 'wonderfully');
+  cleaned = cleaned.replace(/\bstunningly\b/gi, 'wonderfully');
+  cleaned = cleaned.replace(/\bstunning\b/gi, 'excellent');
+  cleaned = cleaned.replace(/\bStunning\b/g, 'Excellent');
 
   // Fix capitalization after punctuation or start of sentence/phrase
   cleaned = cleaned.replace(/^authentic\b/, 'Authentic');
