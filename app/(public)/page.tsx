@@ -195,27 +195,12 @@ export default async function Home() {
               )}
             </p>
             
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row max-w-md">
-              {session && personalizedPlans.length > 0 ? (
-                <Link
-                  href={`/personalized/${personalizedPlans[0].id}`}
-                  className="rounded-xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 text-center cursor-pointer shadow-lg active:scale-98"
-                >
-                  View Your Custom Plan →
-                </Link>
-              ) : (
-                <Link
-                  href="/diet-plan"
-                  className="rounded-xl bg-white px-6 py-3 text-sm font-semibold text-black transition hover:bg-white/90 text-center cursor-pointer shadow-lg active:scale-98"
-                >
-                  Get My Free Meal Plan →
-                </Link>
-              )}
+            <div className="mt-6">
               <Link
-                href="/recipes"
-                className="rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10 text-center cursor-pointer active:scale-98"
+                href="/personalized"
+                className="inline-block rounded-xl bg-emerald-600 px-8 py-4 text-base font-bold text-white transition hover:bg-emerald-700 text-center cursor-pointer shadow-xl active:scale-98 border-none"
               >
-                Browse Recipes
+                Get Your Free AI Meal Plan in 60 Seconds &rarr;
               </Link>
             </div>
           </div>

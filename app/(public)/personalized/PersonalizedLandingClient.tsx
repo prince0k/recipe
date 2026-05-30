@@ -46,27 +46,16 @@ export function PersonalizedLandingClient({
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
-            {session ? (
-              defaultDietPlan ? (
-                <Button 
-                  size="lg" 
-                  className="px-8 py-4 rounded-xl shadow-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer transition border-none"
-                  onClick={() => setShowWizard(true)}
-                >
-                  Start Assessment Quiz &rarr;
-                </Button>
-              ) : (
-                <p className="text-sm text-text-muted">Personalized planner setup is incomplete. Check back later.</p>
-              )
+            {defaultDietPlan ? (
+              <Button 
+                size="lg" 
+                className="px-8 py-4 rounded-xl shadow-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer transition border-none"
+                onClick={() => setShowWizard(true)}
+              >
+                Start Assessment Quiz &rarr;
+              </Button>
             ) : (
-              <Link href="/signup?redirect=/personalized">
-                <Button 
-                  size="lg" 
-                  className="px-8 py-4 rounded-xl shadow-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer transition border-none"
-                >
-                  Create Free Account to Start &rarr;
-                </Button>
-              </Link>
+              <p className="text-sm text-text-muted">Personalized planner setup is incomplete. Check back later.</p>
             )}
             <Link href="#how-it-works" className="text-sm font-bold text-text-muted hover:text-primary transition">
               Learn How It Works
@@ -262,6 +251,7 @@ export function PersonalizedLandingClient({
           isOpen={showWizard} 
           onClose={() => setShowWizard(false)} 
           content={defaultDietPlan}
+          isLoggedIn={!!session}
         />
       )}
     </div>

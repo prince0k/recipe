@@ -44,6 +44,7 @@ export function DownloadGate({ content }: DownloadGateProps) {
           isOpen={showWizard}
           onClose={() => setShowWizard(false)}
           content={content}
+          isLoggedIn={!!session}
         />
       )}
 

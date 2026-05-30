@@ -19,6 +19,7 @@ export function Navbar() {
     { name: "Home", href: "/" },
     { name: "Recipes", href: "/recipes" },
     { name: "Diet Plans", href: "/diet-plan" },
+    { name: "AI Meal Planner", href: "/personalized" },
     { name: "Cheat Sheets", href: "/cheat-sheets" },
     { name: "Blog", href: "/blog" },
   ];
