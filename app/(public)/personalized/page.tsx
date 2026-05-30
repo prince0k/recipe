@@ -1,8 +1,27 @@
+import { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { PersonalizedLandingClient } from "./PersonalizedLandingClient";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Personalized Nutrition | NutriGuide by Stewart Lucas",
+  description: "Get your personalized nutrition plans and recipes tailored to your specific health goals and diet preferences.",
+  alternates: {
+    canonical: "https://stewartlucas.com/personalized",
+  },
+  openGraph: {
+    title: "Personalized Nutrition | NutriGuide by Stewart Lucas",
+    description: "Get your personalized nutrition plans and recipes tailored to your specific health goals and diet preferences.",
+    url: "https://stewartlucas.com/personalized",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+};
 
 export default async function PersonalizedPage() {
   const session = await auth();
