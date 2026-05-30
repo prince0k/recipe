@@ -2,13 +2,13 @@ import { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
-  title: "Contact Us | Stewart Lucas",
+  title: "Contact Us",
   description: "Get in touch with the Stewart Lucas team for collaborations, questions, or just to say hi.",
   alternates: {
     canonical: "https://stewartlucas.com/contact",
   },
   openGraph: {
-    title: "Contact Us | Stewart Lucas",
+    title: "Contact Us | NutriGuide",
     description: "Get in touch with the Stewart Lucas team for collaborations, questions, or just to say hi.",
     url: "https://stewartlucas.com/contact",
     images: [
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Contact Us | Stewart Lucas",
+    title: "Contact Us | NutriGuide",
     description: "Get in touch with the Stewart Lucas team for collaborations, questions, or just to say hi.",
     images: ["https://stewartlucas.com/assets/og-image.jpg"],
   },

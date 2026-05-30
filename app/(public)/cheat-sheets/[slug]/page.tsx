@@ -24,7 +24,15 @@ export async function generateMetadata(
     }
   })();
 
-  const title = content.seoTitle || `${content.title} | Cheat Sheets by Stewart Lucas`;
+  const rawTitle = content.seoTitle || content.title;
+  let titleText = rawTitle;
+  if (!content.seoTitle && titleText.length + 13 <= 60) {
+    titleText = `${titleText} | NutriGuide`;
+  }
+  if (titleText.length > 60) {
+    titleText = titleText.slice(0, 57) + "...";
+  }
+
   const description = content.seoDesc || content.excerpt?.slice(0, 155) || 'Free downloadable cheat sheet from NutriGuide.';
 
   const cleanCover = (() => {
@@ -36,14 +44,14 @@ export async function generateMetadata(
 
   return {
     metadataBase: new URL('https://stewartlucas.com'),
-    title,
+    title: { absolute: titleText },
     description,
     keywords: parsedTags,
     alternates: {
       canonical: `https://stewartlucas.com/cheat-sheets/${slug}`,
     },
     openGraph: {
-      title: content.title,
+      title: titleText,
       description,
       images: [{ url: cleanCover }],
       type: 'article',
@@ -51,7 +59,7 @@ export async function generateMetadata(
     },
     twitter: {
       card: 'summary_large_image',
-      title: content.title,
+      title: titleText,
       description,
       images: [cleanCover],
     },

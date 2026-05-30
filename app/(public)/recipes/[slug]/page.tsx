@@ -22,7 +22,15 @@ export async function generateMetadata(
     }
   })();
 
-  const title = content.seoTitle || `${content.title} | NutriGuide by Stewart Lucas`;
+  const rawTitle = content.seoTitle || content.title;
+  let titleText = rawTitle;
+  if (!content.seoTitle && titleText.length + 13 <= 60) {
+    titleText = `${titleText} | NutriGuide`;
+  }
+  if (titleText.length > 60) {
+    titleText = titleText.slice(0, 57) + "...";
+  }
+
   const description = content.seoDesc || content.excerpt?.slice(0, 155) || 'Discover this delicious recipe from NutriGuide.';
 
   const cleanCover = (() => {
@@ -34,14 +42,14 @@ export async function generateMetadata(
 
   return {
     metadataBase: new URL('https://stewartlucas.com'),
-    title,
+    title: { absolute: titleText },
     description,
     keywords: parsedTags,
     alternates: {
       canonical: `https://stewartlucas.com/recipes/${slug}`,
     },
     openGraph: {
-      title: content.title,
+      title: titleText,
       description,
       images: [{ url: cleanCover }],
       type: 'article',
@@ -49,7 +57,7 @@ export async function generateMetadata(
     },
     twitter: {
       card: 'summary_large_image',
-      title: content.title,
+      title: titleText,
       description,
       images: [cleanCover],
     },
@@ -439,7 +447,30 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
           </aside>
         </div>
 
-        <div className="mt-24 max-w-4xl">
+        <div className="mt-24 max-w-4xl border-t border-border pt-12">
+          {/* Author Bio Box */}
+          <div className="bg-surface p-8 rounded-[2rem] border border-border flex flex-col md:flex-row items-center md:items-start gap-8">
+            <div className="relative w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-primary/20">
+              <Image
+                src="/assets/stewart_lucas.webp"
+                alt="Stewart Lucas"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="space-y-3 text-center md:text-left">
+              <div>
+                <h3 className="font-bold text-xl text-text">Stewart Lucas</h3>
+                <span className="text-xs uppercase tracking-widest font-bold text-primary">Certified Nutritionist & Culinary Coach</span>
+              </div>
+              <p className="text-text-muted text-sm leading-relaxed">
+                Stewart Lucas is the founder of NutriGuide. With over a decade of clinical experience in nutrition, hormone balance, and dietetic consulting, Stewart simplifies home cooking with science-backed diet plans, healthy ingredient hacks, and easy culinary techniques.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-12 max-w-4xl">
           <Reviews contentId={recipe.id} />
         </div>
       </div>

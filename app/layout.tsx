@@ -23,8 +23,8 @@ export const metadata: Metadata = {
     canonical: 'https://stewartlucas.com',
   },
   title: {
-    default: 'NutriGuide by Stewart Lucas — Free Diet Plans & Healthy Recipes',
-    template: '%s | NutriGuide by Stewart Lucas',
+    default: 'NutriGuide | Free Diet Plans & Healthy Recipes',
+    template: '%s | NutriGuide',
   },
   description: 'Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.',
   keywords: ['diet plan', 'healthy recipes', 'meal prep', 'weight loss', 'keto', 'gluten free', 'high protein', 'Stewart Lucas'],

@@ -13,7 +13,7 @@ export async function generateMetadata({
   const sParams = await searchParams;
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
 
-  let title = "Cheat Sheets | Stewart Lucas";
+  let title = "Cooking Cheat Sheets & Guides";
   let description = "Quick, downloadable guides for simplified home cooking and kitchen mastery.";
   
   if (page > 1) {
@@ -21,6 +21,7 @@ export async function generateMetadata({
     description += ` (Page ${page})`;
   }
 
+  const formattedTitle = title.length + 13 <= 60 ? `${title} | NutriGuide` : title;
   const url = `https://stewartlucas.com/cheat-sheets${page > 1 ? `?page=${page}` : ""}`;
 
   return {
@@ -31,7 +32,7 @@ export async function generateMetadata({
       canonical: `https://stewartlucas.com/cheat-sheets${page > 1 ? `?page=${page}` : ""}`,
     },
     openGraph: {
-      title,
+      title: formattedTitle,
       description,
       type: "website",
       url,
@@ -46,7 +47,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: formattedTitle,
       description,
       images: ["https://stewartlucas.com/assets/og-image.jpg"],
     },

@@ -12,7 +12,7 @@ export async function generateMetadata({
   const sParams = await searchParams;
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
 
-  let title = "Diet Plans | Stewart Lucas";
+  let title = "Free Diet Plans & Meal Prep";
   let description = "Structured meal plans for simplified home cooking and healthy living.";
   
   if (page > 1) {
@@ -20,6 +20,7 @@ export async function generateMetadata({
     description += ` (Page ${page})`;
   }
 
+  const formattedTitle = title.length + 13 <= 60 ? `${title} | NutriGuide` : title;
   const url = `https://stewartlucas.com/diet-plan${page > 1 ? `?page=${page}` : ""}`;
 
   return {
@@ -30,7 +31,7 @@ export async function generateMetadata({
       canonical: `https://stewartlucas.com/diet-plan${page > 1 ? `?page=${page}` : ""}`,
     },
     openGraph: {
-      title,
+      title: formattedTitle,
       description,
       type: "website",
       url,
@@ -45,7 +46,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: formattedTitle,
       description,
       images: ["https://stewartlucas.com/assets/og-image.jpg"],
     },

@@ -12,13 +12,13 @@ import { prisma } from "@/lib/db";
 import { ContentCard } from "@/components/content/ContentCard";
 
 export const metadata: Metadata = {
-  title: "NutriGuide — Free Diet Plans & Healthy Recipes | Stewart Lucas",
+  title: "NutriGuide | Free Diet Plans & Healthy Recipes",
   description: "Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "NutriGuide — Free Diet Plans & Healthy Recipes | Stewart Lucas",
+    title: "NutriGuide | Free Diet Plans & Healthy Recipes",
     description: "Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.",
     url: "https://stewartlucas.com/",
     images: [

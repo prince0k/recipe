@@ -15,12 +15,12 @@ export async function generateMetadata({
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
   const category = typeof sParams.category === 'string' ? sParams.category : undefined;
 
-  let title = "Explore Recipes | Stewart Lucas";
+  let title = "Healthy Recipes & Meal Ideas";
   let description = "Browse our collection of healthy, delicious, and budget-friendly home-cooked recipes.";
   
   if (category) {
     const catName = category.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-    title = `${catName} Recipes | Stewart Lucas`;
+    title = `${catName} Recipes`;
     description = `Explore our collection of handpicked ${catName} recipes, curated for wellness and flavor.`;
   }
   
@@ -29,6 +29,7 @@ export async function generateMetadata({
     description += ` (Page ${page} of collection)`;
   }
 
+  const formattedTitle = title.length + 13 <= 60 ? `${title} | NutriGuide` : title;
   const url = `https://stewartlucas.com/recipes${page > 1 ? `?page=${page}` : ""}`;
 
   return {
@@ -39,7 +40,7 @@ export async function generateMetadata({
       canonical: `https://stewartlucas.com/recipes${category ? `?category=${category}` : ""}${page > 1 ? `${category ? '&' : '?'}page=${page}` : ""}`,
     },
     openGraph: {
-      title,
+      title: formattedTitle,
       description,
       type: "website",
       url,
@@ -54,7 +55,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: formattedTitle,
       description,
       images: ["https://stewartlucas.com/assets/og-image.jpg"],
     },

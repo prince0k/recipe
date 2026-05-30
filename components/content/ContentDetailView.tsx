@@ -160,6 +160,26 @@ export function ContentDetailView({
               {adComponent}
             </div>
           )}
+          {/* Author Bio Box */}
+          <div className="mt-12 bg-surface p-8 rounded-[2rem] border border-border flex flex-col md:flex-row items-center md:items-start gap-8 text-left">
+            <div className="relative w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-primary/20">
+              <Image
+                src="/assets/stewart_lucas.webp"
+                alt="Stewart Lucas"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="space-y-3 text-center md:text-left">
+              <div>
+                <h3 className="font-bold text-xl text-text">Stewart Lucas</h3>
+                <span className="text-xs uppercase tracking-widest font-bold text-primary">Certified Nutritionist & Culinary Coach</span>
+              </div>
+              <p className="text-text-muted text-sm leading-relaxed">
+                Stewart Lucas is the founder of NutriGuide. With over a decade of clinical experience in nutrition, hormone balance, and dietetic consulting, Stewart simplifies home cooking with science-backed diet plans, healthy ingredient hacks, and easy culinary techniques.
+              </p>
+            </div>
+          </div>
         </div>
 
         {relatedItems && relatedItems.length > 0 && (

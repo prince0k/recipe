@@ -3,13 +3,13 @@ import { Metadata } from "next";
 import { EmailCaptureForm } from "@/components/ui/EmailCaptureForm";
 
 export const metadata: Metadata = {
-  title: "About Stewart Lucas | Home Cooking Simplified",
+  title: "Stewart Lucas | Healthy Home Cooking & Nutrition",
   description: "The story behind Stewart Lucas - a premium food blog dedicated to cinematic, budget-friendly home cooking.",
   alternates: {
     canonical: "https://stewartlucas.com/about",
   },
   openGraph: {
-    title: "About Stewart Lucas | Home Cooking Simplified",
+    title: "Stewart Lucas | Healthy Home Cooking & Nutrition",
     description: "The story behind Stewart Lucas - a premium food blog dedicated to cinematic, budget-friendly home cooking.",
     url: "https://stewartlucas.com/about",
     images: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "About Stewart Lucas | Home Cooking Simplified",
+    title: "Stewart Lucas | Healthy Home Cooking & Nutrition",
     description: "The story behind Stewart Lucas - a premium food blog dedicated to cinematic, budget-friendly home cooking.",
     images: ["https://stewartlucas.com/assets/stewart_lucas.webp"],
   },

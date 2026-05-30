@@ -6,13 +6,13 @@ import { PersonalizedLandingClient } from "./PersonalizedLandingClient";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Personalized Nutrition | NutriGuide by Stewart Lucas",
+  title: "Personalized Nutrition Plan",
   description: "Get your personalized nutrition plans and recipes tailored to your specific health goals and diet preferences.",
   alternates: {
     canonical: "https://stewartlucas.com/personalized",
   },
   openGraph: {
-    title: "Personalized Nutrition | NutriGuide by Stewart Lucas",
+    title: "Personalized Nutrition Plan | NutriGuide",
     description: "Get your personalized nutrition plans and recipes tailored to your specific health goals and diet preferences.",
     url: "https://stewartlucas.com/personalized",
   },
