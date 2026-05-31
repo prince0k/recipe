@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 interface Props {
   url: string;
   title: string;
@@ -24,9 +26,12 @@ export function ShareButtons({ url, title, image }: Props) {
     },
   ];
 
+  const [copied, setCopied] = useState(false);
+
   function copyLink() {
     navigator.clipboard.writeText(fullUrl);
-    alert('Link copied to clipboard!');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   return (
@@ -45,9 +50,9 @@ export function ShareButtons({ url, title, image }: Props) {
       ))}
       <button
         onClick={copyLink}
-        className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/70 transition hover:bg-white/10 cursor-pointer"
+        className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/70 transition hover:bg-white/10 cursor-pointer min-w-[70px]"
       >
-        Copy Link
+        {copied ? 'Copied!' : 'Copy Link'}
       </button>
     </div>
   );

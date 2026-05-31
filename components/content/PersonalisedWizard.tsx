@@ -23,6 +23,7 @@ export function PersonalisedWizard({
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [showEmailCapture, setShowEmailCapture] = useState(false);
   const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   let customQuestions: any[] = [];
   try {
@@ -94,6 +95,7 @@ export function PersonalisedWizard({
   };
 
   const nextStep = async () => {
+    setError(null);
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
@@ -101,7 +103,7 @@ export function PersonalisedWizard({
         setShowEmailCapture(true);
       } else {
         if (!isLoggedIn && (!email || !email.includes("@"))) {
-          alert("Please enter a valid email address.");
+          setError("Please enter a valid email address.");
           return;
         }
 
@@ -122,10 +124,10 @@ export function PersonalisedWizard({
           if (res.ok) {
             setSuccess(true);
           } else {
-            alert(data.error || "Something went wrong. Please try again.");
+            setError(data.error || "Something went wrong. Please try again.");
           }
         } catch (e) {
-          alert("Failed to submit.");
+          setError("Failed to submit.");
         } finally {
           setIsSubmitting(false);
         }
@@ -248,6 +250,13 @@ export function PersonalisedWizard({
               </div>
             )}
 
+            {/* Error Message */}
+            {error && (
+              <div className="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 text-sm font-semibold text-left">
+                ⚠️ {error}
+              </div>
+            )}
+
             {/* Navigation */}
             <div className="flex justify-between pt-4">
               {step > 1 ? (
@@ -304,9 +313,19 @@ export function PersonalisedWizard({
               </p>
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 text-sm font-semibold text-left">
+                ⚠️ {error}
+              </div>
+            )}
+
             {/* Navigation */}
             <div className="flex justify-between pt-4 border-t border-border">
-              <Button variant="ghost" onClick={() => setShowEmailCapture(false)}>
+              <Button variant="ghost" onClick={() => {
+                setError(null);
+                setShowEmailCapture(false);
+              }}>
                 Back
               </Button>
 
