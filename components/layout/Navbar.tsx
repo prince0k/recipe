@@ -35,7 +35,7 @@ export function Navbar() {
                 <span className="text-xs md:text-sm font-medium opacity-80 italic -mt-1 tracking-wide">by Stewart Lucas</span>
               </span>
             </Link>
-            <div className="hidden md:flex md:space-x-3 lg:space-x-6 xl:space-x-8 md:ml-6 lg:ml-10">
+            <div className="hidden lg:flex lg:space-x-6 xl:space-x-8 lg:ml-10">
               {links.map((link) => (
                 <Link
                   key={link.href}
@@ -88,7 +88,7 @@ export function Navbar() {
             )}
           </div>
           
-          <div className="-mr-2 flex items-center md:hidden">
+          <div className="-mr-2 flex items-center lg:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#10b981]"
@@ -110,7 +110,7 @@ export function Navbar() {
       </div>
 
       {isOpen && (
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <div className="pt-2 pb-3 space-y-1 bg-surface shadow-lg border-b border-border">
             {links.map((link) => (
               <Link
