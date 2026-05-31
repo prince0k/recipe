@@ -35,7 +35,7 @@ export function Navbar() {
                 <span className="text-xs md:text-sm font-medium opacity-80 italic -mt-1 tracking-wide">by Stewart Lucas</span>
               </span>
             </Link>
-            <div className="hidden sm:ml-10 sm:flex sm:space-x-8">
+            <div className="hidden lg:flex lg:space-x-8 lg:ml-10">
               {links.map((link) => (
                 <Link
                   key={link.href}
@@ -51,7 +51,7 @@ export function Navbar() {
               ))}
             </div>
           </div>
-          <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-6">
+          <div className="flex items-center space-x-3 sm:space-x-6 ml-auto mr-4 lg:mr-0 lg:ml-6">
             <Link href="/favorites" className="text-text-muted hover:text-primary p-2 rounded-full hover:bg-surface transition-colors" aria-label="Favorites">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -88,7 +88,7 @@ export function Navbar() {
             )}
           </div>
           
-          <div className="-mr-2 flex items-center sm:hidden">
+          <div className="-mr-2 flex items-center lg:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#10b981]"
@@ -110,7 +110,7 @@ export function Navbar() {
       </div>
 
       {isOpen && (
-        <div className="sm:hidden">
+        <div className="lg:hidden">
           <div className="pt-2 pb-3 space-y-1 bg-surface shadow-lg border-b border-border">
             {links.map((link) => (
               <Link
@@ -126,38 +126,6 @@ export function Navbar() {
                 {link.name}
               </Link>
             ))}
-            <div className="pt-4 pb-3 border-t border-border px-4 space-y-2">
-              <Link href="/favorites" className="block text-center w-full bg-white py-2 rounded-md text-text-muted font-medium border border-border mb-4">
-                Favorites
-              </Link>
-              {session ? (
-                <>
-                  <div className="text-base font-medium text-text mb-2 px-2">
-                    {session.user?.email}
-                  </div>
-                  {session.user?.role === "ADMIN" && (
-                    <Link href="/admin" className="block text-center w-full bg-secondary py-2 rounded-md text-white font-medium mb-2">
-                      Admin Dashboard
-                    </Link>
-                  )}
-                  <button 
-                    onClick={() => signOut({ callbackUrl: "/" })}
-                    className="block text-center w-full text-primary border border-primary/20 py-2 rounded-md font-medium"
-                  >
-                    Log out
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link href="/login" className="block text-center w-full bg-white py-2 rounded-md text-text font-medium border border-border">
-                    Log in
-                  </Link>
-                  <Link href="/signup">
-                    <Button variant="primary" className="w-full mt-2">Get Started Free</Button>
-                  </Link>
-                </>
-              )}
-            </div>
           </div>
         </div>
       )}

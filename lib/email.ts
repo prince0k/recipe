@@ -219,3 +219,65 @@ export async function sendPersonalisedPlanReadyEmail({
   }
 }
 
+/**
+ * Send an email notifying the user that their requested diet plan guide is ready for download.
+ */
+export async function sendDietPlanGuideEmail({
+  to,
+  name,
+  guideTitle,
+  downloadUrl,
+}: {
+  to: string;
+  name: string;
+  guideTitle: string;
+  downloadUrl: string;
+}) {
+  try {
+    if (!EMAIL_CORE_URL || !EMAIL_CORE_API_KEY) {
+      console.warn("[email] Diet plan guide email skipped: Missing config");
+      return { success: false };
+    }
+
+    const endpoint = `${EMAIL_CORE_URL.replace(/\/$/, "")}/api/welcome/send-guide`;
+
+    console.log(`[email] Sending guide email to ${to} for ${guideTitle} via ${endpoint}`);
+
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Internal-Key": EMAIL_CORE_API_KEY,
+      },
+      body: JSON.stringify({
+        email: to,
+        name: name || "",
+        guideTitle,
+        downloadUrl,
+        siteName: SITE_NAME,
+      }),
+      signal: AbortSignal.timeout(15000),
+    });
+
+    if (!res.ok) throw new Error("Failed to send diet plan guide email");
+
+    const data = await res.json();
+
+    await prisma.emailLog.create({
+      data: {
+        to,
+        subject: `Your Guide is Ready: ${guideTitle} - ${SITE_NAME}`,
+        type: "GUIDE_READY",
+        status: "SENT",
+      },
+    });
+
+    return { success: true, messageId: data.messageId };
+
+  } catch (err: any) {
+    console.error("[email] Diet plan guide email error:", err);
+    return { success: false, error: err.message };
+  }
+}
+
+

@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
-import { PersonalisedWizard } from "./PersonalisedWizard";
 
 interface DownloadGateProps {
   content: any;
@@ -15,73 +14,161 @@ export function DownloadGate({ content }: DownloadGateProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showWizard, setShowWizard] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [email, setEmail] = useState("");
+  const [sentEmail, setSentEmail] = useState("");
+  const [error, setError] = useState("");
 
-  const handlePersonalisedRequest = () => {
-    if (!session) {
-      setShowAuthModal(true);
-    } else {
-      setShowWizard(true);
+  const handleRequest = async (targetEmail?: string) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/downloads/request-guide", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contentId: content.id,
+          ...(targetEmail && { email: targetEmail }),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setSentEmail(targetEmail || session?.user?.email || "");
+        setShowEmailModal(false);
+        setShowSuccessModal(true);
+      } else {
+        setError(data.error || "Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      setError("Failed to connect to the server. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleGetClick = () => {
+    if (session) {
+      handleRequest();
+    } else {
+      setShowEmailModal(true);
+    }
+  };
+
+  const handleModalSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !email.includes("@")) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    handleRequest(email);
   };
 
   return (
     <>
       <Button
-        onClick={handlePersonalisedRequest}
+        onClick={handleGetClick}
         size="lg"
-        className="w-full"
+        className="w-full font-semibold cursor-pointer"
+        disabled={isLoading}
+        isLoading={isLoading}
       >
-        Get
+        {isLoading ? "Sending..." : "Get"}
       </Button>
 
-      {/* Auth Modal */}
-
-      {/* Wizard Modal */}
-      {showWizard && (
-        <PersonalisedWizard
-          isOpen={showWizard}
-          onClose={() => setShowWizard(false)}
-          content={content}
-          isLoggedIn={!!session}
-        />
-      )}
-
-      {/* Auth Modal */}
+      {/* Email Request Modal for Logged-Out Users */}
       <Modal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        title="Sign up to continue"
+        isOpen={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+        title="Get the Full Guide"
       >
-        <div className="space-y-6 pt-2">
-          <p className="text-muted-foreground">
-            You need a free account to access personalised plans and unlimited
-            downloads.
+        <form onSubmit={handleModalSubmit} className="space-y-6 pt-2 text-left">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Enter your email below to receive a direct download link for the printable version of <strong className="text-foreground">{content.title}</strong>.
           </p>
-          <div className="flex flex-col gap-4">
+
+          <div className="space-y-2">
+            <label htmlFor="gate-email" className="block text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Email Address
+            </label>
+            <input
+              id="gate-email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full rounded-xl border border-border bg-secondary/50 p-3.5 text-sm text-foreground placeholder-muted-foreground/60 focus:border-foreground focus:outline-none"
+            />
+          </div>
+
+          {error && (
+            <p className="text-xs font-medium text-red-550 dark:text-red-400">
+              {error}
+            </p>
+          )}
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <Button
-              onClick={() => router.push(`/signup?redirect=/${content.id}`)}
-              className="w-full"
-            >
-              Create Free Account
-            </Button>
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="bg-card px-2 text-muted-foreground">Or</span>
-              </div>
-            </div>
-            <Button
+              type="button"
               variant="outline"
-              onClick={() => router.push(`/login?redirect=/${content.id}`)}
-              className="w-full"
+              onClick={() => setShowEmailModal(false)}
+              className="w-full sm:w-1/3"
             >
-              Log in to existing account
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              isLoading={isLoading}
+              className="w-full sm:w-2/3"
+            >
+              {isLoading ? "Sending..." : "Send Guide"}
             </Button>
           </div>
+        </form>
+      </Modal>
+
+      {/* Success Modal */}
+      <Modal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title="Guide Sent! 📩"
+      >
+        <div className="space-y-6 pt-2 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
+            <svg
+              className="h-7 w-7"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              We've sent the printable guide for <strong>{content.title}</strong> directly to:
+            </p>
+            <p className="text-base font-bold text-foreground">
+              {sentEmail}
+            </p>
+            <p className="text-xs text-muted-foreground/80 mt-1">
+              Please check your inbox or spam folder in a few moments.
+            </p>
+          </div>
+
+          <Button onClick={() => setShowSuccessModal(false)} className="w-full mt-2">
+            Done
+          </Button>
         </div>
       </Modal>
     </>
