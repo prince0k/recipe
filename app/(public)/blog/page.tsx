@@ -69,42 +69,50 @@ export default async function BlogPage({
   const { data: posts, totalPages } = await getAllBlogPosts(page, pageSize);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="border-b border-border pb-8 mb-8">
-        <h1 className="text-4xl font-extrabold font-serif text-text">Kitchen Stories</h1>
-        <p className="mt-4 text-xl text-text-muted">
-          Inspiration for your kitchen and stories from our culinary journey.
-        </p>
-      </div>
-
-      {posts.length === 0 ? (
-        <div className="text-center py-20 bg-surface rounded-[2.5rem] border border-border cinematic-shadow">
-          <p className="text-text-muted text-lg font-serif italic">No articles found. Check back soon!</p>
+    <div className="w-full min-h-screen bg-background">
+      {/* Header — full bleed */}
+      <section className="w-full bg-surface border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+          <h1 className="text-4xl font-extrabold font-serif text-text">Kitchen Stories</h1>
+          <p className="mt-4 text-xl text-text-muted">
+            Inspiration for your kitchen and stories from our culinary journey.
+          </p>
         </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post) => (
-              <ContentCard
-                key={post.id}
-                type={post.type as any}
-                title={post.title}
-                slug={post.slug}
-                excerpt={post.excerpt}
-                coverImage={post.coverImage}
-                tags={JSON.parse(post.tags)}
-                hrefPrefix="blog"
-              />
-            ))}
-          </div>
+      </section>
 
-          <Pagination 
-            currentPage={page} 
-            totalPages={totalPages} 
-            baseUrl="/blog"
-          />
-        </>
-      )}
+      {/* Content — full bleed */}
+      <section className="w-full bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+          {posts.length === 0 ? (
+            <div className="text-center py-20 bg-surface rounded-[2.5rem] border border-border cinematic-shadow">
+              <p className="text-text-muted text-lg font-serif italic">No articles found. Check back soon!</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {posts.map((post) => (
+                  <ContentCard
+                    key={post.id}
+                    type={post.type as any}
+                    title={post.title}
+                    slug={post.slug}
+                    excerpt={post.excerpt}
+                    coverImage={post.coverImage}
+                    tags={JSON.parse(post.tags)}
+                    hrefPrefix="blog"
+                  />
+                ))}
+              </div>
+
+              <Pagination 
+                currentPage={page} 
+                totalPages={totalPages} 
+                baseUrl="/blog"
+              />
+            </>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

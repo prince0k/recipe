@@ -71,42 +71,50 @@ export default async function CheatSheetsPage({
   const { data: sheets, totalPages } = await getAllCheatSheets(page, pageSize);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="border-b border-border pb-8 mb-8">
-        <h1 className="text-4xl font-extrabold font-serif text-text">Cheat Sheets</h1>
-        <p className="mt-4 text-xl text-text-muted">
-          Quick reference guides for every home cook. Download and print for your kitchen.
-        </p>
-      </div>
-
-      {sheets.length === 0 ? (
-        <div className="text-center py-20 bg-surface rounded-[2.5rem] border border-border cinematic-shadow">
-          <p className="text-text-muted text-lg font-serif italic">No cheat sheets found. Check back soon!</p>
+    <div className="w-full min-h-screen bg-background">
+      {/* Header — full bleed */}
+      <section className="w-full bg-surface border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+          <h1 className="text-4xl font-extrabold font-serif text-text">Cheat Sheets</h1>
+          <p className="mt-4 text-xl text-text-muted">
+            Quick reference guides for every home cook. Download and print for your kitchen.
+          </p>
         </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sheets.map((sheet) => (
-              <ContentCard
-                key={sheet.id}
-                type={sheet.type as any}
-                title={sheet.title}
-                slug={sheet.slug}
-                excerpt={sheet.excerpt}
-                coverImage={sheet.coverImage}
-                tags={JSON.parse(sheet.tags)}
-                hrefPrefix="cheat-sheets"
-              />
-            ))}
-          </div>
+      </section>
 
-          <Pagination 
-            currentPage={page} 
-            totalPages={totalPages} 
-            baseUrl="/cheat-sheets"
-          />
-        </>
-      )}
+      {/* Content — full bleed */}
+      <section className="w-full bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+          {sheets.length === 0 ? (
+            <div className="text-center py-20 bg-surface rounded-[2.5rem] border border-border cinematic-shadow">
+              <p className="text-text-muted text-lg font-serif italic">No cheat sheets found. Check back soon!</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {sheets.map((sheet) => (
+                  <ContentCard
+                    key={sheet.id}
+                    type={sheet.type as any}
+                    title={sheet.title}
+                    slug={sheet.slug}
+                    excerpt={sheet.excerpt}
+                    coverImage={sheet.coverImage}
+                    tags={JSON.parse(sheet.tags)}
+                    hrefPrefix="cheat-sheets"
+                  />
+                ))}
+              </div>
+
+              <Pagination 
+                currentPage={page} 
+                totalPages={totalPages} 
+                baseUrl="/cheat-sheets"
+              />
+            </>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

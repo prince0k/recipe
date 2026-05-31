@@ -36,7 +36,8 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <div className="bg-background min-h-screen">
-      <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="w-full py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
           <div>
             <span className="text-primary font-bold tracking-widest uppercase text-xs mb-4 block">Get in Touch</span>
@@ -99,6 +100,7 @@ export default function ContactPage() {
               <Button size="lg" className="w-full py-5 rounded-xl shadow-xl">Send Message</Button>
             </form>
           </div>
+        </div>
         </div>
       </section>
     </div>

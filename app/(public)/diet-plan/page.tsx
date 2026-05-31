@@ -62,34 +62,42 @@ export default async function DietPlansPage() {
   const plans = await getAllDietPlans();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="border-b border-border pb-8 mb-8">
-        <h1 className="text-4xl font-extrabold font-serif text-text">Diet Plans</h1>
-        <p className="mt-4 text-xl text-text-muted">
-          Structured meal plans designed for real life and real results.
-        </p>
-      </div>
+    <div className="w-full min-h-screen bg-background">
+      {/* Header — full bleed */}
+      <section className="w-full bg-surface border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+          <h1 className="text-4xl font-extrabold font-serif text-text">Diet Plans</h1>
+          <p className="mt-4 text-xl text-text-muted">
+            Structured meal plans designed for real life and real results.
+          </p>
+        </div>
+      </section>
 
-      {plans.length === 0 ? (
-        <div className="text-center py-20 bg-surface rounded-[2.5rem] border border-border cinematic-shadow">
-          <p className="text-text-muted text-lg font-serif italic">No diet plans found. Check back soon!</p>
+      {/* Content — full bleed */}
+      <section className="w-full bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+          {plans.length === 0 ? (
+            <div className="text-center py-20 bg-surface rounded-[2.5rem] border border-border cinematic-shadow">
+              <p className="text-text-muted text-lg font-serif italic">No diet plans found. Check back soon!</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {plans.map((plan) => (
+                <ContentCard
+                  key={plan.id}
+                  type={plan.type as any}
+                  title={plan.title}
+                  slug={plan.slug}
+                  excerpt={plan.excerpt}
+                  coverImage={plan.coverImage}
+                  tags={JSON.parse(plan.tags)}
+                  hrefPrefix="diet-plan"
+                />
+              ))}
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {plans.map((plan) => (
-            <ContentCard
-              key={plan.id}
-              type={plan.type as any}
-              title={plan.title}
-              slug={plan.slug}
-              excerpt={plan.excerpt}
-              coverImage={plan.coverImage}
-              tags={JSON.parse(plan.tags)}
-              hrefPrefix="diet-plan"
-            />
-          ))}
-        </div>
-      )}
+      </section>
     </div>
   );
 }
