@@ -11,37 +11,14 @@ const ai = new GoogleGenAI({
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const { contentId, answers, email } = await req.json();
+    const { contentId, answers } = await req.json();
 
-    let userId: string;
-    let userName: string;
-
-    if (session && session.user && session.user.id) {
-      userId = session.user.id;
-      userName = session.user.name || "Friend";
-    } else {
-      if (!email || !email.includes("@")) {
-        return NextResponse.json({ error: "Email is required to personalize your plan." }, { status: 400 });
-      }
-
-      const targetEmail = email.trim().toLowerCase();
-      let user = await prisma.user.findUnique({
-        where: { email: targetEmail }
-      });
-
-      if (!user) {
-        user = await prisma.user.create({
-          data: {
-            email: targetEmail,
-            name: targetEmail.split("@")[0],
-            role: "USER"
-          }
-        });
-      }
-
-      userId = user.id;
-      userName = user.name || "Friend";
+    if (!session || !session.user || !session.user.id) {
+      return NextResponse.json({ error: "Please log in to personalize your plan." }, { status: 401 });
     }
+
+    const userId = session.user.id;
+    const userName = session.user.name || "Friend";
 
     if (!contentId || !answers) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
