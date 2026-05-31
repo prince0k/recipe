@@ -100,8 +100,19 @@ const customMarkdownComponents = {
 export function PersonalizedClientView({ request }: PersonalizedClientViewProps) {
   const [activeTab, setActiveTab] = useState(0);
 
+  let displayTitle = request.content.title;
+  let cleanContent = request.generatedContent || "";
+
+  // Try to parse custom title from the beginning of the generatedContent
+  const titleMatch = cleanContent.match(/^\s*#\s+(.+)$/m);
+  if (titleMatch) {
+    displayTitle = titleMatch[1].replace(/\*|_/g, "").trim();
+    // Remove the title line from content
+    cleanContent = cleanContent.replace(/^\s*#\s+.+$/m, "").trim();
+  }
+
   // Parse markdown into distinct pages based on the 8 main uppercase headings
-  const rawSections = (request.generatedContent || "").split(/(?=^(?:###|##|#)?\s*(?:\*\*|__)?(?:(?:1\.\s+)?LETTER FROM STEWART LUCAS|(?:1\.\s+)?PERSONAL OPENING LETTER|\d+[\.:]\s*(?:\*\*|__)?[^a-z\n]+)(?:\*\*|__)?\s*$)/m);
+  const rawSections = cleanContent.split(/(?=^(?:###|##|#)?\s*(?:\*\*|__)?(?:(?:1\.\s+)?LETTER FROM STEWART LUCAS|(?:1\.\s+)?PERSONAL OPENING LETTER|\d+[\.:]\s*(?:\*\*|__)?[^a-z\n]+)(?:\*\*|__)?\s*$)/m);
   
   let intro = "";
   let sections: { title: string; content: string }[] = [];
@@ -158,7 +169,7 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
 
   // Fallback if split failed
   if (sections.length === 0) {
-    sections = [{ title: "Personalized Plan", content: request.generatedContent || "" }];
+    sections = [{ title: "Personalized Plan", content: cleanContent }];
   }
 
   const renderSectionContent = (sec: { title: string; content: string }, idx: number) => {
@@ -280,7 +291,7 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
           <div className="flex justify-between items-start">
             <div className="max-w-[70%]">
               <p className="text-primary font-bold tracking-[0.2em] uppercase text-[10px] mb-3">Premium Personalised Edition</p>
-              <h1 className="text-4xl font-bold font-serif italic m-0 leading-tight">{request.content.title}</h1>
+              <h1 className="text-4xl font-bold font-serif italic m-0 leading-tight">{displayTitle}</h1>
             </div>
             <div className="text-right flex flex-col items-end">
               <div className="font-serif text-2xl font-bold text-primary mb-1">Stewart Lucas</div>
@@ -296,7 +307,7 @@ export function PersonalizedClientView({ request }: PersonalizedClientViewProps)
             Premium Personalised Edition
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-serif italic">
-            {request.content.title}
+            {displayTitle}
           </h1>
           <p className="text-gray-500 max-w-2xl mx-auto text-lg leading-relaxed">
             Crafted specifically for <span className="text-primary font-bold">{request.user.name || "you"}</span> based on your unique goals and dietary preferences.

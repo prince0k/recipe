@@ -103,8 +103,15 @@ Activity Level:    ${leadData.activity}
 Prep Time/Day:     ${leadData.time}
 ${customQuestionsAndAnswers}
 
+═══════════════════════════════════════════════
+BASE PLAN REFERENCE (FOR STRUCTURE & LAYOUT ONLY)
+═══════════════════════════════════════════════
 Base Plan Reference (strip all HTML, use only structure + meals):
 ${strippedBody}
+
+[CRITICAL RULE] The Base Plan Reference is provided ONLY as a structural layout/meals reference. 
+You MUST ignore its specific medical focus or thematic focus (such as Menopause Support, Hormone Balancing, or PCOS) unless they are explicitly present in the CLIENT DOSSIER above. 
+Generate a completely custom title and meals tailored strictly to the client's dossier goals, diet, and struggles.
 
 ═══════════════════════════════════════════════
 STEWART LUCAS VOICE RULES — NON-NEGOTIABLE
@@ -264,6 +271,9 @@ Three milestone check-ins tailored to their specific goal:
 ═══════════════════════════════════════════════
 OUTPUT FORMAT RULES
 ═══════════════════════════════════════════════
+- The VERY FIRST line of your output MUST be: # 7-Day [Diet/Goal Description] Meal Plan: Personalized Edition
+  Example: "# 7-Day Keto Weight Loss Meal Plan: Personalized Edition"
+  Customize this title strictly to the client's goal, diet, and struggles. Do NOT include medical targets like PCOS or Menopause unless they are explicitly present in the CLIENT DOSSIER above.
 - Output clean Markdown only — no HTML, no JSON wrapper
 - Use ### for section headers, #### for sub-sections
 - Tables for meal plan (pipe format)
