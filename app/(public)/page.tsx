@@ -499,11 +499,11 @@ export default async function Home() {
                     Get Your Free Personalized Meal Plan
                   </Button>
                 </Link>
-                <Link href="/personalized#how-it-works">
+                <a href="#how-it-works">
                   <Button variant="outline" size="lg" className="px-10 py-5 rounded-2xl !border-white/30 !text-white !bg-transparent hover:!bg-white/10 font-bold transition-all cursor-pointer">
                     How It Works
                   </Button>
-                </Link>
+                </a>
               </div>
 
               {/* Dynamic features indicators */}
@@ -526,6 +526,62 @@ export default async function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-24 bg-surface border-t border-b border-border/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <span className="text-primary font-bold tracking-widest uppercase text-xs mb-4 block">Process</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-text mb-4">How It Works</h2>
+            <p className="text-text-muted font-serif italic text-lg max-w-2xl mx-auto">
+              Get a custom-tailored nutrition protocol in three simple steps.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {/* Step 1 */}
+            <div className="relative p-8 bg-white rounded-[2.5rem] border border-border shadow-sm flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xl mb-6">
+                1
+              </div>
+              <h3 className="text-xl font-bold text-text mb-4 font-serif">1. Share Your Profile</h3>
+              <p className="text-sm text-text-muted leading-relaxed">
+                Take a quick 60-second assessment. Tell us about your primary health goals, dietary choices, daily schedule, and weight management hurdles.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative p-8 bg-white rounded-[2.5rem] border border-border shadow-sm flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-emerald-600/10 text-emerald-600 flex items-center justify-center font-bold text-xl mb-6">
+                2
+              </div>
+              <h3 className="text-xl font-bold text-text mb-4 font-serif">2. Custom Calibration</h3>
+              <p className="text-sm text-text-muted leading-relaxed">
+                Our science-backed AI engine calculates your tailored calorie and macro targets using algorithms calibrated by Certified Nutritionists.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative p-8 bg-white rounded-[2.5rem] border border-border shadow-sm flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-secondary/10 text-secondary flex items-center justify-center font-bold text-xl mb-6">
+                3
+              </div>
+              <h3 className="text-xl font-bold text-text mb-4 font-serif">3. Deploy Plan</h3>
+              <p className="text-sm text-text-muted leading-relaxed">
+                Unlock your interactive, easy-prep dashboard instantly and get a premium, printable 7-day meal plan PDF sent directly to your inbox.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-16 text-center">
+            <Link href="/personalized">
+              <Button size="lg" className="px-10 py-5 rounded-2xl shadow-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer transition border-none">
+                Start My Assessment Now
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
