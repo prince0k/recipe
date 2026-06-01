@@ -25,10 +25,7 @@ const AUTHOR_BLOCK = {
   "@type": "Person",
   "name": "Stewart Lucas",
   "url": "https://stewartlucas.com/about",
-  "sameAs": [
-    "https://instagram.com/nutriguide.stewartlucas",
-    "https://pinterest.com/nutriguide_stewartlucas"
-  ]
+  "sameAs": []
 };
 
 async function main() {
@@ -101,7 +98,7 @@ async function main() {
 
     let finalSchema: any = null;
 
-    if (!isLegacyFlat && currentSchemaObj) {
+    if (false && !isLegacyFlat && currentSchemaObj) {
       // It's already in the @graph format
       finalSchema = currentSchemaObj;
       counts[typeKey].skipped++;

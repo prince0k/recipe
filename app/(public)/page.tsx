@@ -70,10 +70,7 @@ const homepageJsonLd = {
         "width": 1200,
         "height": 630
       },
-      "sameAs": [
-        "https://instagram.com/nutriguide.stewartlucas",
-        "https://pinterest.com/nutriguide_stewartlucas"
-      ],
+      "sameAs": [],
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "customer support",
