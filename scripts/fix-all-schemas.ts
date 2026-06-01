@@ -28,6 +28,18 @@ const AUTHOR_BLOCK = {
   "sameAs": []
 };
 
+const PUBLISHER_BLOCK = {
+  "@type": "Organization",
+  "name": "NutriGuide by Stewart Lucas",
+  "url": "https://stewartlucas.com",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://stewartlucas.com/assets/og-image.jpg",
+    "width": 1200,
+    "height": 630
+  }
+};
+
 async function main() {
   const dryRun = process.argv.includes('--dry-run');
   console.log(`🚀 STARTING GLOBAL SCHEMA CLEANUP & REBUILD 🚀 ${dryRun ? '(DRY RUN)' : ''}`);
@@ -235,6 +247,7 @@ async function main() {
                 "height": 630
               },
               "author": AUTHOR_BLOCK,
+              "publisher": PUBLISHER_BLOCK,
               "inLanguage": "en-GB",
               "url": `https://stewartlucas.com/${prefix}/${item.slug}`,
               "datePublished": item.createdAt.toISOString(),
@@ -261,9 +274,10 @@ async function main() {
         artNode["@type"] = "BlogPosting";
         artNode["@id"] = `https://stewartlucas.com/${prefix}/${item.slug}#article`;
         artNode["author"] = AUTHOR_BLOCK;
+        artNode["publisher"] = PUBLISHER_BLOCK;
         artNode["inLanguage"] = "en-GB";
-        if (artNode.publisher) {
-          delete artNode.publisher;
+        if (artNode.publisher === undefined) {
+          artNode["publisher"] = PUBLISHER_BLOCK;
         }
       }
 

@@ -4,7 +4,7 @@ import { AdBanner } from "@/components/ui/AdBanner";
 import { prisma } from "@/lib/db";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { AUTHOR_BLOCK } from "@/lib/schema/authorBlock";
+import { AUTHOR_BLOCK, PUBLISHER_BLOCK } from "@/lib/schema/authorBlock";
 import { buildImageObject } from "@/lib/schema/buildImageObject";
 import { parseFaqs } from "@/lib/schema/parseFaqs";
 
@@ -114,6 +114,7 @@ export default async function DietPlanPage(props: { params: Promise<{ slug: stri
         "datePublished": content.createdAt?.toISOString(),
         "dateModified": content.updatedAt?.toISOString(),
         "author": AUTHOR_BLOCK,
+        "publisher": PUBLISHER_BLOCK,
         "inLanguage": "en-GB",
         "mainEntityOfPage": {
           "@type": "WebPage",

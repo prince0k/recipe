@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import type { Metadata } from "next";
-import { AUTHOR_BLOCK } from "@/lib/schema/authorBlock";
+import { AUTHOR_BLOCK, PUBLISHER_BLOCK } from "@/lib/schema/authorBlock";
 import { buildImageObject } from "@/lib/schema/buildImageObject";
 import { parseFaqs } from "@/lib/schema/parseFaqs";
 
@@ -123,6 +123,7 @@ export default async function CheatSheetPage(props: { params: Promise<{ slug: st
         "datePublished": content.createdAt?.toISOString(),
         "dateModified": content.updatedAt?.toISOString(),
         "author": AUTHOR_BLOCK,
+        "publisher": PUBLISHER_BLOCK,
         "inLanguage": "en-GB",
         "mainEntityOfPage": {
           "@type": "WebPage",
