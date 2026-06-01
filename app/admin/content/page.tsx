@@ -10,6 +10,8 @@ import { GenerateCoverButton } from "@/components/admin/GenerateCoverButton";
 import { GenerateAllCoversButton } from "@/components/admin/GenerateAllCoversButton";
 import { BulkPublishButton } from "@/components/admin/BulkPublishButton";
 import { Pagination } from "@/components/ui/Pagination";
+import { SearchInput } from "@/components/admin/SearchInput";
+import { Suspense } from "react";
 import { 
   FileText, 
   Plus, 
@@ -33,6 +35,7 @@ export default async function AdminContentPage({
   const page = typeof sParams.page === 'string' ? parseInt(sParams.page) : 1;
   const activeTab = typeof sParams.type === 'string' ? sParams.type.toLowerCase() : "all";
   const imageMode = typeof sParams.imageMode === 'string' ? sParams.imageMode : "prompt";
+  const search = typeof sParams.search === 'string' ? sParams.search : "";
   const pageSize = 20;
   const skip = (page - 1) * pageSize;
 
@@ -55,6 +58,27 @@ export default async function AdminContentPage({
     ];
   } else {
     where.type = activeTab.toUpperCase();
+  }
+
+  // Handle keyword search across fields
+  if (search) {
+    const searchFilter = {
+      OR: [
+        { title: { contains: search } },
+        { slug: { contains: search } },
+        { excerpt: { contains: search } },
+        { body: { contains: search } }
+      ]
+    };
+    if (where.OR) {
+      where.AND = [
+        { OR: where.OR },
+        searchFilter
+      ];
+      delete where.OR;
+    } else {
+      where.OR = searchFilter.OR;
+    }
   }
 
   // Get total counts for badge indicators
@@ -172,39 +196,54 @@ export default async function AdminContentPage({
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-100 pb-px">
-        {[
-          { label: "All Content", value: "all" },
-          { label: "Recipes", value: "recipe" },
-          { label: "Diet Plans", value: "diet_plan" },
-          { label: "Cheat Sheets", value: "cheat_sheet" },
-          { label: "Blogs", value: "blog" },
-          { label: "Pending Recipes", value: "pending_recipe", count: pendingCount },
-          { label: "Pending Images", value: "pending_image", count: pendingImageCount }
-        ].map(tab => {
-          const isActive = activeTab === tab.value;
-          const href = tab.value === "all" ? "/admin/content" : `/admin/content?type=${tab.value}`;
-          return (
-            <Link key={tab.value} href={href} className="inline-flex">
-              <button
-                type="button"
-                className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 rounded-t-xl flex items-center gap-1.5 ${
-                  isActive 
-                    ? "text-slate-900 border-slate-900 bg-slate-50/50" 
-                    : "text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-50/20"
-                }`}
-              >
-                {tab.label}
-                {tab.count !== undefined && tab.count > 0 && (
-                  <span className={`px-2 py-0.5 text-[9px] font-extrabold rounded-full ${isActive ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            </Link>
-          );
-        })}
+      {/* Tab Navigation & Search Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-2">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {[
+            { label: "All Content", value: "all" },
+            { label: "Recipes", value: "recipe" },
+            { label: "Diet Plans", value: "diet_plan" },
+            { label: "Cheat Sheets", value: "cheat_sheet" },
+            { label: "Blogs", value: "blog" },
+            { label: "Pending Recipes", value: "pending_recipe", count: pendingCount },
+            { label: "Pending Images", value: "pending_image", count: pendingImageCount }
+          ].map(tab => {
+            const isActive = activeTab === tab.value;
+            const params = new URLSearchParams();
+            if (tab.value !== "all") {
+              params.set("type", tab.value);
+            }
+            if (search) {
+              params.set("search", search);
+            }
+            const queryString = params.toString();
+            const href = `/admin/content${queryString ? `?${queryString}` : ""}`;
+            return (
+              <Link key={tab.value} href={href} className="inline-flex">
+                <button
+                  type="button"
+                  className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 rounded-t-xl flex items-center gap-1.5 ${
+                    isActive 
+                      ? "text-slate-900 border-slate-900 bg-slate-50/50" 
+                      : "text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-50/20"
+                  }`}
+                >
+                  {tab.label}
+                  {tab.count !== undefined && tab.count > 0 && (
+                    <span className={`px-2 py-0.5 text-[9px] font-extrabold rounded-full ${isActive ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              </Link>
+            );
+          })}
+        </div>
+        <div className="w-full md:w-auto min-w-[240px] md:max-w-xs mb-2 md:mb-0">
+          <Suspense fallback={<div className="h-10 w-full bg-slate-100 rounded-xl animate-pulse" />}>
+            <SearchInput />
+          </Suspense>
+        </div>
       </div>
 
       {/* Main Table Grid Container */}
@@ -339,7 +378,19 @@ export default async function AdminContentPage({
       <Pagination 
         currentPage={page} 
         totalPages={totalPages} 
-        baseUrl={activeTab === "all" ? "/admin/content" : `/admin/content?type=${activeTab}`}
+        baseUrl={
+          (() => {
+            const params = new URLSearchParams();
+            if (activeTab !== "all") {
+              params.set("type", activeTab);
+            }
+            if (search) {
+              params.set("search", search);
+            }
+            const queryString = params.toString();
+            return `/admin/content${queryString ? `?${queryString}` : ""}`;
+          })()
+        }
       />
     </div>
   );

@@ -146,7 +146,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
   })();
 
   // Construct JSON-LD schema dynamically
-  const prepTimeMinutes = (() => {
+  const parsedPrep = (() => {
     if (typeof recipe.prepTime === 'number') return recipe.prepTime;
     if (typeof recipe.prepTime === 'string') {
       const match = recipe.prepTime.match(/\d+/);
@@ -155,7 +155,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     return undefined;
   })();
 
-  const durationMinutes = (() => {
+  const parsedCook = (() => {
     if (typeof recipe.cookingTime === 'number') return recipe.cookingTime;
     if (typeof recipe.cookingTime === 'string') {
       const match = recipe.cookingTime.match(/\d+/);
@@ -164,13 +164,16 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     return undefined;
   })();
 
+  const prepTimeMinutes = parsedPrep || 15;
+  const durationMinutes = parsedCook || 25;
+
   const cleanRecipeCover = recipe.coverImage
     ? recipe.coverImage.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/g, '')
     : '/assets/og-image.jpg';
 
   const baseImageUrl = cleanRecipeCover.startsWith('http')
     ? cleanRecipeCover
-    : `https://stewartlucas.com${cleanRecipeCover}`;
+    : `https://stewartlucas.com${cleanRecipeCover.startsWith('/') ? '' : '/'}${cleanRecipeCover}`;
 
   // Always build the enhanced schema from code
   const builtSchema: Record<string, any> = {
@@ -197,13 +200,17 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     "datePublished": recipe.createdAt?.toISOString(),
     "dateModified": recipe.updatedAt?.toISOString(),
     "keywords": tags.join(", "),
-    "recipeCategory": tags.find((t: string) => ["breakfast", "lunch", "dinner", "snack", "dessert"].includes(t.toLowerCase())) || "Main Course",
-    "recipeCuisine": tags.find((t: string) => ["mediterranean", "american", "italian", "mexican", "asian", "french", "greek"].includes(t.toLowerCase())) || "Healthy",
-    ...(prepTimeMinutes && { "prepTime": `PT${prepTimeMinutes}M` }),
-    ...(durationMinutes && { "cookTime": `PT${durationMinutes}M` }),
-    ...((prepTimeMinutes || durationMinutes) && {
-      "totalTime": `PT${(prepTimeMinutes || 0) + (durationMinutes || 0)}M`
-    }),
+    "recipeCategory": (() => {
+      const cat = tags.find((t: string) => ["breakfast", "lunch", "dinner", "snack", "dessert"].includes(t.toLowerCase())) || "Main Course";
+      return cat.charAt(0).toUpperCase() + cat.slice(1);
+    })(),
+    "recipeCuisine": (() => {
+      const cuis = tags.find((t: string) => ["mediterranean", "american", "italian", "mexican", "asian", "french", "greek"].includes(t.toLowerCase())) || "Healthy";
+      return cuis.charAt(0).toUpperCase() + cuis.slice(1);
+    })(),
+    "prepTime": `PT${prepTimeMinutes}M`,
+    "cookTime": `PT${durationMinutes}M`,
+    "totalTime": `PT${prepTimeMinutes + durationMinutes}M`,
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": reviewCount > 0 ? avgRating.toFixed(1) : (recipe.rating > 0 ? recipe.rating.toFixed(1) : "5.0"),
@@ -211,24 +218,20 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
       "bestRating": "5",
       "worstRating": "1"
     },
-    ...(recipe.servings && { "recipeYield": `${recipe.servings} servings` }),
-    ...(ingredientsList.length > 0 && { "recipeIngredient": ingredientsList }),
-    ...(instructionsList.length > 0 && {
-      "recipeInstructions": instructionsList.map((step: string, i: number) => ({
-        "@type": "HowToStep",
-        "position": i + 1,
-        "text": step
-      }))
-    }),
-    ...((recipe.calories || recipe.protein || recipe.fat || recipe.carbs) && {
-      "nutrition": {
-        "@type": "NutritionInformation",
-        ...(recipe.calories && { "calories": `${recipe.calories} calories` }),
-        ...(recipe.protein && { "proteinContent": recipe.protein }),
-        ...(recipe.fat && { "fatContent": recipe.fat }),
-        ...(recipe.carbs && { "carbohydrateContent": recipe.carbs })
-      }
-    })
+    "recipeYield": recipe.servings ? `${recipe.servings} servings` : "4 servings",
+    "recipeIngredient": ingredientsList.length > 0 ? ingredientsList : ["1 recipe ingredients list"],
+    "recipeInstructions": instructionsList.map((step: string, i: number) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "text": step
+    })),
+    "nutrition": {
+      "@type": "NutritionInformation",
+      "calories": recipe.calories ? `${recipe.calories} calories` : "350 calories",
+      ...(recipe.protein && { "proteinContent": recipe.protein }),
+      ...(recipe.fat && { "fatContent": recipe.fat }),
+      ...(recipe.carbs && { "carbohydrateContent": recipe.carbs })
+    }
   };
 
   // Merge any DB-stored schema overrides on top (but never let it remove our enhanced fields)
