@@ -83,32 +83,49 @@ export default async function RecipesPage({
   // Fetch matching recipes from server cache
   const { data: recipes, totalPages } = await getCachedRecipes(category, page, pageSize, time, dietary, sort);
 
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "numberOfItems": recipes.length,
+    "itemListElement": recipes.map((recipe: any, index: number) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": `https://stewartlucas.com/recipes/${recipe.slug}`
+    }))
+  };
+
   return (
-    <div className="bg-[#fafaf8] min-h-screen">
-      {/* Hero Section Banner */}
-      <RecipesHero />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
+      <div className="bg-[#fafaf8] min-h-screen">
+        {/* Hero Section Banner */}
+        <RecipesHero />
 
-      {/* Main Content Area Container */}
-      <div className="max-w-[1280px] mx-auto px-4 lg:px-6 py-12 md:py-16">
-        <Suspense fallback={<div className="animate-pulse h-96 bg-[#f5f3e9] rounded-2xl" />}>
-          <RecipesClient 
-            recipes={recipes} 
-            totalPages={totalPages} 
-            currentPage={page} 
-          />
-        </Suspense>
-
-        {/* Pagination Controls */}
-        {recipes.length > 0 && (
-          <div className="mt-16 flex justify-center border-t border-[#e8e4dc]/60 pt-8 print-hide">
-            <Pagination 
-              currentPage={page} 
+        {/* Main Content Area Container */}
+        <div className="max-w-[1280px] mx-auto px-4 lg:px-6 py-12 md:py-16">
+          <Suspense fallback={<div className="animate-pulse h-96 bg-[#f5f3e9] rounded-2xl" />}>
+            <RecipesClient 
+              recipes={recipes} 
               totalPages={totalPages} 
-              baseUrl="/recipes"
+              currentPage={page} 
             />
-          </div>
-        )}
+          </Suspense>
+
+          {/* Pagination Controls */}
+          {recipes.length > 0 && (
+            <div className="mt-16 flex justify-center border-t border-[#e8e4dc]/60 pt-8 print-hide">
+              <Pagination 
+                currentPage={page} 
+                totalPages={totalPages} 
+                baseUrl="/recipes"
+              />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -44,36 +44,49 @@ export const metadata: Metadata = {
 };
 
 // Organization + WebSite JSON-LD for Google Knowledge Panel
-const homepageJsonLd = [
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "NutriGuide by Stewart Lucas",
-    "url": "https://stewartlucas.com",
-    "logo": "https://stewartlucas.com/assets/og-image.jpg",
-    "description": "Free science-backed diet plans, healthy recipes, and meal prep guides.",
-    "founder": {
-      "@type": "Person",
-      "name": "Stewart Lucas",
-      "url": "https://stewartlucas.com/about"
+const homepageJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://stewartlucas.com/#website",
+      "name": "NutriGuide by Stewart Lucas",
+      "url": "https://stewartlucas.com",
+      "inLanguage": "en-GB",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": { "@type": "EntryPoint", "urlTemplate": "https://stewartlucas.com/recipes?q={search_term_string}" },
+        "query-input": "required name=search_term_string"
+      }
     },
-    "sameAs": [
-      "https://instagram.com/nutriguide.stewartlucas",
-      "https://pinterest.com/nutriguide_stewartlucas"
-    ]
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "NutriGuide by Stewart Lucas",
-    "url": "https://stewartlucas.com",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://stewartlucas.com/recipes?q={search_term_string}",
-      "query-input": "required name=search_term_string"
+    {
+      "@type": "Organization",
+      "@id": "https://stewartlucas.com/#organization",
+      "name": "NutriGuide by Stewart Lucas",
+      "url": "https://stewartlucas.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://stewartlucas.com/assets/og-image.jpg",
+        "width": 1200,
+        "height": 630
+      },
+      "sameAs": [
+        "https://instagram.com/nutriguide.stewartlucas",
+        "https://pinterest.com/nutriguide_stewartlucas"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "url": "https://stewartlucas.com/contact"
+      },
+      "founder": {
+        "@type": "Person",
+        "name": "Stewart Lucas",
+        "url": "https://stewartlucas.com/about"
+      }
     }
-  }
-];
+  ]
+};
 
 export default async function Home() {
   const session = await auth();

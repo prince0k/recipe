@@ -1,5 +1,12 @@
 import { ContentDetailView } from "@/components/content/ContentDetailView";
 import type { Metadata } from "next";
+import { AdBanner } from "@/components/ui/AdBanner";
+import { prisma } from "@/lib/db";
+import { notFound } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { AUTHOR_BLOCK } from "@/lib/schema/authorBlock";
+import { buildImageObject } from "@/lib/schema/buildImageObject";
+import { parseFaqs } from "@/lib/schema/parseFaqs";
 
 export async function generateMetadata(
   props: { params: Promise<{ slug: string }> }
@@ -57,10 +64,6 @@ export async function generateMetadata(
     },
   };
 }
-import { AdBanner } from "@/components/ui/AdBanner";
-import { prisma } from "@/lib/db";
-import { notFound } from "next/navigation";
-import { auth } from "@/lib/auth";
 
 export default async function BlogPostPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
@@ -95,87 +98,69 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
     orderBy: { createdAt: "desc" }
   });
 
-  // Parse FAQs dynamically from content body
-  const faqs: { question: string; answer: string }[] = [];
-  const htmlStr = content.body || "";
-  const detailsRegex = /<details[^>]*>\s*<summary[^>]*>([\s\S]*?)<\/summary>\s*([\s\S]*?)<\/details>/gi;
-  let match;
-  while ((match = detailsRegex.exec(htmlStr)) !== null) {
-    const question = match[1].replace(/<[^>]*>?/gm, '').trim();
-    const answer = match[2].replace(/<[^>]*>?/gm, '').trim();
-    if (question && answer) {
-      faqs.push({ question, answer });
-    }
-  }
-  if (faqs.length === 0) {
-    const qRegex = /<(h3|h4)[^>]*>([^<]*?\?[^<]*?)<\/\1>\s*<p[^>]*>([\s\S]*?)<\/p>/gi;
-    let qMatch;
-    while ((qMatch = qRegex.exec(htmlStr)) !== null) {
-      const question = qMatch[2].replace(/<[^>]*>?/gm, '').trim();
-      const answer = qMatch[3].replace(/<[^>]*>?/gm, '').trim();
-      if (question && answer) {
-        faqs.push({ question, answer });
-      }
-    }
-  }
+  // Parse FAQs dynamically using shared utility
+  const faqs = parseFaqs(content.body || "");
+  const imageObject = buildImageObject(content.coverImage);
 
-  const cleanCover = content.coverImage
-    ? (content.coverImage.startsWith('http') ? content.coverImage : `https://stewartlucas.com${content.coverImage.startsWith('/') ? '' : '/'}${content.coverImage}`)
-    : 'https://stewartlucas.com/assets/og-image.jpg';
-
-  const articleSchema = {
+  const builtSchema: Record<string, any> = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": content.title,
-    "description": content.excerpt || 'A blog post from Stewart Lucas.',
-    "image": [cleanCover],
-    "datePublished": content.createdAt?.toISOString(),
-    "dateModified": content.updatedAt?.toISOString(),
-    "author": {
-      "@type": "Person",
-      "name": "Stewart Lucas",
-      "url": "https://stewartlucas.com/about"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "NutriGuide by Stewart Lucas",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://stewartlucas.com/assets/og-image.jpg"
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        "@id": `https://stewartlucas.com/blog/${content.slug}#article`,
+        "headline": content.title,
+        "description": content.excerpt || 'A blog post from Stewart Lucas.',
+        "image": imageObject,
+        "datePublished": content.createdAt?.toISOString(),
+        "dateModified": content.updatedAt?.toISOString(),
+        "author": AUTHOR_BLOCK,
+        "inLanguage": "en-GB",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": `https://stewartlucas.com/blog/${content.slug}`
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://stewartlucas.com" },
+          { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://stewartlucas.com/blog" },
+          { "@type": "ListItem", "position": 3, "name": content.title, "item": `https://stewartlucas.com/blog/${content.slug}` }
+        ]
       }
-    },
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": `https://stewartlucas.com/blog/${params.slug}`
-    }
+    ]
   };
 
-  const faqSchema = faqs.length > 0 ? {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faqs.map(faq => ({
-      "@type": "Question",
-      "name": faq.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.answer
-      }
-    }))
-  } : null;
+  if (faqs.length > 0) {
+    builtSchema["@graph"].push({
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    });
+  }
 
-  const schemas: any[] = [
-    articleSchema,
-    ...(faqSchema ? [faqSchema] : [])
-  ];
-
+  // Merge any DB-stored schema overrides
+  let schemaJson = builtSchema;
   if (content.schema) {
     try {
       const dbSchema = JSON.parse(content.schema);
       if (dbSchema) {
-        if (Array.isArray(dbSchema)) {
-          schemas.push(...dbSchema);
-        } else {
-          schemas.push(dbSchema);
+        const postIndex = builtSchema["@graph"].findIndex((item: any) => item["@type"] === "BlogPosting");
+        if (postIndex !== -1) {
+          const dbPosting = dbSchema["@graph"]
+            ? dbSchema["@graph"].find((item: any) => item["@type"] === "BlogPosting")
+            : dbSchema;
+
+          builtSchema["@graph"][postIndex] = {
+            ...dbPosting,
+            ...builtSchema["@graph"][postIndex]
+          };
         }
       }
     } catch (e) {
@@ -187,7 +172,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaJson) }}
       />
       <ContentDetailView 
         content={content} 
@@ -198,3 +183,4 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
     </>
   );
 }
+

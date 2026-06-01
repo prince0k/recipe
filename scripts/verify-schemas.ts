@@ -130,11 +130,19 @@ async function main() {
 
     // 2. Validate JSON-LD
     if (schemaObj) {
-      // Handle array or object structure
-      const schemasToValidate = Array.isArray(schemaObj) ? schemaObj : [schemaObj];
+      // Handle array, @graph wrapper, or flat object structure
+      let schemasToValidate: any[] = [];
+      if (Array.isArray(schemaObj)) {
+        schemasToValidate = schemaObj;
+      } else if (schemaObj && schemaObj["@graph"] && Array.isArray(schemaObj["@graph"])) {
+        schemasToValidate = schemaObj["@graph"];
+      } else if (schemaObj) {
+        schemasToValidate = [schemaObj];
+      }
 
       for (const sc of schemasToValidate) {
-        if (!sc["@context"]) {
+        const hasRootContext = schemaObj && schemaObj["@context"];
+        if (!sc["@context"] && !hasRootContext) {
           errors.push("Missing '@context' property.");
         }
         if (!sc["@type"]) {
@@ -142,26 +150,30 @@ async function main() {
         }
 
         // Image Validation
-        const images = Array.isArray(sc.image) ? sc.image : (sc.image ? [sc.image] : []);
-        if (images.length === 0) {
-          errors.push("Missing representative 'image' URL.");
-        } else {
-          images.forEach((imgUrl: string) => {
-            if (typeof imgUrl !== 'string') {
-              errors.push(`Invalid image type: expected string, got ${typeof imgUrl}.`);
-            } else {
-              if (imgUrl.includes("localhost") || imgUrl.includes("127.0.0.1")) {
-                errors.push(`Image URL contains local environment domain: "${imgUrl}".`);
+        const typesRequiringImage = ['Recipe', 'BlogPosting', 'Article'];
+        if (typesRequiringImage.includes(sc["@type"])) {
+          const images = Array.isArray(sc.image) ? sc.image : (sc.image ? [sc.image] : []);
+          if (images.length === 0) {
+            errors.push("Missing representative 'image' URL.");
+          } else {
+            images.forEach((imgUrl: any) => {
+              const actualUrl = imgUrl && typeof imgUrl === 'object' ? imgUrl.url : imgUrl;
+              if (typeof actualUrl !== 'string') {
+                errors.push(`Invalid image type: expected string, got ${typeof actualUrl}.`);
+              } else {
+                if (actualUrl.includes("localhost") || actualUrl.includes("127.0.0.1")) {
+                  errors.push(`Image URL contains local environment domain: "${actualUrl}".`);
+                }
+                if (!actualUrl.startsWith("http://") && !actualUrl.startsWith("https://")) {
+                  errors.push(`Image URL is relative or not absolute: "${actualUrl}".`);
+                }
               }
-              if (!imgUrl.startsWith("http://") && !imgUrl.startsWith("https://")) {
-                errors.push(`Image URL is relative or not absolute: "${imgUrl}".`);
-              }
-            }
-          });
+            });
+          }
         }
 
         // Recipe Validation
-        if (item.type === 'RECIPE' || sc["@type"] === 'Recipe') {
+        if (sc["@type"] === 'Recipe') {
           // Prep/Cook Time
           if (!sc.prepTime) {
             warnings.push("Missing recommended 'prepTime'.");

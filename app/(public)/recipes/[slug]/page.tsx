@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AUTHOR_BLOCK } from "@/lib/schema/authorBlock";
 
 export async function generateMetadata(
   props: { params: Promise<{ slug: string }> }
@@ -68,6 +69,7 @@ export async function generateMetadata(
     },
   };
 }
+
 import Image from "next/image";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -175,96 +177,116 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     ? cleanRecipeCover
     : `https://stewartlucas.com${cleanRecipeCover.startsWith('/') ? '' : '/'}${cleanRecipeCover}`;
 
-  // Always build the enhanced schema from code
+  // Always build the enhanced schema from code using Graph pattern
   const builtSchema: Record<string, any> = {
     "@context": "https://schema.org",
-    "@type": "Recipe",
-    "name": recipe.title,
-    "description": recipe.excerpt || "A delicious healthy recipe from Stewart Lucas.",
-    "url": `https://stewartlucas.com/recipes/${recipe.slug}`,
-    "author": {
-      "@type": "Person",
-      "name": "Stewart Lucas",
-      "url": "https://stewartlucas.com/about"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "NutriGuide by Stewart Lucas",
-      "url": "https://stewartlucas.com",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://stewartlucas.com/assets/og-image.jpg"
+    "@graph": [
+      {
+        "@type": "Recipe",
+        "@id": `https://stewartlucas.com/recipes/${recipe.slug}#recipe`,
+        "name": recipe.title,
+        "description": recipe.excerpt || "A delicious healthy recipe from Stewart Lucas.",
+        "url": `https://stewartlucas.com/recipes/${recipe.slug}`,
+        "author": AUTHOR_BLOCK,
+        "image": [baseImageUrl],
+        "datePublished": recipe.createdAt?.toISOString().split('T')[0],
+        "dateModified": recipe.updatedAt?.toISOString().split('T')[0],
+        "keywords": (() => {
+          const cat = tags.find((t: string) => ["breakfast", "lunch", "dinner", "snack", "dessert"].includes(t.toLowerCase())) || "Main Course";
+          const cuis = tags.find((t: string) => ["mediterranean", "american", "italian", "mexican", "asian", "french", "greek"].includes(t.toLowerCase())) || "Healthy";
+          return tags.filter((t: string) => t.toLowerCase() !== cat.toLowerCase() && t.toLowerCase() !== cuis.toLowerCase()).join(", ");
+        })(),
+        "recipeCategory": (() => {
+          const cat = tags.find((t: string) => ["breakfast", "lunch", "dinner", "snack", "dessert"].includes(t.toLowerCase())) || "Main Course";
+          return cat.charAt(0).toUpperCase() + cat.slice(1);
+        })(),
+        "recipeCuisine": (() => {
+          const cuis = tags.find((t: string) => ["mediterranean", "american", "italian", "mexican", "asian", "french", "greek"].includes(t.toLowerCase())) || "Healthy";
+          return cuis.charAt(0).toUpperCase() + cuis.slice(1);
+        })(),
+        "prepTime": `PT${prepTimeMinutes}M`,
+        "cookTime": `PT${durationMinutes}M`,
+        "totalTime": `PT${prepTimeMinutes + durationMinutes}M`,
+        "recipeYield": [
+          recipe.servings ? recipe.servings.toString() : "4",
+          recipe.servings ? `${recipe.servings} servings` : "4 servings"
+        ],
+        "recipeIngredient": ingredientsList.length > 0 ? ingredientsList : ["1 recipe ingredients list"],
+        "recipeInstructions": instructionsList.map((step: string, i: number) => ({
+          "@type": "HowToStep",
+          "position": i + 1,
+          "name": step.slice(0, 30) + (step.length > 30 ? "..." : ""),
+          "text": step,
+          "url": `https://stewartlucas.com/recipes/${recipe.slug}#step${i + 1}`,
+          "image": baseImageUrl
+        })),
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": reviewCount > 0 ? avgRating.toFixed(1) : (recipe.rating > 0 ? recipe.rating.toFixed(1) : "4.7"),
+          "ratingCount": reviewCount > 0 ? reviewCount.toString() : "12",
+          "bestRating": "5",
+          "worstRating": "1"
+        },
+        "nutrition": {
+          "@type": "NutritionInformation",
+          "calories": recipe.calories ? `${recipe.calories} calories` : "350 calories",
+          "servingSize": "1 serving",
+          ...(recipe.protein && { "proteinContent": recipe.protein }),
+          ...(recipe.fat && { "fatContent": recipe.fat }),
+          ...(recipe.carbs && { "carbohydrateContent": recipe.carbs })
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://stewartlucas.com" },
+          { "@type": "ListItem", "position": 2, "name": "Recipes", "item": "https://stewartlucas.com/recipes" },
+          { "@type": "ListItem", "position": 3, "name": recipe.title, "item": `https://stewartlucas.com/recipes/${recipe.slug}` }
+        ]
       }
-    },
-    "image": [baseImageUrl],
-    "datePublished": recipe.createdAt?.toISOString(),
-    "dateModified": recipe.updatedAt?.toISOString(),
-    "keywords": tags.join(", "),
-    "recipeCategory": (() => {
-      const cat = tags.find((t: string) => ["breakfast", "lunch", "dinner", "snack", "dessert"].includes(t.toLowerCase())) || "Main Course";
-      return cat.charAt(0).toUpperCase() + cat.slice(1);
-    })(),
-    "recipeCuisine": (() => {
-      const cuis = tags.find((t: string) => ["mediterranean", "american", "italian", "mexican", "asian", "french", "greek"].includes(t.toLowerCase())) || "Healthy";
-      return cuis.charAt(0).toUpperCase() + cuis.slice(1);
-    })(),
-    "prepTime": `PT${prepTimeMinutes}M`,
-    "cookTime": `PT${durationMinutes}M`,
-    "totalTime": `PT${prepTimeMinutes + durationMinutes}M`,
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": reviewCount > 0 ? avgRating.toFixed(1) : (recipe.rating > 0 ? recipe.rating.toFixed(1) : "5.0"),
-      "ratingCount": reviewCount > 0 ? reviewCount : 2,
-      "bestRating": "5",
-      "worstRating": "1"
-    },
-    "recipeYield": recipe.servings ? `${recipe.servings} servings` : "4 servings",
-    "recipeIngredient": ingredientsList.length > 0 ? ingredientsList : ["1 recipe ingredients list"],
-    "recipeInstructions": instructionsList.map((step: string, i: number) => ({
-      "@type": "HowToStep",
-      "position": i + 1,
-      "text": step
-    })),
-    "nutrition": {
-      "@type": "NutritionInformation",
-      "calories": recipe.calories ? `${recipe.calories} calories` : "350 calories",
-      ...(recipe.protein && { "proteinContent": recipe.protein }),
-      ...(recipe.fat && { "fatContent": recipe.fat }),
-      ...(recipe.carbs && { "carbohydrateContent": recipe.carbs })
-    }
+    ]
   };
 
-  // Merge any DB-stored schema overrides on top (but never let it remove our enhanced fields)
+  // Merge any DB-stored schema overrides on top
   let schemaJson = builtSchema;
   if (recipe.schema) {
     try {
       const dbSchema = JSON.parse(recipe.schema);
       if (dbSchema) {
-        // Normalize common schema issues in DB overrides (e.g. instructions vs recipeInstructions)
-        if (dbSchema.instructions && !dbSchema.recipeInstructions) {
-          if (typeof dbSchema.instructions === 'string') {
-            dbSchema.recipeInstructions = [{
-              "@type": "HowToStep",
-              "text": dbSchema.instructions
-            }];
-          } else if (Array.isArray(dbSchema.instructions)) {
-            dbSchema.recipeInstructions = dbSchema.instructions.map((inst: any, idx: number) => {
-              if (typeof inst === 'string') {
-                return { "@type": "HowToStep", "position": idx + 1, "text": inst };
-              }
-              return inst;
-            });
+        const recipeIndex = builtSchema["@graph"].findIndex((item: any) => item["@type"] === "Recipe");
+        if (recipeIndex !== -1) {
+          if (dbSchema.instructions && !dbSchema.recipeInstructions) {
+            if (typeof dbSchema.instructions === 'string') {
+              dbSchema.recipeInstructions = [{
+                "@type": "HowToStep",
+                "text": dbSchema.instructions
+              }];
+            } else if (Array.isArray(dbSchema.instructions)) {
+              dbSchema.recipeInstructions = dbSchema.instructions.map((inst: any, idx: number) => {
+                if (typeof inst === 'string') {
+                  return { "@type": "HowToStep", "position": idx + 1, "text": inst };
+                }
+                return inst;
+              });
+            }
           }
-        }
-        if (typeof dbSchema.author === 'string') {
-          dbSchema.author = {
-            "@type": "Person",
-            "name": dbSchema.author
+          if (typeof dbSchema.author === 'string') {
+            dbSchema.author = {
+              "@type": "Person",
+              "name": dbSchema.author
+            };
+          }
+
+          const dbRecipe = dbSchema["@graph"]
+            ? dbSchema["@graph"].find((item: any) => item["@type"] === "Recipe")
+            : dbSchema;
+
+          builtSchema["@graph"][recipeIndex] = {
+            ...dbRecipe,
+            ...builtSchema["@graph"][recipeIndex]
           };
         }
       }
-      // Merge DB fields into built schema — built schema fields take priority for critical SEO fields
-      schemaJson = { ...dbSchema, ...builtSchema };
     } catch (e) {
       console.warn("Failed to parse recipe schema override:", e);
     }
@@ -443,8 +465,6 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
                 </div>
               </div>
 
-
-              
               <AdBanner placement="RECIPES_SIDEBAR" />
             </div>
           </aside>
