@@ -169,6 +169,7 @@ export default async function Home() {
             fill
             className="object-cover scale-105"
             priority
+            fetchPriority="high"
             sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
@@ -408,10 +409,10 @@ export default async function Home() {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { title: "Quick Recipes", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=1000", count: "120+ Recipes", color: "bg-orange-500/20" },
-              { title: "Healthy Eating", img: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&q=80&w=1000", count: "85+ Recipes", color: "bg-olive/20" },
-              { title: "Budget Friendly", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=1000", count: "60+ Recipes", color: "bg-yellow-500/20" },
-              { title: "Dinner Ideas", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=1000", count: "95+ Recipes", color: "bg-red-500/20" },
+              { title: "Quick Recipes", img: "/assets/quick.webp", count: "120+ Recipes", color: "bg-orange-500/20" },
+              { title: "Healthy Eating", img: "/assets/healthy.webp", count: "85+ Recipes", color: "bg-olive/20" },
+              { title: "Budget Friendly", img: "/assets/budget.webp", count: "60+ Recipes", color: "bg-yellow-500/20" },
+              { title: "Dinner Ideas", img: "/assets/dinner.webp", count: "95+ Recipes", color: "bg-red-500/20" },
             ].map((cat) => (
               <Link key={cat.title} href={`/recipes?category=${cat.title.toLowerCase().replace(' ', '-')}`} className="group">
                 <div className="relative h-96 rounded-[2.5rem] overflow-hidden cinematic-shadow transition-all duration-500 group-hover:-translate-y-2">

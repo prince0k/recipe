@@ -103,6 +103,7 @@ export function ContentDetailView({
               sizes="(max-width: 1024px) 100vw, 1024px"
               className="object-cover"
               priority
+              fetchPriority="high"
               loader={content.coverImage.startsWith('/uploads/images/') && content.coverImage.endsWith('.webp') ? uploadsLoader : undefined}
               unoptimized={!content.coverImage.startsWith('/uploads/images/') && content.coverImage.startsWith('/uploads')}
             />
