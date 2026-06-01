@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { prisma, getInsensitiveMode } from "@/lib/db";
 import { getSubscriberStats } from "@/lib/queries";
 
 export async function GET(req: Request) {
@@ -23,14 +23,14 @@ export async function GET(req: Request) {
 
     if (search) {
       where.OR = [
-        { email: { contains: search, mode: "insensitive" } },
-        { name: { contains: search, mode: "insensitive" } },
-        { city: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, ...getInsensitiveMode() } },
+        { name: { contains: search, ...getInsensitiveMode() } },
+        { city: { contains: search, ...getInsensitiveMode() } },
       ];
     }
 
     if (country) {
-      where.country = { equals: country, mode: "insensitive" };
+      where.country = { equals: country, ...getInsensitiveMode() };
     }
 
     // For CSV export, we might still want a larger limit or all records

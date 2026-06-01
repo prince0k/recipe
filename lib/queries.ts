@@ -1,4 +1,4 @@
-import { prisma } from "./db";
+import { prisma, getInsensitiveMode } from "./db";
 import { unstable_cache } from "next/cache";
 
 /**
@@ -119,8 +119,8 @@ function getTimeFilter(timeLabel: string): any {
   if (timeLabel === "1 hour+") {
     return {
       OR: [
-        { cookingTime: { contains: "hour", mode: "insensitive" } },
-        { cookingTime: { contains: "hr", mode: "insensitive" } },
+        { cookingTime: { contains: "hour", ...getInsensitiveMode() } },
+        { cookingTime: { contains: "hr", ...getInsensitiveMode() } },
         { cookingTime: { startsWith: "65 mins" } },
         { cookingTime: { startsWith: "70 mins" } },
         { cookingTime: { startsWith: "75 mins" } },
@@ -140,13 +140,13 @@ function getCategoryFilter(category: string): any {
   if (catLower === "quick-recipes" || catLower === "quick recipes") {
     return {
       OR: [
-        { tags: { contains: "quick", mode: "insensitive" } },
-        { tags: { contains: "easy", mode: "insensitive" } },
-        { tags: { contains: "one-pan", mode: "insensitive" } },
-        { tags: { contains: "sheet-pan", mode: "insensitive" } },
-        { tags: { contains: "breakfast", mode: "insensitive" } },
-        { tags: { contains: "meal-prep", mode: "insensitive" } },
-        { tags: { contains: "fast", mode: "insensitive" } }
+        { tags: { contains: "quick", ...getInsensitiveMode() } },
+        { tags: { contains: "easy", ...getInsensitiveMode() } },
+        { tags: { contains: "one-pan", ...getInsensitiveMode() } },
+        { tags: { contains: "sheet-pan", ...getInsensitiveMode() } },
+        { tags: { contains: "breakfast", ...getInsensitiveMode() } },
+        { tags: { contains: "meal-prep", ...getInsensitiveMode() } },
+        { tags: { contains: "fast", ...getInsensitiveMode() } }
       ]
     };
   }
@@ -154,18 +154,18 @@ function getCategoryFilter(category: string): any {
   if (catLower === "healthy-eating" || catLower === "healthy eating") {
     return {
       OR: [
-        { tags: { contains: "healthy", mode: "insensitive" } },
-        { tags: { contains: "nutrition", mode: "insensitive" } },
-        { tags: { contains: "plant-based", mode: "insensitive" } },
-        { tags: { contains: "vegan", mode: "insensitive" } },
-        { tags: { contains: "vegetarian", mode: "insensitive" } },
-        { tags: { contains: "gluten-free", mode: "insensitive" } },
-        { tags: { contains: "low-carb", mode: "insensitive" } },
-        { tags: { contains: "sugar-free", mode: "insensitive" } },
-        { tags: { contains: "fiber", mode: "insensitive" } },
-        { tags: { contains: "wellness", mode: "insensitive" } },
-        { tags: { contains: "gut-health", mode: "insensitive" } },
-        { tags: { contains: "biohacking", mode: "insensitive" } }
+        { tags: { contains: "healthy", ...getInsensitiveMode() } },
+        { tags: { contains: "nutrition", ...getInsensitiveMode() } },
+        { tags: { contains: "plant-based", ...getInsensitiveMode() } },
+        { tags: { contains: "vegan", ...getInsensitiveMode() } },
+        { tags: { contains: "vegetarian", ...getInsensitiveMode() } },
+        { tags: { contains: "gluten-free", ...getInsensitiveMode() } },
+        { tags: { contains: "low-carb", ...getInsensitiveMode() } },
+        { tags: { contains: "sugar-free", ...getInsensitiveMode() } },
+        { tags: { contains: "fiber", ...getInsensitiveMode() } },
+        { tags: { contains: "wellness", ...getInsensitiveMode() } },
+        { tags: { contains: "gut-health", ...getInsensitiveMode() } },
+        { tags: { contains: "biohacking", ...getInsensitiveMode() } }
       ]
     };
   }
@@ -173,10 +173,10 @@ function getCategoryFilter(category: string): any {
   if (catLower === "budget-friendly" || catLower === "budget friendly" || catLower === "budget") {
     return {
       OR: [
-        { tags: { contains: "budget", mode: "insensitive" } },
-        { tags: { contains: "inflation-proof", mode: "insensitive" } },
-        { tags: { contains: "cheap", mode: "insensitive" } },
-        { tags: { contains: "pantry", mode: "insensitive" } }
+        { tags: { contains: "budget", ...getInsensitiveMode() } },
+        { tags: { contains: "inflation-proof", ...getInsensitiveMode() } },
+        { tags: { contains: "cheap", ...getInsensitiveMode() } },
+        { tags: { contains: "pantry", ...getInsensitiveMode() } }
       ]
     };
   }
@@ -184,13 +184,13 @@ function getCategoryFilter(category: string): any {
   if (catLower === "dinner-ideas" || catLower === "dinner ideas" || catLower === "dinner") {
     return {
       OR: [
-        { tags: { contains: "dinner", mode: "insensitive" } },
-        { tags: { contains: "roast", mode: "insensitive" } },
-        { tags: { contains: "bowl", mode: "insensitive" } },
-        { tags: { contains: "skillet", mode: "insensitive" } },
-        { tags: { contains: "main", mode: "insensitive" } },
-        { tags: { contains: "lunch", mode: "insensitive" } },
-        { tags: { contains: "meal", mode: "insensitive" } }
+        { tags: { contains: "dinner", ...getInsensitiveMode() } },
+        { tags: { contains: "roast", ...getInsensitiveMode() } },
+        { tags: { contains: "bowl", ...getInsensitiveMode() } },
+        { tags: { contains: "skillet", ...getInsensitiveMode() } },
+        { tags: { contains: "main", ...getInsensitiveMode() } },
+        { tags: { contains: "lunch", ...getInsensitiveMode() } },
+        { tags: { contains: "meal", ...getInsensitiveMode() } }
       ]
     };
   }
@@ -198,11 +198,11 @@ function getCategoryFilter(category: string): any {
   if (catLower === "breakfast") {
     return {
       OR: [
-        { tags: { contains: "breakfast", mode: "insensitive" } },
-        { tags: { contains: "smoothie", mode: "insensitive" } },
-        { tags: { contains: "loaf", mode: "insensitive" } },
-        { tags: { contains: "baking", mode: "insensitive" } },
-        { tags: { contains: "skillet", mode: "insensitive" } }
+        { tags: { contains: "breakfast", ...getInsensitiveMode() } },
+        { tags: { contains: "smoothie", ...getInsensitiveMode() } },
+        { tags: { contains: "loaf", ...getInsensitiveMode() } },
+        { tags: { contains: "baking", ...getInsensitiveMode() } },
+        { tags: { contains: "skillet", ...getInsensitiveMode() } }
       ]
     };
   }
@@ -210,16 +210,16 @@ function getCategoryFilter(category: string): any {
   if (catLower === "lunch") {
     return {
       OR: [
-        { tags: { contains: "lunch", mode: "insensitive" } },
-        { tags: { contains: "bowl", mode: "insensitive" } },
-        { tags: { contains: "skillet", mode: "insensitive" } },
-        { tags: { contains: "salad", mode: "insensitive" } },
-        { tags: { contains: "soup", mode: "insensitive" } }
+        { tags: { contains: "lunch", ...getInsensitiveMode() } },
+        { tags: { contains: "bowl", ...getInsensitiveMode() } },
+        { tags: { contains: "skillet", ...getInsensitiveMode() } },
+        { tags: { contains: "salad", ...getInsensitiveMode() } },
+        { tags: { contains: "soup", ...getInsensitiveMode() } }
       ]
     };
   }
   
-  return { tags: { contains: category, mode: "insensitive" } };
+  return { tags: { contains: category, ...getInsensitiveMode() } };
 }
 
 function getDietaryFilter(diet: string): any {
@@ -227,35 +227,35 @@ function getDietaryFilter(diet: string): any {
   if (dLower === "gluten free" || dLower === "gluten-free") {
     return {
       OR: [
-        { tags: { contains: "gluten free", mode: "insensitive" } },
-        { tags: { contains: "gluten-free", mode: "insensitive" } }
+        { tags: { contains: "gluten free", ...getInsensitiveMode() } },
+        { tags: { contains: "gluten-free", ...getInsensitiveMode() } }
       ]
     };
   }
   if (dLower === "dairy free" || dLower === "dairy-free") {
     return {
       OR: [
-        { tags: { contains: "dairy free", mode: "insensitive" } },
-        { tags: { contains: "dairy-free", mode: "insensitive" } }
+        { tags: { contains: "dairy free", ...getInsensitiveMode() } },
+        { tags: { contains: "dairy-free", ...getInsensitiveMode() } }
       ]
     };
   }
   if (dLower === "vegan") {
     return {
       OR: [
-        { tags: { contains: "vegan", mode: "insensitive" } }
+        { tags: { contains: "vegan", ...getInsensitiveMode() } }
       ]
     };
   }
   if (dLower === "vegetarian") {
     return {
       OR: [
-        { tags: { contains: "vegetarian", mode: "insensitive" } },
-        { tags: { contains: "plant-based", mode: "insensitive" } }
+        { tags: { contains: "vegetarian", ...getInsensitiveMode() } },
+        { tags: { contains: "plant-based", ...getInsensitiveMode() } }
       ]
     };
   }
-  return { tags: { contains: diet, mode: "insensitive" } };
+  return { tags: { contains: diet, ...getInsensitiveMode() } };
 }
 
 export const getAllRecipes = unstable_cache(
