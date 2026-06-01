@@ -12,7 +12,7 @@ export async function saveAndCompressImage(
   source: string,
   label = "ai-image"
 ): Promise<string> {
-  const uploadDir = path.join(process.cwd(), "public", "uploads", "images");
+  const uploadDir = `${process.cwd()}/public/uploads/images`;
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
   }
@@ -23,7 +23,7 @@ export async function saveAndCompressImage(
     .replace(/(^-|-$)/g, "")
     .slice(0, 40);
   const fileName = `${Date.now()}-${slug}.webp`;
-  const filePath = path.join(uploadDir, fileName);
+  const filePath = `${uploadDir}/${fileName}`;
   const publicUrl = `/uploads/images/${fileName}`;
 
   let buffer: Buffer;

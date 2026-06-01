@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
     // Ensure uploads directory exists
     const folder = type === "pdf" ? "pdfs" : (type === "video" ? "videos" : "images");
-    const uploadDir = path.join(process.cwd(), "public", "uploads", folder);
+    const uploadDir = `${process.cwd()}/public/uploads/${folder}`;
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     if (type === "image") {
       // Optimize image with sharp to WebP
       const optimizedName = `${Date.now()}.webp`;
-      const optimizedPath = path.join(uploadDir, optimizedName);
+      const optimizedPath = `${uploadDir}/${optimizedName}`;
       
       await sharp(buffer)
         .resize({ width: 1200, withoutEnlargement: true })
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       fileUrl = `/uploads/images/${optimizedName}`;
     } else {
       // Save PDF as is
-      const filePath = path.join(uploadDir, fileName);
+      const filePath = `${uploadDir}/${fileName}`;
       fs.writeFileSync(filePath, buffer);
     }
 

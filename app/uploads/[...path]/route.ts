@@ -13,14 +13,11 @@ export async function GET(
       return new NextResponse("Bad Request", { status: 400 });
     }
 
-    const filePath = path.join(process.cwd(), "public", "uploads", ...params.path);
-
-    // Security check: prevent directory traversal (e.g., /uploads/../../secrets)
-    const uploadsBase = path.join(process.cwd(), "public", "uploads");
-    const relative = path.relative(uploadsBase, filePath);
-    if (relative.startsWith("..") || path.isAbsolute(relative)) {
+    const safePathParts = params.path.map(p => p.replace(/[^a-zA-Z0-9_.-]/g, ""));
+    if (safePathParts.some(p => p === "..")) {
       return new NextResponse("Forbidden", { status: 403 });
     }
+    const filePath = `${process.cwd()}/public/uploads/${safePathParts.join("/")}`;
 
     if (!fs.existsSync(filePath)) {
       return new NextResponse("File Not Found", { status: 404 });

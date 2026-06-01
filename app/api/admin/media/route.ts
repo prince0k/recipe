@@ -10,7 +10,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "images");
+    const uploadDir = `${process.cwd()}/public/uploads/images`;
     
     if (!fs.existsSync(uploadDir)) {
       return NextResponse.json([]);
@@ -23,7 +23,7 @@ export async function GET() {
       .filter(file => !file.includes("-tablet") && !file.includes("-mobile") && !file.includes("-thumb")) // Hide variants
       .filter(file => /\.(webp|jpg|jpeg|png|gif)$/i.test(file))
       .map(file => {
-        const stats = fs.statSync(path.join(uploadDir, file));
+        const stats = fs.statSync(`${uploadDir}/${file}`);
         return {
           url: `/uploads/images/${file}`,
           name: file,
