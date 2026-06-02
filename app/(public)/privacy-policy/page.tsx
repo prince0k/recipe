@@ -1,5 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -36,10 +37,25 @@ export const metadata: Metadata = {
 export default function PrivacyPolicyPage() {
   const lastUpdated = "March 13, 2025";
 
+  const breadcrumbListSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://stewartlucas.com" },
+      { "@type": "ListItem", "position": 2, "name": "Privacy Policy", "item": "https://stewartlucas.com/privacy-policy" }
+    ]
+  };
+
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-3xl mx-auto px-4 py-16 sm:px-6 lg:px-8 animate-fade-in">
-        <h1 className="text-4xl font-bold font-serif text-gray-900 mb-4">Privacy Policy</h1>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbListSchema) }}
+      />
+      <div className="min-h-screen bg-white">
+        <div className="max-w-3xl mx-auto px-4 py-16 sm:px-6 lg:px-8 animate-fade-in">
+          <Breadcrumbs items={[{ label: "Privacy Policy" }]} />
+          <h1 className="text-4xl font-bold font-serif text-gray-900 mb-4">Privacy Policy</h1>
         <p className="text-sm text-gray-500 mb-12">Last Updated: {lastUpdated}</p>
 
         <div className="prose prose-slate max-w-none space-y-8">
@@ -307,5 +323,6 @@ export default function PrivacyPolicyPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

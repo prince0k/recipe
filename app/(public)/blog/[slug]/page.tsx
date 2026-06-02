@@ -102,6 +102,16 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
   const faqs = parseFaqs(content.body || "");
   const imageObject = buildImageObject(content.coverImage);
 
+  const wordCount = content.body ? content.body.replace(/<[^>]*>?/gm, '').split(/\s+/).filter(Boolean).length : 0;
+  const tagsList = (() => {
+    try {
+      return JSON.parse(content.tags || "[]");
+    } catch {
+      return [];
+    }
+  })();
+  const articleSection = tagsList[0] || "Health";
+
   const builtSchema: Record<string, any> = {
     "@context": "https://schema.org",
     "@graph": [
@@ -116,6 +126,8 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
         "author": AUTHOR_BLOCK,
         "publisher": PUBLISHER_BLOCK,
         "inLanguage": "en-GB",
+        "wordCount": wordCount,
+        "articleSection": articleSection,
         "mainEntityOfPage": {
           "@type": "WebPage",
           "@id": `https://stewartlucas.com/blog/${content.slug}`
@@ -180,6 +192,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
         relatedItems={relatedItems} 
         isFavorited={isFavorited} 
         adComponent={<AdBanner placement="BLOG_SIDEBAR" />}
+        breadcrumbs={[{ label: "Blog", href: "/blog" }, { label: content.title }]}
       />
     </>
   );

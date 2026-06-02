@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Metadata } from "next";
 import { EmailCaptureForm } from "@/components/ui/EmailCaptureForm";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Stewart Lucas | Healthy Home Cooking & Nutrition",
@@ -35,32 +36,63 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
-  return (
-    <div className="bg-background min-h-screen">
-      <section className="relative py-24 bg-surface overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-secondary" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-3xl mx-auto">
-            <span className="text-primary font-bold tracking-widest uppercase text-xs mb-4 block">Our Story</span>
-            <h1 className="text-5xl md:text-6xl font-bold text-text mb-8">Home Cooking <br /><span className="text-primary">for Everyone.</span></h1>
-            <p className="text-xl text-text-muted font-serif italic leading-relaxed">
-              "I believe that every meal shared at home is an opportunity to create a lasting memory, regardless of your budget or skill level."
-            </p>
-          </div>
-        </div>
-      </section>
+  const breadcrumbListSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://stewartlucas.com" },
+      { "@type": "ListItem", "position": 2, "name": "About", "item": "https://stewartlucas.com/about" }
+    ]
+  };
 
-      <section className="w-full py-24 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-          <div className="relative h-[700px] rounded-[3.5rem] overflow-hidden cinematic-shadow">
-            <Image 
-              src="/assets/stewart_lucas.webp" 
-              alt="Stewart Lucas Kitchen" 
-              fill 
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 50vw"
-            />
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": "https://stewartlucas.com/#stewartlucas",
+    "name": "Stewart Lucas",
+    "jobTitle": "Certified Nutritionist & Culinary Coach",
+    "url": "https://stewartlucas.com/about",
+    "image": "https://stewartlucas.com/assets/stewart_lucas.webp",
+    "description": "Stewart Lucas is a Certified Nutritionist and culinary consultant with over a decade of clinical experience in nutrition, hormone balance, and dietetic consulting.",
+    "sameAs": []
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbListSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+      />
+      <div className="bg-background min-h-screen">
+        <section className="relative py-24 bg-surface overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-secondary" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <Breadcrumbs items={[{ label: "About" }]} />
+            <div className="text-center max-w-3xl mx-auto">
+              <span className="text-primary font-bold tracking-widest uppercase text-xs mb-4 block">Our Story</span>
+              <h1 className="text-5xl md:text-6xl font-bold text-text mb-8">Home Cooking <br /><span className="text-primary">for Everyone.</span></h1>
+              <p className="text-xl text-text-muted font-serif italic leading-relaxed">
+                "I believe that every meal shared at home is an opportunity to create a lasting memory, regardless of your budget or skill level."
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full py-24 bg-background">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div className="relative h-[700px] rounded-[3.5rem] overflow-hidden cinematic-shadow">
+              <Image 
+                src="/assets/stewart_lucas.webp" 
+                alt="Stewart Lucas, Certified Nutritionist and founder of NutriGuide" 
+                fill 
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
             <div className="absolute inset-0 bg-black/10" />
           </div>
           <div className="space-y-10">
@@ -109,5 +141,6 @@ export default function AboutPage() {
         </div>
       </section>
     </div>
+    </>
   );
 }

@@ -12,13 +12,13 @@ import { prisma } from "@/lib/db";
 import { ContentCard } from "@/components/content/ContentCard";
 
 export const metadata: Metadata = {
-  title: "NutriGuide | Free Diet Plans & Healthy Recipes",
+  title: "NutriGuide by Stewart Lucas | Diet Plans & Recipes",
   description: "Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "NutriGuide | Free Diet Plans & Healthy Recipes",
+    title: "NutriGuide by Stewart Lucas | Diet Plans & Recipes",
     description: "Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.",
     url: "https://stewartlucas.com/",
     images: [
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "NutriGuide by Stewart Lucas",
+    title: "NutriGuide by Stewart Lucas | Diet Plans & Recipes",
     description: "Free science-backed diet plans and healthy recipes.",
     images: ["https://stewartlucas.com/assets/og-image.jpg"],
   },
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   },
 };
 
-// Organization + WebSite JSON-LD for Google Knowledge Panel
+// Organization + WebSite + Person + BreadcrumbList JSON-LD
 const homepageJsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -74,6 +74,7 @@ const homepageJsonLd = {
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "customer support",
+        "email": "hello@stewartlucas.com",
         "url": "https://stewartlucas.com/contact"
       },
       "founder": {
@@ -81,6 +82,34 @@ const homepageJsonLd = {
         "name": "Stewart Lucas",
         "url": "https://stewartlucas.com/about"
       }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://stewartlucas.com/#stewartlucas",
+      "name": "Stewart Lucas",
+      "jobTitle": "Certified Nutritionist & Culinary Coach",
+      "url": "https://stewartlucas.com/about",
+      "image": "https://stewartlucas.com/assets/stewart_lucas.webp",
+      "description": "Stewart Lucas is a Certified Nutritionist and culinary consultant with over a decade of clinical experience in nutrition, hormone balance, and dietetic consulting.",
+      "sameAs": [],
+      "knowsAbout": ["Nutrition", "Healthy Cooking", "Meal Prep", "Diet Plans", "Hormone Balance", "Insulin Resistance"],
+      "hasCredential": [
+        {
+          "@type": "EducationalOccupationalCredential",
+          "name": "Certified Nutritionist"
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stewartlucas.com"
+        }
+      ]
     }
   ]
 };
@@ -161,11 +190,11 @@ export default async function Home() {
       />
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[85vh] flex items-center overflow-hidden">
+      <section className="relative h-[65vh] sm:h-[75vh] md:h-[85vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
             src="/assets/hero.webp"
-            alt="Beautiful home-cooked meal"
+            alt="NutriGuide hero - fresh healthy home-cooked meal with vegetables"
             fill
             className="object-cover scale-105"
             priority
@@ -178,10 +207,10 @@ export default async function Home() {
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="max-w-2xl">
-            <span className="inline-block px-4 py-1 rounded-full bg-primary/20 backdrop-blur-md text-primary text-xs font-bold tracking-widest uppercase mb-6 animate-pulse">
+            <span className="inline-block px-3 py-1 sm:px-4 rounded-full bg-primary/20 backdrop-blur-md text-primary text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-3 sm:mb-6 animate-pulse">
               Authentic Home Cooking
             </span>
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-[1.1]">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-3 sm:mb-6 leading-[1.1]">
               {session ? (
                 <>
                   Welcome back, <br />
@@ -194,7 +223,7 @@ export default async function Home() {
                 </>
               )}
             </h1>
-            <p className="text-xl text-white/80 mb-10 leading-relaxed font-serif italic max-w-lg">
+            <p className="text-sm sm:text-base md:text-xl text-white/80 mb-6 sm:mb-10 leading-relaxed font-serif italic max-w-lg">
               {session ? (
                 leadDataObj.goal ? (
                   `Let's keep making progress toward your ${leadDataObj.goal.replace('-', ' ')} goals. Addressing your challenge with ${leadDataObj.struggle || "daily nutrition"} is our mission today.`
@@ -206,12 +235,12 @@ export default async function Home() {
               )}
             </p>
             
-            <div className="mt-6">
+            <div className="mt-4 sm:mt-6">
               <Link
                 href="/personalized"
-                className="inline-block rounded-xl bg-emerald-600 px-8 py-4 text-base font-bold text-white transition hover:bg-emerald-700 text-center cursor-pointer shadow-xl active:scale-98 border-none"
+                className="inline-block rounded-xl bg-emerald-600 px-5 py-3 sm:px-8 sm:py-4 text-sm sm:text-base font-bold text-white transition hover:bg-emerald-700 text-center cursor-pointer shadow-xl active:scale-98 border-none"
               >
-                Get Your Free AI Meal Plan in 60 Seconds &rarr;
+                Get Your Free AI Meal Plan &rarr;
               </Link>
             </div>
           </div>
@@ -220,28 +249,28 @@ export default async function Home() {
 
       {/* AI Personalisation Banner / Dashboard */}
       {session ? (
-        <section className="border-t border-white/10 py-16 px-4 bg-slate-950 text-white relative overflow-hidden">
+        <section className="border-t border-white/10 py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-slate-950 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
           <div className="mx-auto max-w-7xl">
-            <div className="border-b border-white/10 pb-8 mb-12 flex flex-col md:flex-row md:items-end justify-between">
+            <div className="border-b border-white/10 pb-4 sm:pb-8 mb-6 sm:mb-8 md:mb-12 flex flex-col md:flex-row md:items-end justify-between">
               <div>
-                <span className="text-emerald-400 font-bold tracking-widest uppercase text-xs mb-2 block">Your Workspace</span>
-                <h2 className="text-3xl md:text-4xl font-bold text-white font-serif">Personalized Dashboard</h2>
+                <span className="text-emerald-400 font-bold tracking-widest uppercase text-[10px] sm:text-xs mb-1 sm:mb-2 block">Your Workspace</span>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white font-serif">Personalized Dashboard</h2>
               </div>
-              <p className="text-sm text-white/50 mt-2 md:mt-0 font-serif italic">
+              <p className="text-xs sm:text-sm text-white/50 mt-2 md:mt-0 font-serif italic">
                 Science-backed nutrition configured for you.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
               {/* Profile Summary Card */}
-              <div className="rounded-[2rem] bg-white/5 border border-white/10 p-8 backdrop-blur-sm flex flex-col justify-between">
+              <div className="rounded-2xl sm:rounded-[1.5rem] md:rounded-[2rem] bg-white/5 border border-white/10 p-4 sm:p-6 md:p-8 backdrop-blur-sm flex flex-col justify-between">
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-white mb-3 sm:mb-4 md:mb-6 flex items-center">
                     <span className="mr-2">👤</span> Your Profile Config
                   </h3>
                   {leadDataObj.goal ? (
-                    <ul className="space-y-4 text-sm text-white/80">
+                    <ul className="space-y-2 sm:space-y-3 md:space-y-4 text-xs sm:text-sm text-white/80">
                       <li className="flex justify-between border-b border-white/5 pb-2">
                         <span className="text-white/40">Goal:</span>
                         <span className="font-semibold text-accent capitalize">{leadDataObj.goal.replace('-', ' ')}</span>
@@ -265,7 +294,7 @@ export default async function Home() {
                     </p>
                   )}
                 </div>
-                <div className="mt-8">
+                <div className="mt-4 sm:mt-6 md:mt-8">
                   <Link
                     href="/diet-plan"
                     className="inline-block w-full text-center rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 px-4 py-3 text-xs font-bold text-white transition cursor-pointer"
@@ -276,22 +305,22 @@ export default async function Home() {
               </div>
 
               {/* Personalized Meal Plan Card */}
-              <div className="rounded-[2rem] bg-white/5 border border-white/10 p-8 backdrop-blur-sm flex flex-col justify-between lg:col-span-2">
+              <div className="rounded-2xl sm:rounded-[1.5rem] md:rounded-[2rem] bg-white/5 border border-white/10 p-4 sm:p-6 md:p-8 backdrop-blur-sm flex flex-col justify-between lg:col-span-2">
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-white mb-3 sm:mb-4 md:mb-6 flex items-center">
                     <span className="mr-2">📋</span> Your Custom Meal Plans
                   </h3>
                   {personalizedPlans.length > 0 ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {personalizedPlans.map((req) => (
-                        <div key={req.id} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition flex items-center justify-between">
-                          <div>
-                            <h4 className="font-bold text-white text-base line-clamp-1">{req.content.title}</h4>
-                            <p className="text-xs text-white/50 mt-1">Generated {new Date(req.createdAt).toLocaleDateString()}</p>
+                        <div key={req.id} className="p-3 sm:p-4 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
+                          <div className="min-w-0">
+                            <h4 className="font-bold text-white text-sm sm:text-base line-clamp-1">{req.content.title}</h4>
+                            <p className="text-[10px] sm:text-xs text-white/50 mt-0.5 sm:mt-1">Generated {new Date(req.createdAt).toLocaleDateString()}</p>
                           </div>
                           <Link
                             href={`/personalized/${req.id}`}
-                            className="rounded-xl bg-emerald-600 hover:bg-emerald-700 px-4 py-2 text-xs font-bold text-white transition cursor-pointer"
+                            className="rounded-xl bg-emerald-600 hover:bg-emerald-700 px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold text-white transition cursor-pointer text-center flex-shrink-0 self-start sm:self-auto"
                           >
                             Open Plan
                           </Link>
@@ -312,7 +341,7 @@ export default async function Home() {
                     </div>
                   )}
                 </div>
-                <div className="mt-6 border-t border-white/5 pt-4 text-xs text-white/40 flex items-center justify-between">
+                <div className="mt-4 sm:mt-6 border-t border-white/5 pt-3 sm:pt-4 text-[10px] sm:text-xs text-white/40 flex items-center justify-between">
                   <span>Limit 1 personalized plan request per day</span>
                   <span>Active Plans: {personalizedPlans.length}</span>
                 </div>
@@ -321,19 +350,19 @@ export default async function Home() {
 
             {/* Recommended Recipes Section inside Dashboard */}
             {recommendedRecipes.length > 0 && (
-              <div className="mt-16">
-                <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-2xl font-bold text-white font-serif flex items-center">
+              <div className="mt-8 sm:mt-12 md:mt-16">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 md:mb-8 gap-2">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white font-serif flex items-center">
                     <span className="mr-2">🍲</span> Recommended for Your Diet
                   </h3>
                   <Link href="/recipes" className="text-xs font-bold text-emerald-400 hover:underline">
                     View All Recipes →
                   </Link>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                   {recommendedRecipes.map((recipe) => (
-                    <div key={recipe.id} className="group bg-white/5 rounded-[2rem] p-4 border border-white/5 hover:border-white/10 transition-all duration-300">
-                      <div className="relative h-48 rounded-[1.5rem] overflow-hidden mb-4">
+                    <div key={recipe.id} className="group bg-white/5 rounded-2xl sm:rounded-[1.5rem] md:rounded-[2rem] p-3 sm:p-4 border border-white/5 hover:border-white/10 transition-all duration-300">
+                      <div className="relative h-36 sm:h-40 md:h-48 rounded-xl sm:rounded-[1rem] md:rounded-[1.5rem] overflow-hidden mb-3 sm:mb-4">
                         <Image 
                           src={recipe.coverImage || "https://images.unsplash.com/photo-1495195129352-aec325b55b65?auto=format&fit=crop&q=80&w=1000"} 
                           alt={recipe.title} 
@@ -348,9 +377,9 @@ export default async function Home() {
                           </div>
                         )}
                       </div>
-                      <h4 className="text-lg font-bold text-white line-clamp-1 group-hover:text-accent transition-colors">{recipe.title}</h4>
-                      <p className="text-xs text-white/50 mt-1 line-clamp-2">{recipe.excerpt}</p>
-                      <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+                      <h4 className="text-sm sm:text-base md:text-lg font-bold text-white line-clamp-1 group-hover:text-accent transition-colors">{recipe.title}</h4>
+                      <p className="text-[10px] sm:text-xs text-white/50 mt-1 line-clamp-2">{recipe.excerpt}</p>
+                      <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-white/5 flex items-center justify-between">
                         <span className="text-xs text-white/60 font-semibold">{recipe.cookingTime || "45m"}</span>
                         <Link href={`/recipes/${recipe.slug}`} className="text-xs font-bold text-emerald-400 hover:underline">
                           View Recipe →
@@ -365,29 +394,29 @@ export default async function Home() {
         </section>
       ) : (
         /* Guest User: Call to Action Banner */
-        <section className="border-t border-white/10 py-16 px-4 bg-slate-950 text-white">
+        <section className="border-t border-white/10 py-10 sm:py-16 px-4 bg-slate-950 text-white">
           <div className="mx-auto max-w-4xl text-center">
             <span className="mb-4 inline-block text-xs font-semibold uppercase tracking-widest text-emerald-400">
               Free · AI-Powered
             </span>
-            <h2 className="mb-4 text-3xl font-semibold md:text-4xl text-white">
-              Your Personalised Meal Plan,<br />Built Around Your Life
+            <h2 className="mb-4 text-2xl sm:text-3xl font-semibold md:text-4xl text-white">
+              Your Personalised Meal Plan,<br className="hidden sm:block" />Built Around Your Life
             </h2>
             <p className="mx-auto mb-8 max-w-xl text-base text-white/60">
               Tell us your goals, dietary needs, and schedule. Our AI builds a complete
               plan just for you — in under 60 seconds.
             </p>
-            <div className="mb-8 flex flex-wrap justify-center gap-6 text-sm text-white/50 font-medium">
-              <span>✓ Keto &amp; Gluten-Free friendly</span>
-              <span>✓ Budget-conscious options</span>
-              <span>✓ 15–30 minute meals</span>
+            <div className="mb-6 sm:mb-8 grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-2 sm:gap-6 text-xs sm:text-sm text-white/50 font-medium">
+              <span>✓ Keto &amp; Gluten-Free</span>
+              <span>✓ Budget-conscious</span>
+              <span>✓ 15–30 min meals</span>
               <span>✓ 100% free</span>
             </div>
             <Link
               href="/personalized"
-              className="inline-block rounded-2xl bg-white px-8 py-4 text-sm font-semibold text-black transition hover:bg-white/90 shadow-xl cursor-pointer active:scale-98"
+              className="inline-block rounded-xl sm:rounded-2xl bg-white px-6 py-3 sm:px-8 sm:py-4 text-sm font-semibold text-black transition hover:bg-white/90 shadow-xl cursor-pointer active:scale-98"
             >
-              Get My Free Personalised Plan →
+              Get My Free Plan →
             </Link>
           </div>
         </section>
@@ -395,19 +424,19 @@ export default async function Home() {
 
 
       {/* Categories Grid */}
-      <section className="py-24 bg-background">
+      <section className="py-12 sm:py-16 md:py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 md:mb-16">
             <div>
-              <h2 className="text-4xl md:text-5xl font-bold text-text mb-4">Browse by Category</h2>
-              <p className="text-text-muted font-serif italic text-lg">Curated collections for every occasion and diet.</p>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-text mb-2 sm:mb-4">Browse by Category</h2>
+              <p className="text-text-muted font-serif italic text-sm sm:text-base md:text-lg">Curated collections for every occasion and diet.</p>
             </div>
-            <Link href="/recipes" className="mt-4 md:mt-0 text-primary font-bold hover:underline flex items-center">
+            <Link href="/recipes" className="mt-3 md:mt-0 text-primary font-bold hover:underline flex items-center text-sm sm:text-base">
               View All Recipes <span className="ml-2">→</span>
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 md:gap-8">
             {[
               { title: "Quick Recipes", img: "/assets/quick.webp", count: "120+ Recipes", color: "bg-orange-500/20" },
               { title: "Healthy Eating", img: "/assets/healthy.webp", count: "85+ Recipes", color: "bg-olive/20" },
@@ -415,18 +444,18 @@ export default async function Home() {
               { title: "Dinner Ideas", img: "/assets/dinner.webp", count: "95+ Recipes", color: "bg-red-500/20" },
             ].map((cat) => (
               <Link key={cat.title} href={`/recipes?category=${cat.title.toLowerCase().replace(' ', '-')}`} className="group">
-                <div className="relative h-96 rounded-[2.5rem] overflow-hidden cinematic-shadow transition-all duration-500 group-hover:-translate-y-2">
+                <div className="relative h-48 sm:h-64 md:h-80 lg:h-96 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] overflow-hidden cinematic-shadow transition-all duration-500 group-hover:-translate-y-2">
                   <Image
                     src={cat.img}
                     alt={cat.title}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute bottom-8 left-8">
-                    <span className="text-white/60 text-xs font-bold tracking-widest uppercase mb-2 block">{cat.count}</span>
-                    <h3 className="text-2xl font-bold text-white leading-tight">{cat.title}</h3>
+                  <div className="absolute bottom-3 left-3 sm:bottom-5 sm:left-5 md:bottom-8 md:left-8">
+                    <span className="text-white/60 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-widest uppercase mb-1 sm:mb-2 block">{cat.count}</span>
+                    <h3 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-bold text-white leading-tight">{cat.title}</h3>
                   </div>
                 </div>
               </Link>
@@ -438,17 +467,17 @@ export default async function Home() {
       <AdBanner placement="HOMEPAGE_BANNER" />
 
       {/* Featured Section */}
-      <section className="py-24 bg-surface rounded-[4rem] mx-4 lg:mx-8 mb-24 overflow-hidden relative">
+      <section className="py-12 sm:py-16 md:py-24 bg-surface rounded-2xl sm:rounded-[2.5rem] md:rounded-[4rem] mx-2 sm:mx-4 lg:mx-8 mb-12 sm:mb-16 md:mb-24 overflow-hidden relative">
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -mr-48 -mt-48" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-olive/5 rounded-full blur-3xl -ml-48 -mb-48" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <span className="text-primary font-bold tracking-widest uppercase text-xs mb-4 block">Handpicked for you</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-text">Featured Recipes</h2>
+          <div className="text-center mb-8 sm:mb-12 md:mb-16">
+            <span className="text-primary font-bold tracking-widest uppercase text-[10px] sm:text-xs mb-2 sm:mb-4 block">Handpicked for you</span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-text">Featured Recipes</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-10">
             {featuredRecipes.map((recipe) => (
               <ContentCard
                 key={recipe.id}
@@ -471,9 +500,9 @@ export default async function Home() {
             )}
           </div>
           
-          <div className="mt-16 text-center">
+          <div className="mt-8 sm:mt-12 md:mt-16 text-center">
             <Link href="/recipes">
-              <Button size="lg" className="px-10 py-5 rounded-2xl shadow-2xl">Explore More Recipes</Button>
+              <Button size="lg" className="px-6 py-3 sm:px-10 sm:py-5 rounded-xl sm:rounded-2xl shadow-2xl text-sm sm:text-base">Explore More Recipes</Button>
             </Link>
           </div>
         </div>
@@ -483,9 +512,9 @@ export default async function Home() {
       <Testimonials />
 
       {/* Personalized Meal Plan CTA Section */}
-      <section className="py-24 bg-background">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative rounded-[3.5rem] overflow-hidden bg-gradient-to-br from-slate-900 via-neutral-900 to-emerald-950 p-12 md:p-20 text-white shadow-2xl border border-white/10">
+      <section className="py-12 sm:py-16 md:py-24 bg-background">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+          <div className="relative rounded-2xl sm:rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden bg-gradient-to-br from-slate-900 via-neutral-900 to-emerald-950 p-6 sm:p-10 md:p-12 lg:p-20 text-white shadow-2xl border border-white/10">
             {/* Background decorations */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none" />
@@ -495,12 +524,12 @@ export default async function Home() {
                 AI-Powered Custom Nutrition
               </span>
               
-              <h2 className="text-4xl md:text-5xl font-bold font-serif leading-tight text-white">
-                Tailored to your body. <br/>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold font-serif leading-tight text-white">
+                Tailored to your body. <br className="hidden sm:block"/>
                 <span className="text-emerald-400 italic">Designed for your life.</span>
               </h2>
               
-              <p className="text-lg text-white/80 leading-relaxed font-serif max-w-2xl mx-auto">
+              <p className="text-sm sm:text-base md:text-lg text-white/80 leading-relaxed font-serif max-w-2xl mx-auto">
                 Get a free, science-backed meal plan personalized by Stewart Lucas and powered by advanced AI. We customize everything around your dietary restrictions, goals, and struggles.
               </p>
 
@@ -518,21 +547,21 @@ export default async function Home() {
               </div>
 
               {/* Dynamic features indicators */}
-              <div className="pt-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-xs text-white/60">
+              <div className="pt-6 sm:pt-10 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center text-[10px] sm:text-xs text-white/60">
                 <div className="space-y-1">
-                  <span className="text-emerald-400 font-bold text-lg block">100%</span>
+                  <span className="text-emerald-400 font-bold text-base sm:text-lg block">100%</span>
                   <span>Custom Tailored</span>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-emerald-400 font-bold text-lg block">7 Days</span>
+                  <span className="text-emerald-400 font-bold text-base sm:text-lg block">7 Days</span>
                   <span>Structured Meal Grid</span>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-emerald-400 font-bold text-lg block">Free</span>
+                  <span className="text-emerald-400 font-bold text-base sm:text-lg block">Free</span>
                   <span>No Credit Card Needed</span>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-emerald-400 font-bold text-lg block">AI + Expert</span>
+                  <span className="text-emerald-400 font-bold text-base sm:text-lg block">AI + Expert</span>
                   <span>Science-Backed Logic</span>
                 </div>
               </div>
@@ -542,54 +571,54 @@ export default async function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-24 bg-surface border-t border-b border-border/60">
+      <section id="how-it-works" className="py-12 sm:py-16 md:py-24 bg-surface border-t border-b border-border/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <span className="text-primary font-bold tracking-widest uppercase text-xs mb-4 block">Process</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-text mb-4">How It Works</h2>
-            <p className="text-text-muted font-serif italic text-lg max-w-2xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12 md:mb-16">
+            <span className="text-primary font-bold tracking-widest uppercase text-[10px] sm:text-xs mb-2 sm:mb-4 block">Process</span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-text mb-2 sm:mb-4">How It Works</h2>
+            <p className="text-text-muted font-serif italic text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
               Get a custom-tailored nutrition protocol in three simple steps.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8 md:gap-12">
             {/* Step 1 */}
-            <div className="relative p-8 bg-white rounded-[2.5rem] border border-border shadow-sm flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xl mb-6">
+            <div className="relative p-5 sm:p-6 md:p-8 bg-white rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] border border-border shadow-sm flex flex-col items-center text-center">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg sm:text-xl mb-4 sm:mb-6">
                 1
               </div>
-              <h3 className="text-xl font-bold text-text mb-4 font-serif">1. Share Your Profile</h3>
-              <p className="text-sm text-text-muted leading-relaxed">
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-text mb-2 sm:mb-4 font-serif">1. Share Your Profile</h3>
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
                 Take a quick 60-second assessment. Tell us about your primary health goals, dietary choices, daily schedule, and weight management hurdles.
               </p>
             </div>
 
             {/* Step 2 */}
-            <div className="relative p-8 bg-white rounded-[2.5rem] border border-border shadow-sm flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-full bg-emerald-600/10 text-emerald-600 flex items-center justify-center font-bold text-xl mb-6">
+            <div className="relative p-5 sm:p-6 md:p-8 bg-white rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] border border-border shadow-sm flex flex-col items-center text-center">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-emerald-600/10 text-emerald-600 flex items-center justify-center font-bold text-lg sm:text-xl mb-4 sm:mb-6">
                 2
               </div>
-              <h3 className="text-xl font-bold text-text mb-4 font-serif">2. Custom Calibration</h3>
-              <p className="text-sm text-text-muted leading-relaxed">
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-text mb-2 sm:mb-4 font-serif">2. Custom Calibration</h3>
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
                 Our science-backed AI engine calculates your tailored calorie and macro targets using algorithms calibrated by Certified Nutritionists.
               </p>
             </div>
 
             {/* Step 3 */}
-            <div className="relative p-8 bg-white rounded-[2.5rem] border border-border shadow-sm flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-full bg-secondary/10 text-secondary flex items-center justify-center font-bold text-xl mb-6">
+            <div className="relative p-5 sm:p-6 md:p-8 bg-white rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] border border-border shadow-sm flex flex-col items-center text-center">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-secondary/10 text-secondary flex items-center justify-center font-bold text-lg sm:text-xl mb-4 sm:mb-6">
                 3
               </div>
-              <h3 className="text-xl font-bold text-text mb-4 font-serif">3. Deploy Plan</h3>
-              <p className="text-sm text-text-muted leading-relaxed">
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-text mb-2 sm:mb-4 font-serif">3. Deploy Plan</h3>
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
                 Unlock your interactive, easy-prep dashboard instantly and get a premium, printable 7-day meal plan PDF sent directly to your inbox.
               </p>
             </div>
           </div>
 
-          <div className="mt-16 text-center">
+          <div className="mt-8 sm:mt-12 md:mt-16 text-center">
             <Link href="/personalized">
-              <Button size="lg" className="px-10 py-5 rounded-2xl shadow-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer transition border-none">
+              <Button size="lg" className="px-6 py-3 sm:px-10 sm:py-5 rounded-xl sm:rounded-2xl shadow-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer transition border-none text-sm sm:text-base">
                 Start My Assessment Now
               </Button>
             </Link>
@@ -598,13 +627,13 @@ export default async function Home() {
       </section>
 
       {/* Brand Story / About CTA */}
-      <section className="py-24 bg-background">
+      <section className="py-12 sm:py-16 md:py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="relative h-[600px] rounded-[3rem] overflow-hidden cinematic-shadow">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center">
+            <div className="relative h-[280px] sm:h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl sm:rounded-[2rem] md:rounded-[3rem] overflow-hidden cinematic-shadow">
               <Image 
                 src="/assets/hero.webp" 
-                alt="Stewart Lucas Kitchen" 
+                alt="Stewart Lucas in his kitchen preparing healthy meal" 
                 fill 
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -612,15 +641,15 @@ export default async function Home() {
               <div className="absolute inset-0 bg-black/20" />
             </div>
             <div>
-              <span className="text-secondary font-bold tracking-widest uppercase text-xs mb-4 block">The Brand Story</span>
-              <h2 className="text-4xl md:text-5xl font-bold text-text mb-8 leading-tight">
-                Crafting Culinary Memories, <br /> 
+              <span className="text-secondary font-bold tracking-widest uppercase text-[10px] sm:text-xs mb-2 sm:mb-4 block">The Brand Story</span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-text mb-4 sm:mb-6 md:mb-8 leading-tight">
+                Crafting Culinary Memories, <br className="hidden sm:block" /> 
                 One Simple Meal at a Time.
               </h2>
-              <p className="text-lg text-text-muted mb-6 leading-relaxed font-serif italic">
+              <p className="text-sm sm:text-base md:text-lg text-text-muted mb-4 sm:mb-6 leading-relaxed font-serif italic">
                 "I believe that good food shouldn't be complicated or expensive. NutriGuide by Stewart Lucas is born from a passion for home cooking that celebrates real ingredients and memorable moments around the table."
               </p>
-              <p className="text-base text-text-muted mb-10 leading-relaxed">
+              <p className="text-sm sm:text-base text-text-muted mb-6 sm:mb-8 md:mb-10 leading-relaxed">
                 Whether you're a busy professional looking for a 15-minute dinner or a home cook wanting to impress with a weekend feast, our recipes are designed to fit your life and your budget.
               </p>
               <Link href="/about">
@@ -632,7 +661,7 @@ export default async function Home() {
       </section>
 
       {/* Email Capture Section */}
-      <section className="py-16 px-4 bg-slate-950 text-white border-t border-white/10">
+      <section className="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-slate-950 text-white border-t border-white/10">
         <EmailCaptureForm
           source="homepage"
           heading="Download the Anti-Inflammatory Meal Prep & Grocery Guide (PDF)"

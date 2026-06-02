@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -34,11 +35,26 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
+  const breadcrumbListSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://stewartlucas.com" },
+      { "@type": "ListItem", "position": 2, "name": "Contact", "item": "https://stewartlucas.com/contact" }
+    ]
+  };
+
   return (
-    <div className="bg-background min-h-screen">
-      <section className="w-full py-24 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbListSchema) }}
+      />
+      <div className="bg-background min-h-screen">
+        <section className="w-full py-24 bg-background">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Breadcrumbs items={[{ label: "Contact" }]} />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
           <div>
             <span className="text-primary font-bold tracking-widest uppercase text-xs mb-4 block">Get in Touch</span>
             <h1 className="text-5xl md:text-6xl font-bold text-text mb-8">We'd love to hear <br /><span className="text-secondary">from you.</span></h1>
@@ -104,5 +120,6 @@ export default function ContactPage() {
         </div>
       </section>
     </div>
+    </>
   );
 }

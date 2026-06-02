@@ -59,18 +59,18 @@ export function Testimonials() {
   const step = isMobile ? 180 : 320;
 
   return (
-    <section className="py-24 bg-surface rounded-[4rem] mx-4 lg:mx-8 mb-24 relative overflow-hidden select-none">
+    <section className="py-12 sm:py-16 md:py-24 bg-surface rounded-2xl sm:rounded-[2.5rem] md:rounded-[4rem] mx-2 sm:mx-4 lg:mx-8 mb-12 sm:mb-16 md:mb-24 relative overflow-hidden select-none">
       <div className="absolute top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -ml-48 -mt-48 pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl -mr-48 -mb-48 pointer-events-none" />
       
       <div className="relative z-10 w-full flex flex-col items-center">
-        <div className="text-center mb-12 px-4">
-          <span className="text-primary font-bold tracking-widest uppercase text-xs mb-4 block">Success Stories</span>
-          <h2 className="text-4xl md:text-5xl font-bold text-text">What Our Community Says</h2>
+        <div className="text-center mb-8 sm:mb-12 px-4">
+          <span className="text-primary font-bold tracking-widest uppercase text-[10px] sm:text-xs mb-2 sm:mb-4 block">Success Stories</span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-text">What Our Community Says</h2>
         </div>
 
         {/* 3D Cover Flow Slider Viewport */}
-        <div className="relative w-full max-w-5xl h-[340px] md:h-[400px] flex items-center justify-center">
+        <div className="relative w-full max-w-5xl h-[280px] sm:h-[340px] md:h-[400px] flex items-center justify-center">
           
           {/* Left Arrow Button */}
           <button 
@@ -120,7 +120,7 @@ export function Testimonials() {
                     width: isMobile ? '260px' : '420px',
                   }}
                 >
-                  <div className="w-full bg-white p-6 md:p-8 rounded-[2.5rem] cinematic-shadow border border-border flex flex-col justify-between h-[260px] md:h-[320px] text-left">
+                  <div className="w-full bg-white p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] cinematic-shadow border border-border flex flex-col justify-between h-[220px] sm:h-[260px] md:h-[320px] text-left">
                     <div>
                       {/* Stars Rating */}
                       <div className="flex gap-1 mb-4">
@@ -133,7 +133,7 @@ export function Testimonials() {
                       </div>
                       
                       {/* Review Comment */}
-                      <p className="text-text-muted mb-6 leading-relaxed italic font-serif text-xs md:text-base line-clamp-4 md:line-clamp-5">
+                      <p className="text-text-muted mb-4 sm:mb-6 leading-relaxed italic font-serif text-[11px] sm:text-xs md:text-base line-clamp-3 sm:line-clamp-4 md:line-clamp-5">
                         "{item.comment}"
                       </p>
                     </div>

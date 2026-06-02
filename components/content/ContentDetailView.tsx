@@ -10,17 +10,20 @@ import { FavoriteButton } from "./FavoriteButton";
 import { ShareButton } from "./ShareButton";
 import { Reviews } from "./Reviews";
 import { uploadsLoader } from "@/lib/image-loader";
+import { Breadcrumbs, BreadcrumbItem } from "@/components/ui/Breadcrumbs";
 
 export function ContentDetailView({ 
   content, 
   relatedItems, 
   isFavorited = false,
-  adComponent
+  adComponent,
+  breadcrumbs
 }: { 
   content: any, 
   relatedItems?: any[], 
   isFavorited?: boolean,
-  adComponent?: React.ReactNode 
+  adComponent?: React.ReactNode,
+  breadcrumbs?: BreadcrumbItem[]
 }) {
   if (!content) return null;
 
@@ -57,6 +60,7 @@ export function ContentDetailView({
   return (
     <article className="py-12 lg:py-20">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
         {/* Header */}
         <div className="mb-10 text-center">
           {tags.length > 0 && (

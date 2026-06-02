@@ -5,6 +5,8 @@ import { getCachedRecipes } from "@/lib/queries";
 import { Suspense } from "react";
 import { RecipesHero } from "@/components/content/RecipesHero";
 import { RecipesClient } from "@/components/content/RecipesClient";
+import { Breadcrumbs, BreadcrumbItem } from "@/components/ui/Breadcrumbs";
+
 
 export async function generateMetadata({
   searchParams,
@@ -94,18 +96,68 @@ export default async function RecipesPage({
     }))
   };
 
+  const breadcrumbItems: BreadcrumbItem[] = [{ label: "Recipes", href: "/recipes" }];
+  if (category) {
+    const catName = category.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+    breadcrumbItems.push({ label: catName });
+  } else {
+    breadcrumbItems[0] = { label: "Recipes" };
+  }
+
+  const breadcrumbListSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://stewartlucas.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Recipes",
+        "item": "https://stewartlucas.com/recipes"
+      },
+      ...(category ? [{
+        "@type": "ListItem",
+        "position": 3,
+        "name": category.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+        "item": `https://stewartlucas.com/recipes?category=${category}`
+      }] : [])
+    ]
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbListSchema) }}
+      />
+      {page > 1 && (
+        <link
+          rel="prev"
+          href={`https://stewartlucas.com/recipes${category ? `?category=${category}` : ""}${page - 1 > 1 ? `${category ? '&' : '?'}page=${page - 1}` : ""}`}
+        />
+      )}
+      {page < totalPages && (
+        <link
+          rel="next"
+          href={`https://stewartlucas.com/recipes${category ? `?category=${category}` : ""}${category ? '&' : '?'}page=${page + 1}`}
+        />
+      )}
       <div className="bg-[#fafaf8] min-h-screen">
         {/* Hero Section Banner */}
         <RecipesHero />
 
         {/* Main Content Area Container */}
         <div className="max-w-[1280px] mx-auto px-4 lg:px-6 py-12 md:py-16">
+          <Breadcrumbs items={breadcrumbItems} />
           <Suspense fallback={<div className="animate-pulse h-96 bg-[#f5f3e9] rounded-2xl" />}>
             <RecipesClient 
               recipes={recipes} 

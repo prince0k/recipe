@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AUTHOR_BLOCK } from "@/lib/schema/authorBlock";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 
 export async function generateMetadata(
   props: { params: Promise<{ slug: string }> }
@@ -220,13 +221,25 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
           "url": `https://stewartlucas.com/recipes/${recipe.slug}#step${i + 1}`,
           "image": baseImageUrl
         })),
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": reviewCount > 0 ? avgRating.toFixed(1) : (recipe.rating > 0 ? recipe.rating.toFixed(1) : "4.7"),
-          "ratingCount": reviewCount > 0 ? reviewCount.toString() : "12",
-          "bestRating": "5",
-          "worstRating": "1"
-        },
+        ...( (reviewCount > 0 || recipe.rating > 0) && {
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": reviewCount > 0 ? avgRating.toFixed(1) : recipe.rating.toFixed(1),
+            "ratingCount": reviewCount > 0 ? reviewCount.toString() : "1",
+            "bestRating": "5",
+            "worstRating": "1"
+          }
+        }),
+        ...(recipe.coverVideo && {
+          "video": {
+            "@type": "VideoObject",
+            "name": recipe.title,
+            "description": recipe.excerpt || `Video showing how to prepare ${recipe.title}.`,
+            "thumbnailUrl": [baseImageUrl],
+            "uploadDate": recipe.createdAt?.toISOString().split('T')[0],
+            "contentUrl": recipe.coverVideo.startsWith('http') ? recipe.coverVideo : `https://stewartlucas.com${recipe.coverVideo.startsWith('/') ? '' : '/'}${recipe.coverVideo}`
+          }
+        }),
         "nutrition": {
           "@type": "NutritionInformation",
           "calories": recipe.calories ? `${recipe.calories} calories` : "350 calories",
@@ -373,6 +386,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <Breadcrumbs items={[{ label: "Recipes", href: "/recipes" }, { label: recipe.title }]} />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-12">

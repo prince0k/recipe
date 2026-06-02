@@ -69,10 +69,10 @@ export function ContentCard({
 
   return (
     <Link href={`/${hrefPrefix}/${slug}`} className="block group h-full">
-      <div className="h-full flex flex-col transition-all duration-500 hover:-translate-y-2 rounded-[2.5rem] bg-[#1e1c1a] border border-white/5 overflow-hidden shadow-2xl">
+      <div className="h-full flex flex-col transition-all duration-500 hover:-translate-y-2 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] bg-[#1e1c1a] border border-white/5 overflow-hidden shadow-2xl">
         
         {/* Top Image Section */}
-        <div className="relative w-full h-64 overflow-hidden bg-[#141211]">
+        <div className="relative w-full h-44 sm:h-52 md:h-64 overflow-hidden bg-[#141211]">
           {showImage ? (
             <Image
               src={coverImage}
@@ -104,10 +104,10 @@ export function ContentCard({
         </div>
 
         {/* Text Details Section */}
-        <div className="p-7 flex flex-col flex-grow bg-[#242220]">
+        <div className="p-4 sm:p-5 md:p-7 flex flex-col flex-grow bg-[#242220]">
           
           {/* Author · Read Time · Date */}
-          <div className="text-[11px] font-semibold text-zinc-400 tracking-wider mb-3 uppercase flex items-center gap-1.5">
+          <div className="text-[9px] sm:text-[10px] md:text-[11px] font-semibold text-zinc-400 tracking-wider mb-2 sm:mb-3 uppercase flex items-center gap-1 sm:gap-1.5 flex-wrap">
             <span>By Stewart Lucas</span>
             <span className="text-zinc-600 font-bold">•</span>
             <span>{readTime} min read</span>
@@ -116,7 +116,7 @@ export function ContentCard({
           </div>
 
           {/* Title */}
-          <h3 className="text-xl font-bold font-serif text-white mb-3 group-hover:text-[#e77443] transition-colors line-clamp-2 leading-tight tracking-tight">
+          <h3 className="text-base sm:text-lg md:text-xl font-bold font-serif text-white mb-2 sm:mb-3 group-hover:text-[#e77443] transition-colors line-clamp-2 leading-tight tracking-tight">
             {title}
           </h3>
 
@@ -133,7 +133,7 @@ export function ContentCard({
           )}
 
           {/* Excerpt */}
-          <p className="text-zinc-400 text-sm line-clamp-2 mb-6 flex-grow leading-relaxed italic">
+          <p className="text-zinc-400 text-xs sm:text-sm line-clamp-2 mb-4 sm:mb-6 flex-grow leading-relaxed italic">
             {excerpt || ""}
           </p>
 

@@ -111,6 +111,16 @@ export default async function CheatSheetPage(props: { params: Promise<{ slug: st
   const faqs = parseFaqs(content.body || "");
   const imageObject = buildImageObject(content.coverImage);
 
+  const wordCount = content.body ? content.body.replace(/<[^>]*>?/gm, '').split(/\s+/).filter(Boolean).length : 0;
+  const tagsList = (() => {
+    try {
+      return JSON.parse(content.tags || "[]");
+    } catch {
+      return [];
+    }
+  })();
+  const articleSection = tagsList[0] || "Cooking";
+
   const builtSchema: Record<string, any> = {
     "@context": "https://schema.org",
     "@graph": [
@@ -125,6 +135,8 @@ export default async function CheatSheetPage(props: { params: Promise<{ slug: st
         "author": AUTHOR_BLOCK,
         "publisher": PUBLISHER_BLOCK,
         "inLanguage": "en-GB",
+        "wordCount": wordCount,
+        "articleSection": articleSection,
         "mainEntityOfPage": {
           "@type": "WebPage",
           "@id": `https://stewartlucas.com/cheat-sheets/${content.slug}`
@@ -189,6 +201,7 @@ export default async function CheatSheetPage(props: { params: Promise<{ slug: st
         relatedItems={relatedItems} 
         isFavorited={isFavorited} 
         adComponent={<AdBanner placement="BLOG_SIDEBAR" />}
+        breadcrumbs={[{ label: "Cheat Sheets", href: "/cheat-sheets" }, { label: content.title }]}
       />
     </>
   );
