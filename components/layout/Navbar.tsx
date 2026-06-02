@@ -51,8 +51,8 @@ export function Navbar() {
               ))}
             </div>
           </div>
-          <div className="flex items-center space-x-3 sm:space-x-6 ml-auto mr-4 lg:mr-0 lg:ml-6">
-            <Link href="/favorites" className="hidden sm:inline-flex text-text-muted hover:text-primary p-2 rounded-full hover:bg-surface transition-colors" aria-label="Favorites">
+          <div className="flex items-center space-x-3 lg:space-x-6 ml-auto mr-4 lg:mr-0 lg:ml-6">
+            <Link href="/favorites" className="hidden lg:inline-flex text-text-muted hover:text-primary p-2 rounded-full hover:bg-surface transition-colors" aria-label="Favorites">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
@@ -62,26 +62,26 @@ export function Navbar() {
             ) : session ? (
               <>
                 {session.user?.role === "ADMIN" && (
-                  <Link href="/admin" className="hidden sm:inline-flex text-gray-500 hover:text-gray-700 text-sm font-medium">
+                  <Link href="/admin" className="hidden lg:inline-flex text-gray-500 hover:text-gray-700 text-sm font-medium">
                     Admin
                   </Link>
                 )}
-                <div className="hidden sm:inline-flex text-sm font-medium text-gray-900 border border-gray-200 px-3 py-1.5 rounded-full">
+                <div className="hidden lg:inline-flex text-sm font-medium text-gray-900 border border-gray-200 px-3 py-1.5 rounded-full">
                   {session.user?.name || session.user?.email}
                 </div>
                 <button 
                   onClick={() => signOut({ callbackUrl: "/" })}
-                  className="hidden sm:inline-flex text-gray-500 hover:text-red-600 text-sm font-medium cursor-pointer"
+                  className="hidden lg:inline-flex text-gray-500 hover:text-red-600 text-sm font-medium cursor-pointer"
                 >
                   Log out
                 </button>
               </>
             ) : (
               <>
-                <Link href="/login" className="hidden sm:inline-flex text-gray-500 hover:text-gray-700 text-sm font-medium">
+                <Link href="/login" className="hidden lg:inline-flex text-gray-500 hover:text-gray-700 text-sm font-medium">
                   Log in
                 </Link>
-                <Link href="/signup" className="hidden sm:inline-flex">
+                <Link href="/signup" className="hidden lg:inline-flex">
                   <Button variant="primary" size="sm">Get Started Free</Button>
                 </Link>
               </>
