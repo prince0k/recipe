@@ -141,7 +141,17 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
 
   const instructionsList = (() => {
     const bodyStr = recipe.body || "";
-    const matches = bodyStr.match(/<li[^>]*>(.*?)<\/li>/g) || bodyStr.match(/<p[^>]*>(.*?)<\/p>/g);
+    // Extract only steps from the <ol> block (instructions list)
+    const olMatch = bodyStr.match(/<ol[^>]*>([\s\S]*?)<\/ol>/i);
+    if (olMatch && olMatch[1]) {
+      const liMatches = olMatch[1].match(/<li[^>]*>([\s\S]*?)<\/li>/gi);
+      if (liMatches && liMatches.length > 0) {
+        return liMatches.map(m => m.replace(/<[^>]*>?/gm, '').trim()).filter(Boolean);
+      }
+    }
+
+    // Fallback to match all <li> if no <ol> exists
+    const matches = bodyStr.match(/<li[^>]*>(.*?)<\/li>/g);
     if (matches && matches.length > 0) {
       return matches.map(m => m.replace(/<[^>]*>?/gm, '').trim()).filter(Boolean);
     }
