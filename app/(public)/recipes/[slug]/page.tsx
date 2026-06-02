@@ -141,7 +141,8 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
 
   const instructionsList = (() => {
     const bodyStr = recipe.body || "";
-    // Extract only steps from the <ol> block (instructions list)
+
+    // Primary: extract steps from <ol> block (instructions list)
     const olMatch = bodyStr.match(/<ol[^>]*>([\s\S]*?)<\/ol>/i);
     if (olMatch && olMatch[1]) {
       const liMatches = olMatch[1].match(/<li[^>]*>([\s\S]*?)<\/li>/gi);
@@ -150,12 +151,19 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
       }
     }
 
-    // Fallback to match all <li> if no <ol> exists
-    const matches = bodyStr.match(/<li[^>]*>(.*?)<\/li>/g);
-    if (matches && matches.length > 0) {
-      return matches.map(m => m.replace(/<[^>]*>?/gm, '').trim()).filter(Boolean);
+    // Fallback: look for an "Instructions" or "Method" heading and grab the <ul> after it
+    const instructionsBlockMatch = bodyStr.match(
+      /(?:Instructions|Method|Steps|Directions)\s*:?\s*<\/h[2-4]>\s*<ul[^>]*>([\s\S]*?)<\/ul>/i
+    );
+    if (instructionsBlockMatch && instructionsBlockMatch[1]) {
+      const liMatches = instructionsBlockMatch[1].match(/<li[^>]*>([\s\S]*?)<\/li>/gi);
+      if (liMatches && liMatches.length > 0) {
+        return liMatches.map(m => m.replace(/<[^>]*>?/gm, '').trim()).filter(Boolean);
+      }
     }
-    return [recipe.excerpt || "Follow instructions on page."];
+
+    // Last resort: return a safe placeholder rather than risking grabbing ingredients
+    return [recipe.excerpt || "See full instructions on page."];
   })();
 
   // Construct JSON-LD schema dynamically
