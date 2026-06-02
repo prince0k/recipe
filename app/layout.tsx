@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Newsreader } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import { ClientProviders } from "@/components/auth/ClientProviders";
+import { ThirdPartyScripts } from "@/components/analytics/ThirdPartyScripts";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -82,24 +82,7 @@ export default function RootLayout({
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-bold">
           Skip to main content
         </a>
-        <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6909933688780427"
-          crossOrigin="anonymous"
-          strategy="lazyOnload"
-        />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-STTYDWMM79"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-
-            gtag('config', 'G-STTYDWMM79');
-          `}
-        </Script>
+        <ThirdPartyScripts />
         <ClientProviders>
           {children}
         </ClientProviders>
