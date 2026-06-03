@@ -22,18 +22,29 @@ export function ContentEditForm({ id, initialData }: ContentEditFormProps) {
   
   const [isLoading, setIsLoading] = useState(false);
   
-  const [formData, setFormData] = useState({
-    title: initialData.title || "",
-    slug: initialData.slug || "",
-    type: initialData.type || "RECIPE",
-    excerpt: initialData.excerpt || "",
-    body: initialData.body || "",
-    tags: initialData.tags ? JSON.parse(initialData.tags).join(", ") : "",
-    coverImage: initialData.coverImage || "",
-    coverVideo: initialData.coverVideo || "",
-    seoTitle: initialData.seoTitle || "",
-    seoDesc: initialData.seoDesc || "",
-    published: initialData.published || false,
+  const [formData, setFormData] = useState(() => {
+    let parsedTags = "";
+    if (initialData.tags) {
+      try {
+        const parsed = JSON.parse(initialData.tags);
+        parsedTags = Array.isArray(parsed) ? parsed.join(", ") : initialData.tags;
+      } catch (e) {
+        parsedTags = initialData.tags;
+      }
+    }
+    return {
+      title: initialData.title || "",
+      slug: initialData.slug || "",
+      type: initialData.type || "RECIPE",
+      excerpt: initialData.excerpt || "",
+      body: initialData.body || "",
+      tags: parsedTags,
+      coverImage: initialData.coverImage || "",
+      coverVideo: initialData.coverVideo || "",
+      seoTitle: initialData.seoTitle || "",
+      seoDesc: initialData.seoDesc || "",
+      published: initialData.published || false,
+    };
   });
 
   const [questions, setQuestions] = useState<{question: string, options: string[]}[]>(() => {

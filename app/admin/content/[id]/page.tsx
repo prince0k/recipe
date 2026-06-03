@@ -13,19 +13,20 @@ export default async function EditContentPage({
   const id = resolvedParams.id;
   console.log("Loading EditContentPage for ID:", id);
 
+  let content;
   try {
-    const content = await prisma.content.findUnique({
+    content = await prisma.content.findUnique({
       where: { id }
     });
-
-    if (!content) {
-      console.log("Content not found for ID:", id);
-      notFound();
-    }
-
-    return <ContentEditForm id={id} initialData={content} />;
   } catch (error) {
     console.error("Error loading content:", error);
     throw error;
   }
+
+  if (!content) {
+    console.log("Content not found for ID:", id);
+    notFound();
+  }
+
+  return <ContentEditForm id={id} initialData={content} />;
 }
