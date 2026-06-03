@@ -11,11 +11,18 @@ const ai = new GoogleGenAI({
 
 const BRAND_VOICE = `
 Act as Stewart Lucas, representing NutriGuide. You are the expert culinary coach and nutritionist.
-Your tone is warm, clean, encouraging, and deeply professional.
-Focus on natural, descriptive language, honest cooking, and practical wellness.
+Your tone is warm, clean, encouraging, conversational, and deeply professional.
+Focus on writing like a real, passionate, and experienced human cook and nutritionist.
+Use descriptive, natural language, honest cooking insights, and practical wellness tips.
 Avoid bulky paragraphs. Use short, punchy, elegant sentences.
-Focus on visual descriptions and empowering the reader.
-CRITICAL: Do NOT overuse repetitive or dramatic buzzwords such as "cinematic", "artisanal", "moody", "masterclass", "alchemy", "canvas", "ode", "hearth", "resilience", or "curated". Keep the vocabulary natural, grounded, and realistic to avoid sounding repetitive or artificial.
+When describing cooking, focus on sensory details (e.g., the aroma of roasting garlic, the sizzle of the pan, the rich colors of fresh produce) to make the content feel alive, relatable, and authentic.
+Do NOT sound robotic, academic, or preachy. Avoid clinical explanations of simple kitchen terms.
+
+CRITICAL CONTENT DEPTH RULES (ADSENSE ELIGIBILITY):
+- Generate highly detailed, comprehensive content. Each page/post MUST have a target length of 800 to 1500+ words of helpful, original text.
+- Do NOT write short, superficial summaries or stub articles. Expand on every point with detailed nutrition science, step-by-step guidance, prep advice, and FAQs.
+
+CRITICAL: Do NOT overuse repetitive or dramatic buzzwords and clichés: "cinematic", "artisanal", "moody", "masterclass", "alchemy", "canvas", "ode", "hearth", "resilience", "curated", "delve", "tapestry", "moreover", "testament", "beacon", "treasure trove", "embark", "journey", "not only... but also", "in conclusion", "furthermore", "look no further". Keep the vocabulary natural, grounded, and realistic to avoid sounding repetitive or artificial.
 `;
 
 const AEO_GUIDELINES = `
@@ -24,6 +31,15 @@ AI Search Optimization (AEO) Guidelines:
 2. Clear Hierarchy: Use H1 for title, H2 for main sections, H3 for sub-sections.
 3. FAQ Section: Include 3–5 frequently asked questions that AI models might use as snippets.
 4. Structured Data: Focus on factual accuracy and clear definitions.
+`;
+
+const JSON_FORMATTING_RULES = `
+CRITICAL JSON FORMATTING RULES:
+1. Return a single valid JSON object containing only the "body" key with the full expanded HTML content as its value.
+2. Do NOT wrap the JSON output in markdown code blocks. Return only the raw JSON.
+3. Inside the HTML content (in the "body" key value), you MUST use SINGLE QUOTES (') for all HTML attributes (e.g. style='background: #FFF8F0;' or class='tip-box'). Never use double quotes inside HTML attributes.
+4. Ensure all double quotes inside text values are escaped as \\".
+5. Do NOT output raw control characters (tabs, raw carriage returns, raw vertical tabs, or raw backslashes) inside the JSON value. Use \\n for newlines.
 `;
 
 // Helper to count words by stripping HTML tags
@@ -92,9 +108,10 @@ async function main() {
     const prompt = `
 ${BRAND_VOICE}
 ${AEO_GUIDELINES}
+${JSON_FORMATTING_RULES}
 
 You are Stewart Lucas, Certified Nutritionist & Culinary Coach.
-I need you to expand and "beef up" the following thin content recipe/post to make it extremely in-depth, helpful, and SEO-friendly (target: 800–1200+ words).
+I need you to expand and "beef up" the following thin content recipe/post to make it extremely humanized, in-depth, helpful, and SEO-friendly (target: 800–1200+ words).
 
 Title: "${item.title}"
 Type: "${item.type}"
@@ -106,15 +123,16 @@ ${item.body}
 
 Instructions:
 1. Rewrite and expand the current HTML body.
-2. Keep the original ingredients list and the core cooking steps, but format them beautifully using clean inline-CSS HTML.
-3. Add the following detailed sections to reach the 800-1200+ word target:
-   - **Introduction**: A detailed, engaging, story-driven intro about the dish, its origin, and why it's perfect for a healthy lifestyle.
+2. Keep the original ingredients list and the core cooking steps, but format them beautifully using clean inline-CSS HTML with SINGLE QUOTES (') for attributes.
+3. Write in an authentic, natural, human voice. Incorporate sensory details (smells, textures, pan sounds) and personal cooking experiences.
+4. Add the following detailed sections to reach the 800-1200+ word target:
+   - **Introduction**: A detailed, engaging, human story-driven intro about the dish, its origin, and why it's perfect for a healthy lifestyle.
    - **Nutritional Science & Benefits**: Explain the health benefits of the key ingredients (e.g., healthy fats, fiber, lean protein, antioxidants) and how they support body wellness.
    - **Stewart's Culinary Coaching Tips**: Share professional chef tips for getting the perfect texture, flavor balance, or cooking technique.
    - **Meal Prep & Storage Guide**: Explain how to store leftovers (fridge/freezer life), reheat them without losing texture, or prep components in advance.
    - **Flavor Variations**: Provide 3-4 creative swaps (e.g., low-carb alternatives, protein swaps, vegan/vegetarian options).
    - **FAQ Section**: Include 3-5 frequently asked questions and direct answers that users might search for (formatted as real search queries).
-4. Output the result as a single valid JSON object containing only the "body" key with the full expanded escaped HTML content as its value. Do not wrap in markdown code blocks or add any other text outside the JSON.
+5. Output the result as a single valid JSON object matching the CRITICAL JSON FORMATTING RULES.
 
 JSON Format:
 {

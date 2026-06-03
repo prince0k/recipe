@@ -151,6 +151,7 @@ export function ContentDetailView({
                     subheading="Instant download. No spam ever."
                     buttonText="Download Free PDF"
                     freebie={content.slug}
+                    variant="light"
                   />
                 ) : (
                   <DownloadGate content={content} />
