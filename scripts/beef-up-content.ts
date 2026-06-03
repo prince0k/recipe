@@ -128,13 +128,30 @@ JSON Format:
         const response = await ai.models.generateContent({
           model: "gemini-2.5-flash",
           contents: prompt,
+          config: {
+            responseMimeType: "application/json",
+          }
         });
 
         let text = response.text || "";
         text = sanitizeContent(text);
         text = text.replace(/```json\n?/, "").replace(/\n?```/, "").trim();
 
-        const data = JSON.parse(text);
+        let data: any;
+        try {
+          data = JSON.parse(text);
+        } catch (jsonErr: any) {
+          try {
+            // Remove control characters (e.g. raw tabs, newlines inside string values)
+            const cleanText = text
+              .replace(/[\u0000-\u0019]+/g, " ")
+              .trim();
+            data = JSON.parse(cleanText);
+          } catch (secondErr) {
+            console.error("Raw response that failed to parse:\n", text.substring(0, 500) + "...\n");
+            throw jsonErr;
+          }
+        }
         const expandedBody = data.body;
         const newWords = countWords(expandedBody);
 
