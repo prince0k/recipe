@@ -42,6 +42,44 @@ CRITICAL JSON FORMATTING RULES:
 5. Do NOT output raw control characters (tabs, raw carriage returns, raw vertical tabs, or raw backslashes) inside the JSON value. Use \\n for newlines.
 `;
 
+const DESIGN_THEME = `
+CRITICAL HTML DESIGN GUIDELINES:
+The generated HTML body will be inserted inside a prose container on a warm-toned website. You MUST match the existing design system. The following rules are MANDATORY:
+
+COLOR PALETTE (USE ONLY THESE COLORS):
+- Primary (Deep Red):       #8B0000
+- Primary Dark:             #660000
+- Secondary (Burnt Orange): #B35412
+- Accent (Soft Yellow):     #F4D03F
+- Background (Warm White):  #FAF9F6
+- Surface (Beige):          #F5F5DC
+- Olive:                    #556B2F
+- Text (Earthy Dark Brown): #2C1E11
+- Text Muted:               #5D4037
+- Border:                   #E0D4C3
+
+HEADING RULES:
+- Do NOT apply any inline color, font, or style to <h2> or <h3> tags. Leave them plain (e.g. <h2>Section Title</h2>). The website CSS styles them automatically.
+- Do NOT use green, teal, blue, red, or any bright colors on headings.
+
+CALLOUT / TIP BOXES:
+- "Stewart's Secret" or coaching tip box: style='background: #F5F5DC; border-left: 4px solid #8B0000; padding: 16px 20px; margin: 24px 0; border-radius: 8px;'
+- Science or nutrition fact box: style='background: #FAF9F6; border: 1px solid #E0D4C3; padding: 16px 20px; margin: 24px 0; border-radius: 8px;'
+- Warning or "avoid" box: style='background: #FAF9F6; border-left: 4px solid #B35412; padding: 16px 20px; margin: 24px 0; border-radius: 8px;'
+- Quick Summary / Key Takeaways box: style='background: #F5F5DC; border: 1px solid #E0D4C3; padding: 16px 20px; margin: 24px 0; border-radius: 8px;'
+
+TABLE STYLING:
+- Do NOT add inline styles to tables. Use plain <table>, <thead>, <tbody>, <tr>, <th>, <td> tags. The website has global CSS that styles all tables automatically.
+
+GENERAL RULES:
+- Body text paragraphs: Do NOT apply inline color styles. Leave <p> tags unstyled.
+- Lists: Do NOT apply inline color styles.
+- Links: Use style='color: #8B0000; text-decoration: underline;' if needed.
+- Horizontal rules: style='border: none; border-top: 1px solid #E0D4C3; margin: 32px 0;'
+- FAQ accordion: Use <details><summary> tags with no inline styles.
+- Do NOT use any bright colors (green #10B981, teal #0D9488, blue #3B82F6, etc.). Stick to the earthy palette above.
+`;
+
 // Helper to count words by stripping HTML tags
 function countWords(htmlString: string): number {
   if (!htmlString) return 0;
@@ -109,6 +147,7 @@ async function main() {
 ${BRAND_VOICE}
 ${AEO_GUIDELINES}
 ${JSON_FORMATTING_RULES}
+${DESIGN_THEME}
 
 You are Stewart Lucas, Certified Nutritionist & Culinary Coach.
 I need you to expand and "beef up" the following thin content recipe/post to make it extremely humanized, in-depth, helpful, and SEO-friendly (target: 800–1200+ words).
@@ -123,16 +162,19 @@ ${item.body}
 
 Instructions:
 1. Rewrite and expand the current HTML body.
-2. Keep the original ingredients list and the core cooking steps, but format them beautifully using clean inline-CSS HTML with SINGLE QUOTES (') for attributes.
+2. Keep the original ingredients list and the core cooking steps, but format them beautifully using clean HTML following the DESIGN THEME rules above. Use SINGLE QUOTES (') for all HTML attributes.
 3. Write in an authentic, natural, human voice. Incorporate sensory details (smells, textures, pan sounds) and personal cooking experiences.
-4. Add the following detailed sections to reach the 800-1200+ word target:
+4. Use plain <h2> and <h3> tags for section headings — do NOT add any inline styles to headings.
+5. Use the themed callout box styles for tip boxes, fact boxes, and warning boxes.
+6. Use plain <table> tags for any tables — do NOT add inline styles to tables.
+7. Add the following detailed sections to reach the 800-1200+ word target:
    - **Introduction**: A detailed, engaging, human story-driven intro about the dish, its origin, and why it's perfect for a healthy lifestyle.
-   - **Nutritional Science & Benefits**: Explain the health benefits of the key ingredients (e.g., healthy fats, fiber, lean protein, antioxidants) and how they support body wellness.
-   - **Stewart's Culinary Coaching Tips**: Share professional chef tips for getting the perfect texture, flavor balance, or cooking technique.
+   - **Nutritional Science & Benefits**: Explain the health benefits of the key ingredients inside a themed fact box.
+   - **Stewart's Culinary Coaching Tips**: Share professional chef tips inside the themed tip box.
    - **Meal Prep & Storage Guide**: Explain how to store leftovers (fridge/freezer life), reheat them without losing texture, or prep components in advance.
    - **Flavor Variations**: Provide 3-4 creative swaps (e.g., low-carb alternatives, protein swaps, vegan/vegetarian options).
-   - **FAQ Section**: Include 3-5 frequently asked questions and direct answers that users might search for (formatted as real search queries).
-5. Output the result as a single valid JSON object matching the CRITICAL JSON FORMATTING RULES.
+   - **FAQ Section**: Include 3-5 frequently asked questions using <details><summary> accordion format.
+8. Output the result as a single valid JSON object matching the CRITICAL JSON FORMATTING RULES.
 
 JSON Format:
 {
