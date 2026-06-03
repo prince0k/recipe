@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client";
-import { OpenAI } from "openai";
+import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const prisma = new PrismaClient();
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "",
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY || "",
 });
 
 const BRAND_VOICE = `
@@ -124,15 +124,15 @@ JSON Format:
 
     if (execute) {
       try {
-        console.log(`    Calling OpenAI API to expand content...`);
-        const response = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [{ role: "user", content: prompt }],
-          response_format: { type: "json_object" }
+        console.log(`    Calling Gemini API to expand content...`);
+        const response = await ai.models.generateContent({
+          model: "gemini-2.5-flash",
+          contents: prompt,
         });
 
-        let text = response.choices[0].message.content || "";
+        let text = response.text || "";
         text = sanitizeContent(text);
+        text = text.replace(/```json\n?/, "").replace(/\n?```/, "").trim();
 
         const data = JSON.parse(text);
         const expandedBody = data.body;
