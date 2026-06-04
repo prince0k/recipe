@@ -120,13 +120,12 @@ To ensure AdSense-eligible content depth (800+ words), your HTML "body" MUST con
 7. **Meal Prep & Storage Guide (150+ words)**: Detailed steps for batch cooking, refrigeration/freezer life, and safe reheating.
 8. **Variations & Swaps (100+ words)**: Swaps for vegan, keto, low-carb, or gluten-free adaptations.
 9. **FAQ Section**: 3-5 real user search questions using <details><summary> accordion format.
-10. JSON-LD schema script tag at the end.
 
 Return a single valid JSON object with these exact fields:
 {
   "title": "Clean, SEO-optimized title under 65 chars (no colons, follow naming formula)",
   "excerpt": "2–3 sentences. An engaging, warm, story-driven description connecting the reader to this dish.",
-  "body": "Full HTML content containing all 10 sections requested above.",
+  "body": "Full HTML content containing all 9 sections requested above.",
   "seoTitle": "SEO title under 60 chars",
   "seoDesc": "Compelling meta description under 155 chars",
   "tags": ["A list of 3-5 tags. MUST include at least one from: Quick Recipes, Healthy Eating, Budget Friendly, Breakfast, Lunch, Dinner. Also include dietary labels like Vegetarian, Vegan, Gluten Free, Dairy Free if applicable."],
@@ -171,13 +170,12 @@ To ensure AdSense-eligible content depth (1000+ words), your HTML "body" MUST co
 4. **Stewart's Perspective Box & Science Callout Box** using the themed styles.
 5. **FAQ Section (200+ words)**: 4-5 real user search queries using <details><summary> accordion format.
 6. **Your Next Step CTA (100+ words)**: An empowering, actionable concluding summary.
-7. JSON-LD Article schema script tag at the end.
 
 Return a single valid JSON object with these exact fields:
 {
   "title": "Clean, SEO-optimized title under 65 chars (no colons, follow naming formula)",
   "excerpt": "2–3 sentences. A story-driven hook that makes the reader feel this topic is urgent and personal to them.",
-  "body": "Full HTML content containing all 7 sections requested above.",
+  "body": "Full HTML content containing all 6 sections requested above.",
   "seoTitle": "SEO-optimized title under 60 chars",
   "seoDesc": "Compelling meta description under 155 chars",
   "tags": ["tag1", "tag2", "tag3"],
@@ -207,7 +205,6 @@ LAYOUT REQUIREMENTS:
 - "Common Mistakes" section using the themed warning box style, each mistake one line only.
 - All bullet points: ONE line maximum — this is a cheat sheet, not an essay.
 - End with FAQ section: 5 questions, each in <details><summary> accordion format.
-- JSON-LD HowTo schema <script> tag at the very end of body.
 
 To ensure AdSense-eligible content depth (800+ words), include:
 - **Introductory Context (150+ words)**: Elaborating on the scientific value of this quick reference. Use warm, natural, human storytelling.
@@ -254,7 +251,7 @@ To ensure AdSense-eligible content depth (1000+ words), include:
 7. **What to Avoid Callout (100+ words)**: Exactly 6 items to skip inside a themed warning box.
 8. **Progress Check (Milestone Cards)**: Day 3, Day 5, and Day 7 cards using themed fact boxes explaining what to expect.
 9. **FAQ Section (200+ words)**: 5 real user search questions using <details><summary> accordion format.
-10. **Next Steps** (3 bullet points) & Diet JSON-LD schema <script> tag.
+10. **Next Steps** (3 bullet points).
 
 Return this exact JSON structure:
 {
