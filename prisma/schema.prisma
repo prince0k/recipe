@@ -71,7 +71,6 @@ model Content {
 
   @@index([createdAt])
   @@index([type, published])
-  @@index([slug])
 }
 
 model Download {
