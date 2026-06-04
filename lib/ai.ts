@@ -1,8 +1,13 @@
 import { GoogleGenAI } from "@google/genai";
+import { OpenAI } from "openai";
 import { prisma } from "./db";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
+});
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || "",
 });
 
 // Hoisted regex for prompt sanitization (js-hoist-regexp)
@@ -93,6 +98,37 @@ export async function getGeminiResponse(prompt: string, jsonMode = false) {
         }
         break;
       }
+    }
+  }
+
+  if (process.env.OPENAI_API_KEY) {
+    try {
+      console.log("♻️ Gemini models failed or billing suspended. Falling back to OpenAI (gpt-4o-mini)...");
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        response_format: jsonMode ? { type: "json_object" } : undefined,
+      });
+
+      let text = completion.choices[0]?.message?.content || "";
+      text = sanitizeContent(text);
+
+      await prisma.aILog.create({
+        data: {
+          prompt,
+          model: "gpt-4o-mini",
+          provider: "OPENAI",
+          type: "TEXT",
+          duration: Date.now() - startTime,
+          status: "SUCCESS",
+          estimatedCost: 0.1
+        }
+      }).catch((e: any) => console.warn("AI log write failed:", e.message));
+
+      return text;
+    } catch (openAiError: any) {
+      console.error("OpenAI fallback failed as well:", openAiError.message);
+      lastError = openAiError;
     }
   }
 

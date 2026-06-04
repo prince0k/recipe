@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { GoogleGenAI } from "@google/genai";
+import { OpenAI } from "openai";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -7,6 +8,9 @@ dotenv.config();
 const prisma = new PrismaClient();
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
+});
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || "",
 });
 
 const BRAND_VOICE = `
@@ -183,17 +187,31 @@ JSON Format:
 `;
 
     if (execute) {
-      try {
-        console.log(`    Calling Gemini API to expand content...`);
-        const response = await ai.models.generateContent({
-          model: "gemini-2.5-flash",
-          contents: prompt,
-          config: {
-            responseMimeType: "application/json",
+        let text = "";
+        try {
+          console.log(`    Calling Gemini API to expand content...`);
+          const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: prompt,
+            config: {
+              responseMimeType: "application/json",
+            }
+          });
+          text = response.text || "";
+        } catch (geminiErr: any) {
+          console.warn(`    ⚠️ Gemini API failed: ${geminiErr.message}. Trying OpenAI fallback...`);
+          if (process.env.OPENAI_API_KEY) {
+            const completion = await openai.chat.completions.create({
+              model: "gpt-4o-mini",
+              messages: [{ role: "user", content: prompt }],
+              response_format: { type: "json_object" }
+            });
+            text = completion.choices[0]?.message?.content || "";
+          } else {
+            throw geminiErr;
           }
-        });
+        }
 
-        let text = response.text || "";
         text = sanitizeContent(text);
         text = text.replace(/```json\n?/, "").replace(/\n?```/, "").trim();
 
