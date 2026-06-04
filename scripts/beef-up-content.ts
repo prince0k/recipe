@@ -187,6 +187,7 @@ JSON Format:
 `;
 
     if (execute) {
+      try {
         let text = "";
         try {
           console.log(`    Calling Gemini API to expand content...`);
