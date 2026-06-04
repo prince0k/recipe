@@ -131,6 +131,10 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     orderBy: { createdAt: "desc" }
   });
 
+  const cleanBody = recipe.body
+    ? recipe.body.replace(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi, '')
+    : '';
+
   const ingredientsList = (() => {
     try {
       return JSON.parse(recipe.ingredients || "[]");
@@ -140,7 +144,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
   })();
 
   const instructionsList = (() => {
-    const bodyStr = recipe.body || "";
+    const bodyStr = cleanBody || "";
 
     // Primary: extract steps from <ol> block (instructions list)
     const olMatch = bodyStr.match(/<ol[^>]*>([\s\S]*?)<\/ol>/i);
@@ -438,7 +442,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
               <div className="space-y-10">
                 <div 
                   className="prose prose-lg prose-olive max-w-none prose-headings:font-serif prose-headings:text-text"
-                  dangerouslySetInnerHTML={{ __html: recipe.body }} 
+                  dangerouslySetInnerHTML={{ __html: cleanBody }} 
                 />
               </div>
             </section>

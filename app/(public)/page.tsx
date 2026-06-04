@@ -196,8 +196,8 @@ export default async function Home() {
       <section className="relative h-[65vh] sm:h-[75vh] md:h-[85vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/assets/hero.webp"
-            alt="NutriGuide hero - fresh healthy home-cooked meal with vegetables"
+            src="/assets/hero-diet.webp"
+            alt="NutriGuide conversion hero - science-backed diet plans and personalized meal spreads"
             fill
             className="object-cover scale-105"
             priority

@@ -28,6 +28,7 @@ export function DietPlanPrintClient({ content, backUrl }: DietPlanPrintClientPro
 
   const formattedBody = typeof content.body === "string"
     ? content.body
+        .replace(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi, '')
         .replace(/<table/g, '<div class="prose-table-wrapper"><table')
         .replace(/<\/table>/g, "</table></div>")
     : "";
