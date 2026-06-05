@@ -82,6 +82,7 @@ import { auth } from "@/lib/auth";
 import { AdBanner } from "@/components/ui/AdBanner";
 import { ShareButtons } from "@/components/ui/ShareButtons";
 import { RecipeDetailCard } from "@/components/content/RecipeDetailCard";
+import { ExpandableSection } from "@/components/content/ExpandableSection";
 
 export default async function RecipeDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -190,6 +191,21 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     }
     return [];
   })();
+
+  // Split cleanBody by <h2> tags for expandable accordions
+  const bodyParts = cleanBody.split(/<h2[^>]*>/i);
+  const introHtml = bodyParts[0] || "";
+  const bodySections: { title: string; html: string }[] = [];
+
+  for (let i = 1; i < bodyParts.length; i++) {
+    const part = bodyParts[i];
+    const endHeadingIndex = part.indexOf("</h2>");
+    if (endHeadingIndex !== -1) {
+      const title = part.substring(0, endHeadingIndex).replace(/<[^>]*>/g, "").trim();
+      const html = part.substring(endHeadingIndex + 5).trim();
+      bodySections.push({ title, html });
+    }
+  }
 
   // Construct JSON-LD schema dynamically
   const parsedPrep = (() => {
@@ -420,16 +436,27 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
               </div>
             </div>
             
-            <div className="mt-8 pt-6 border-t border-white/10 max-w-xl">
-              <ShareButtons
-                url={`/recipes/${recipe.slug}`}
-                title={recipe.title}
-                image={
-                  recipe.slug === "smoky-tandoori-chicken-yogurt-marinade"
-                    ? "/uploads/images/1780666191381-smoky-tandoori-chicken-pinterest.webp"
-                    : (recipe.coverImage || undefined)
-                }
-              />
+            <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center gap-6 max-w-2xl">
+              <a
+                href="#recipe-card"
+                className="no-print inline-flex items-center gap-2 px-6 py-3.5 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold shadow-lg transition-transform hover:scale-105"
+              >
+                <svg className="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+                Jump to Recipe
+              </a>
+              <div className="flex-1">
+                <ShareButtons
+                  url={`/recipes/${recipe.slug}`}
+                  title={recipe.title}
+                  image={
+                    recipe.slug === "smoky-tandoori-chicken-yogurt-marinade"
+                      ? "/uploads/images/1780666191381-smoky-tandoori-chicken-pinterest.webp"
+                      : (recipe.coverImage || undefined)
+                  }
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -447,12 +474,22 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
               </p>
             </section>
 
-            <section>
-              <div 
-                className="prose prose-lg prose-olive max-w-none prose-headings:font-serif prose-headings:text-text"
-                dangerouslySetInnerHTML={{ __html: cleanBody }} 
+            {introHtml && (
+              <section>
+                <div 
+                  className="prose prose-lg prose-olive max-w-none"
+                  dangerouslySetInnerHTML={{ __html: introHtml }} 
+                />
+              </section>
+            )}
+
+            {bodySections.map((section, idx) => (
+              <ExpandableSection 
+                key={idx}
+                title={section.title} 
+                html={section.html} 
               />
-            </section>
+            ))}
 
             <RecipeDetailCard
               title={recipe.title}
@@ -536,7 +573,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
           </div>
         </div>
 
-        <div className="mt-12 max-w-4xl">
+        <div className="mt-12 max-w-4xl" id="reviews-section">
           <Reviews contentId={recipe.id} />
         </div>
       </div>

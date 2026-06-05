@@ -123,6 +123,44 @@ function parseCustomaryAndMetric(str: string) {
   };
 }
 
+// Extract timer duration in seconds from instruction step text
+function extractDuration(stepText: string): number | null {
+  const rangeRegex = /(\d+)\s*(?:to|-)\s*(\d+)\s*(?:minutes|mins|minute|min)/i;
+  const singleRegex = /(\d+)\s*(?:minutes|mins|minute|min)/i;
+
+  let match = stepText.match(rangeRegex);
+  if (match) {
+    return parseInt(match[2], 10) * 60;
+  }
+
+  match = stepText.match(singleRegex);
+  if (match) {
+    return parseInt(match[1], 10) * 60;
+  }
+
+  return null;
+}
+
+// Sound alert using Web Audio API
+const playBeep = () => {
+  if (typeof window !== "undefined") {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(880, ctx.currentTime); // A5 note
+      gain.gain.setValueAtTime(0.5, ctx.currentTime);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.35); // 0.35s beep
+    } catch (e) {
+      console.warn("Web Audio alert failed:", e);
+    }
+  }
+};
+
 export function RecipeDetailCard({
   title,
   excerpt,
@@ -150,7 +188,38 @@ export function RecipeDetailCard({
   const [completedIngredients, setCompletedIngredients] = useState<Record<number, boolean>>({});
   const [completedSteps, setCompletedSteps] = useState<Record<number, boolean>>({});
 
+  // Timer states: record step index to timer info
+  const [activeTimers, setActiveTimers] = useState<
+    Record<number, { secondsLeft: number; isRunning: boolean; originalSeconds: number }>
+  >({});
+
   const wakeLockRef = useRef<any>(null);
+
+  // Background countdown loop for active step timers
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveTimers(prev => {
+        const next = { ...prev };
+        let changed = false;
+        for (const idxStr in next) {
+          const idx = parseInt(idxStr, 10);
+          const timer = next[idx];
+          if (timer && timer.isRunning && timer.secondsLeft > 0) {
+            changed = true;
+            const newSeconds = timer.secondsLeft - 1;
+            if (newSeconds === 0) {
+              playBeep();
+              next[idx] = { ...timer, secondsLeft: 0, isRunning: false };
+            } else {
+              next[idx] = { ...timer, secondsLeft: newSeconds };
+            }
+          }
+        }
+        return changed ? next : prev;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Handle Wake Lock for Cook Mode
   useEffect(() => {
@@ -206,6 +275,50 @@ export function RecipeDetailCard({
     }));
   };
 
+  // Timer actions
+  const startTimer = (idx: number, seconds: number) => {
+    setActiveTimers(prev => ({
+      ...prev,
+      [idx]: {
+        secondsLeft: prev[idx]?.secondsLeft ?? seconds,
+        originalSeconds: seconds,
+        isRunning: true
+      }
+    }));
+  };
+
+  const pauseTimer = (idx: number) => {
+    setActiveTimers(prev => {
+      if (!prev[idx]) return prev;
+      return {
+        ...prev,
+        [idx]: { ...prev[idx], isRunning: false }
+      };
+    });
+  };
+
+  const resetTimer = (idx: number) => {
+    setActiveTimers(prev => {
+      if (!prev[idx]) return prev;
+      return {
+        ...prev,
+        [idx]: { ...prev[idx], secondsLeft: prev[idx].originalSeconds, isRunning: false }
+      };
+    });
+  };
+
+  const formatTimerString = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  };
+
+  const parseNumberOnly = (val: string | null): number => {
+    if (!val) return 0;
+    const match = val.match(/\d+/);
+    return match ? parseInt(match[0], 10) : 0;
+  };
+
   // Compute values
   const currentServings = servings ? servings * multiplier : null;
   const courseTag = tags.find(t => ["breakfast", "lunch", "dinner", "snack", "dessert", "appetizers", "appetizer"].includes(t.toLowerCase())) || "Main Course";
@@ -221,9 +334,27 @@ export function RecipeDetailCard({
   const cookMins = parseTimeMinutes(cookingTime);
   const totalMins = prepMins + cookMins;
 
-  // Render stars
+  // Render stars (Hide raw average rating metrics unless 5+ votes exist to build trust)
   const displayRating = reviewCount > 0 ? avgRating : rating;
   const roundedRating = Math.round(displayRating);
+  const hasFiveVotes = reviewCount >= 5;
+
+  // Macros Daily Value references (based on FDA standards for a 2,000 calorie diet: 78g fat, 275g carbs, 50g protein)
+  const numericCalories = calories ? calories : 0;
+  const scaledCalories = numericCalories * multiplier;
+  const caloriesPctDV = Math.round((scaledCalories / 2000) * 100);
+
+  const numericFat = parseNumberOnly(fat);
+  const scaledFat = numericFat * multiplier;
+  const fatPctDV = Math.round((scaledFat / 78) * 100);
+
+  const numericCarbs = parseNumberOnly(carbs);
+  const scaledCarbs = numericCarbs * multiplier;
+  const carbsPctDV = Math.round((scaledCarbs / 275) * 100);
+
+  const numericProtein = parseNumberOnly(protein);
+  const scaledProtein = numericProtein * multiplier;
+  const proteinPctDV = Math.round((scaledProtein / 50) * 100);
 
   return (
     <div
@@ -245,7 +376,15 @@ export function RecipeDetailCard({
               {"★".repeat(roundedRating) + "☆".repeat(5 - roundedRating)}
             </span>
             <span className="text-xs text-text-muted font-semibold">
-              {displayRating.toFixed(1)} from {reviewCount > 0 ? reviewCount : 1} {reviewCount === 1 ? "vote" : "votes"}
+              {reviewCount > 0 ? (
+                hasFiveVotes ? (
+                  `${displayRating.toFixed(1)} from ${reviewCount} votes`
+                ) : (
+                  `${reviewCount} ${reviewCount === 1 ? "rating" : "ratings"}`
+                )
+              ) : (
+                "Be the first to rate!"
+              )}
             </span>
           </div>
 
@@ -296,17 +435,88 @@ export function RecipeDetailCard({
             <span className="font-bold text-text">{currentServings}</span>
           </div>
         )}
-        {calories && (
-          <div>
-            <span className="block text-xs uppercase tracking-wider font-bold text-text-muted/60 mb-0.5">Calories</span>
-            <span className="font-bold text-text">{calories * multiplier} kcal</span>
-          </div>
-        )}
         <div>
           <span className="block text-xs uppercase tracking-wider font-bold text-text-muted/60 mb-0.5">Author</span>
           <span className="font-bold text-text">{author}</span>
         </div>
       </div>
+
+      {/* Premium Visual Macro Nutrition Grid */}
+      {(calories || fat || carbs || protein) && (
+        <div className="bg-white/60 border border-border/80 p-6 rounded-[2rem] space-y-4">
+          <h4 className="text-xs uppercase tracking-widest font-bold text-text-muted/60">Macro Nutrition Profile (Per Serving)</h4>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {calories && (
+              <div className="bg-white p-4 rounded-2xl border border-border/50 shadow-sm flex flex-col justify-between">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs font-bold text-text-muted/60">Calories</span>
+                  <span className="text-xs font-bold text-primary">{caloriesPctDV}% DV</span>
+                </div>
+                <div className="text-2xl font-bold font-serif text-text mb-2">
+                  {scaledCalories} <span className="text-xs font-sans font-normal text-text-muted">kcal</span>
+                </div>
+                <div className="w-full bg-border/40 h-2 rounded-full overflow-hidden">
+                  <div
+                    className="bg-primary h-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, caloriesPctDV)}%` }}
+                  />
+                </div>
+              </div>
+            )}
+            {protein && (
+              <div className="bg-white p-4 rounded-2xl border border-border/50 shadow-sm flex flex-col justify-between">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs font-bold text-text-muted/60">Protein</span>
+                  <span className="text-xs font-bold text-[#556B2F]">{proteinPctDV}% DV</span>
+                </div>
+                <div className="text-2xl font-bold font-serif text-text mb-2">
+                  {scaledProtein}g
+                </div>
+                <div className="w-full bg-border/40 h-2 rounded-full overflow-hidden">
+                  <div
+                    className="bg-[#556B2F] h-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, proteinPctDV)}%` }}
+                  />
+                </div>
+              </div>
+            )}
+            {fat && (
+              <div className="bg-white p-4 rounded-2xl border border-border/50 shadow-sm flex flex-col justify-between">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs font-bold text-text-muted/60">Fat</span>
+                  <span className="text-xs font-bold text-[#B35412]">{fatPctDV}% DV</span>
+                </div>
+                <div className="text-2xl font-bold font-serif text-text mb-2">
+                  {scaledFat}g
+                </div>
+                <div className="w-full bg-border/40 h-2 rounded-full overflow-hidden">
+                  <div
+                    className="bg-[#B35412] h-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, fatPctDV)}%` }}
+                  />
+                </div>
+              </div>
+            )}
+            {carbs && (
+              <div className="bg-white p-4 rounded-2xl border border-border/50 shadow-sm flex flex-col justify-between">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs font-bold text-text-muted/60">Carbs</span>
+                  <span className="text-xs font-bold text-text/80">{carbsPctDV}% DV</span>
+                </div>
+                <div className="text-2xl font-bold font-serif text-text mb-2">
+                  {scaledCarbs}g
+                </div>
+                <div className="w-full bg-border/40 h-2 rounded-full overflow-hidden">
+                  <div
+                    className="bg-text h-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, carbsPctDV)}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Interactive Controls Bar */}
       <div className="no-print flex flex-wrap gap-6 items-center justify-between bg-surface/50 border border-border/60 p-4 md:p-6 rounded-2xl">
@@ -431,35 +641,111 @@ export function RecipeDetailCard({
         <div className="space-y-6">
           {instructions.map((step, idx) => {
             const isCompleted = !!completedSteps[idx];
+            const durationSec = extractDuration(step);
+
+            // Fetch timer values
+            const timer = activeTimers[idx];
+            const isRunning = timer?.isRunning ?? false;
+            const timeLeft = timer?.secondsLeft ?? durationSec ?? 0;
+
             return (
               <div
                 key={idx}
-                onClick={() => toggleStep(idx)}
-                className={`flex gap-4 items-start select-none cursor-pointer group ${
-                  isCompleted ? "opacity-65" : ""
+                className={`flex gap-4 items-start select-none group border-b border-border/20 pb-4 last:border-b-0 ${
+                  isCompleted ? "opacity-60" : ""
                 }`}
               >
+                {/* Check-off step control */}
                 <div
-                  className={`flex-shrink-0 w-8 h-8 rounded-full font-bold flex items-center justify-center text-sm border-2 transition-all ${
+                  onClick={() => toggleStep(idx)}
+                  className={`flex-shrink-0 w-8 h-8 rounded-full font-bold flex items-center justify-center text-sm border-2 transition-all cursor-pointer ${
                     isCompleted
                       ? "bg-border border-border text-text-muted/50"
                       : "bg-primary/5 border-primary/20 text-primary group-hover:bg-primary group-hover:text-white group-hover:border-primary"
                   }`}
                 >
-                  {idx + 1}
+                  {isCompleted ? "✓" : idx + 1}
                 </div>
-                <p
-                  className={`text-sm md:text-base leading-relaxed pt-0.5 transition-all ${
-                    isCompleted
-                      ? "line-through text-text-muted/50"
-                      : "text-text-muted group-hover:text-text"
-                  }`}
-                >
-                  {step}
-                </p>
+                <div className="flex-1 space-y-3">
+                  <p
+                    className={`text-sm md:text-base leading-relaxed transition-all ${
+                      isCompleted
+                        ? "line-through text-text-muted/40"
+                        : "text-text-muted group-hover:text-text"
+                    }`}
+                  >
+                    {step}
+                  </p>
+
+                  {/* Inline Step Countdown Timer */}
+                  {durationSec !== null && !isCompleted && (
+                    <div className="no-print flex items-center gap-3 bg-surface/80 p-2.5 rounded-xl border border-border/50 max-w-xs shadow-sm">
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-primary animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="font-bold text-xs font-mono text-text">
+                          {formatTimerString(timeLeft)}
+                        </span>
+                      </div>
+
+                      <div className="flex gap-1">
+                        {isRunning ? (
+                          <button
+                            onClick={() => pauseTimer(idx)}
+                            className="px-2.5 py-1 bg-[#B35412] hover:bg-[#B35412]/80 text-white rounded-md text-[10px] font-bold tracking-wider uppercase"
+                          >
+                            Pause
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => startTimer(idx, durationSec)}
+                            className="px-2.5 py-1 bg-[#556B2F] hover:bg-[#556B2F]/80 text-white rounded-md text-[10px] font-bold tracking-wider uppercase"
+                          >
+                            {timeLeft === durationSec ? "Start" : "Resume"}
+                          </button>
+                        )}
+                        <button
+                          onClick={() => resetTimer(idx)}
+                          className="px-2.5 py-1 border border-border hover:bg-white text-text-muted rounded-md text-[10px] font-bold"
+                        >
+                          Reset
+                        </button>
+                      </div>
+
+                      {timeLeft === 0 && (
+                        <span className="text-[10px] font-bold text-primary animate-bounce ml-1">Time's Up!</span>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* Tried This Star Rating Callout CTA */}
+      <div className="no-print bg-white/60 border border-border/80 p-6 rounded-[2rem] text-center space-y-4 shadow-sm">
+        <h4 className="font-bold text-text font-serif italic text-lg">Tried this recipe?</h4>
+        <p className="text-sm text-text-muted max-w-md mx-auto">
+          Let us know how it turned out! Click a star below to leave a review and rate the recipe.
+        </p>
+        <div className="flex justify-center gap-2 text-4xl text-gray-300">
+          {[1, 2, 3, 4, 5].map(star => (
+            <button
+              key={star}
+              onClick={() => {
+                const reviewsSection = document.getElementById("reviews-section");
+                if (reviewsSection) {
+                  reviewsSection.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              className="hover:text-[#F4D03F] hover:scale-110 active:scale-95 transition-all cursor-pointer"
+            >
+              ★
+            </button>
+          ))}
         </div>
       </div>
 
@@ -474,45 +760,6 @@ export function RecipeDetailCard({
               </li>
             ))}
           </ul>
-        </div>
-      )}
-
-      {/* Nutrition Information */}
-      {(calories || fat || carbs || protein) && (
-        <div className="pt-6 border-t border-border/80">
-          <h4 className="text-xs uppercase tracking-widest font-bold text-text-muted/60 mb-4">Nutrition Information</h4>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {calories && (
-              <div className="bg-white p-4 rounded-2xl border border-border/60 shadow-sm">
-                <span className="block text-2xl font-bold text-primary">{calories * multiplier}</span>
-                <span className="text-xs uppercase tracking-widest font-bold text-text-muted/50">Calories</span>
-              </div>
-            )}
-            {fat && (
-              <div className="bg-white p-4 rounded-2xl border border-border/60 shadow-sm">
-                <span className="block text-2xl font-bold text-primary">
-                  {scaleQuantity(fat, multiplier)}
-                </span>
-                <span className="text-xs uppercase tracking-widest font-bold text-text-muted/50">Fat</span>
-              </div>
-            )}
-            {carbs && (
-              <div className="bg-white p-4 rounded-2xl border border-border/60 shadow-sm">
-                <span className="block text-2xl font-bold text-primary">
-                  {scaleQuantity(carbs, multiplier)}
-                </span>
-                <span className="text-xs uppercase tracking-widest font-bold text-text-muted/50">Carbs</span>
-              </div>
-            )}
-            {protein && (
-              <div className="bg-white p-4 rounded-2xl border border-border/60 shadow-sm">
-                <span className="block text-2xl font-bold text-primary">
-                  {scaleQuantity(protein, multiplier)}
-                </span>
-                <span className="text-xs uppercase tracking-widest font-bold text-text-muted/50">Protein</span>
-              </div>
-            )}
-          </div>
         </div>
       )}
 
