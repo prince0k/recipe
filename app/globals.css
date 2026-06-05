@@ -160,4 +160,69 @@
   animation-play-state: paused;
 }
 
+/* ==========================================================================
+   Print Styles for Recipe Card
+   ========================================================================== */
+@media print {
+  /* Hide navbar, footer, sidebar, and other non-recipe elements */
+  header, footer, nav, aside, .no-print, [id^="ad-"], [class*="AdBanner"] {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Reset layout grids so only the main content fits page */
+  .grid {
+    display: block !important;
+  }
+
+  .lg\:col-span-2 {
+    width: 100% !important;
+  }
+
+  /* Hide everything inside main column EXCEPT the recipe card */
+  .lg\:col-span-2 > *:not(#recipe-card) {
+    display: none !important;
+  }
+
+  /* Make the recipe card print beautifully */
+  #recipe-card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  /* Ensure background colors don't force dark ink unless needed */
+  #recipe-card * {
+    background: transparent !important;
+    color: black !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Prevent page breaks inside key recipe blocks */
+  #recipe-card h2,
+  #recipe-card h3,
+  #recipe-card h4,
+  #recipe-card .grid {
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+
+  #recipe-card label,
+  #recipe-card div {
+    page-break-inside: avoid;
+  }
+}
+
+
 

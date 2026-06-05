@@ -81,6 +81,7 @@ import { Reviews } from "@/components/content/Reviews";
 import { auth } from "@/lib/auth";
 import { AdBanner } from "@/components/ui/AdBanner";
 import { ShareButtons } from "@/components/ui/ShareButtons";
+import { RecipeDetailCard } from "@/components/content/RecipeDetailCard";
 
 export default async function RecipeDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -168,6 +169,26 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
 
     // Last resort: return a safe placeholder rather than risking grabbing ingredients
     return [recipe.excerpt || "See full instructions on page."];
+  })();
+
+  const notesList = (() => {
+    const bodyStr = cleanBody || "";
+    const headingIndex = bodyStr.search(/(?:Notes|Tips|Coaching Tips)\s*<\/h[2-4]>/i);
+    if (headingIndex !== -1) {
+      const postHeading = bodyStr.slice(headingIndex);
+      const ulMatch = postHeading.match(/<(?:ul|ol)[^>]*>([\s\S]*?)<\/(?:ul|ol)>/i);
+      if (ulMatch && ulMatch[1]) {
+        const nextHeadingIndex = postHeading.slice(10).search(/<h[2-4]/i);
+        const ulIndex = postHeading.indexOf(ulMatch[0]);
+        if (nextHeadingIndex === -1 || ulIndex < nextHeadingIndex) {
+          const liMatches = ulMatch[1].match(/<li[^>]*>([\s\S]*?)<\/li>/gi);
+          if (liMatches && liMatches.length > 0) {
+            return liMatches.map(m => m.replace(/<[^>]*>?/gm, '').trim()).filter(Boolean);
+          }
+        }
+      }
+    }
+    return [];
   })();
 
   // Construct JSON-LD schema dynamically
@@ -427,65 +448,33 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
             </section>
 
             <section>
-              <h2 className="text-3xl font-bold text-text mb-8 flex items-center gap-3">
-                <span className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">1</span>
-                Ingredients
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-surface p-8 rounded-[2rem] border border-border">
-                {JSON.parse(recipe.ingredients || "[]").map((item: string) => {
-                  const isHeader = item.startsWith("##") || item.endsWith(":");
-                  if (isHeader) {
-                    const cleanItem = item.replace(/^##\s*/, "");
-                    return (
-                      <div key={item} className="col-span-1 md:col-span-2 mt-6 first:mt-0 mb-2">
-                        <h4 className="text-lg font-bold text-text border-b border-border/80 pb-1 font-serif italic">{cleanItem}</h4>
-                      </div>
-                    );
-                  }
-                  return (
-                    <label key={item} className="flex items-start gap-4 p-3 rounded-xl hover:bg-white transition-colors cursor-pointer group">
-                      <input type="checkbox" className="mt-1 w-5 h-5 rounded-md border-border text-primary focus:ring-primary" />
-                      <span className="text-text-muted group-hover:text-text transition-colors">{item}</span>
-                    </label>
-                  );
-                })}
-              </div>
+              <div 
+                className="prose prose-lg prose-olive max-w-none prose-headings:font-serif prose-headings:text-text"
+                dangerouslySetInnerHTML={{ __html: cleanBody }} 
+              />
             </section>
 
-            <section>
-              <h2 className="text-3xl font-bold text-text mb-8 flex items-center gap-3">
-                <span className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">2</span>
-                Instructions
-              </h2>
-              <div className="space-y-10">
-                <div 
-                  className="prose prose-lg prose-olive max-w-none prose-headings:font-serif prose-headings:text-text"
-                  dangerouslySetInnerHTML={{ __html: cleanBody }} 
-                />
-              </div>
-            </section>
-
-            <section className="bg-olive/5 p-10 rounded-[3rem] border border-olive/10">
-              <h3 className="text-2xl font-bold text-olive mb-6">Nutrition Information</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                <div>
-                  <span className="block text-3xl font-bold text-olive">{recipe.calories || '—'}</span>
-                  <span className="text-xs uppercase tracking-widest font-bold text-olive/60">Calories</span>
-                </div>
-                <div>
-                  <span className="block text-3xl font-bold text-olive">{recipe.fat || '—'}</span>
-                  <span className="text-xs uppercase tracking-widest font-bold text-olive/60">Fat</span>
-                </div>
-                <div>
-                  <span className="block text-3xl font-bold text-olive">{recipe.carbs || '—'}</span>
-                  <span className="text-xs uppercase tracking-widest font-bold text-olive/60">Carbs</span>
-                </div>
-                <div>
-                  <span className="block text-3xl font-bold text-olive">{recipe.protein || '—'}</span>
-                  <span className="text-xs uppercase tracking-widest font-bold text-olive/60">Protein</span>
-                </div>
-              </div>
-            </section>
+            <RecipeDetailCard
+              title={recipe.title}
+              excerpt={recipe.excerpt}
+              coverImage={recipe.coverImage}
+              prepTime={recipe.prepTime}
+              cookingTime={recipe.cookingTime}
+              servings={recipe.servings}
+              calories={recipe.calories}
+              fat={recipe.fat}
+              carbs={recipe.carbs}
+              protein={recipe.protein}
+              difficulty={recipe.difficulty}
+              rating={recipe.rating}
+              reviewCount={reviewCount}
+              avgRating={avgRating}
+              tags={tags}
+              ingredients={ingredientsList}
+              instructions={instructionsList}
+              notes={notesList}
+              author="Stewart Lucas"
+            />
 
             {relatedItems.length > 0 && (
               <RelatedContent items={relatedItems} />
