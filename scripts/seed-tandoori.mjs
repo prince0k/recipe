@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import pkgPrisma from "@prisma/client";
+const { PrismaClient } = pkgPrisma;
 import dotenv from "dotenv";
 
 dotenv.config();
