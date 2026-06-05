@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start -p 3002",
     "lint": "eslint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "seed-tandoori": "node scripts/seed-tandoori.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
