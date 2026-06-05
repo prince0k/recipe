@@ -164,9 +164,6 @@ const recipeData = {
 async function main() {
   console.log("Upserting Smoky Tandoori Chicken recipe into database...");
 
-  // Generate the JSON-LD schema
-  const prepMinutes = 20;
-  const cookMinutes = 30;
   const prepTimeStr = "PT20M";
   const cookTimeStr = "PT30M";
   const totalTimeStr = "PT50M";
