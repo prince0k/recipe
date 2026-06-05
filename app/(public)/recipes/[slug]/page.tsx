@@ -234,7 +234,10 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
           recipe.servings ? recipe.servings.toString() : "4",
           recipe.servings ? `${recipe.servings} servings` : "4 servings"
         ],
-        "recipeIngredient": ingredientsList.length > 0 ? ingredientsList : ["1 recipe ingredients list"],
+        "recipeIngredient": (() => {
+          const filtered = ingredientsList.filter((item: string) => !item.startsWith("##") && !item.endsWith(":"));
+          return filtered.length > 0 ? filtered : ["1 recipe ingredients list"];
+        })(),
         "recipeInstructions": instructionsList.map((step: string, i: number) => ({
           "@type": "HowToStep",
           "position": i + 1,
@@ -400,7 +403,11 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
               <ShareButtons
                 url={`/recipes/${recipe.slug}`}
                 title={recipe.title}
-                image={recipe.coverImage || undefined}
+                image={
+                  recipe.slug === "smoky-tandoori-chicken-yogurt-marinade"
+                    ? "/uploads/images/1780666191381-smoky-tandoori-chicken-pinterest.webp"
+                    : (recipe.coverImage || undefined)
+                }
               />
             </div>
           </div>
@@ -425,12 +432,23 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
                 Ingredients
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-surface p-8 rounded-[2rem] border border-border">
-                {JSON.parse(recipe.ingredients || "[]").map((item: string) => (
-                  <label key={item} className="flex items-start gap-4 p-3 rounded-xl hover:bg-white transition-colors cursor-pointer group">
-                    <input type="checkbox" className="mt-1 w-5 h-5 rounded-md border-border text-primary focus:ring-primary" />
-                    <span className="text-text-muted group-hover:text-text transition-colors">{item}</span>
-                  </label>
-                ))}
+                {JSON.parse(recipe.ingredients || "[]").map((item: string) => {
+                  const isHeader = item.startsWith("##") || item.endsWith(":");
+                  if (isHeader) {
+                    const cleanItem = item.replace(/^##\s*/, "");
+                    return (
+                      <div key={item} className="col-span-1 md:col-span-2 mt-6 first:mt-0 mb-2">
+                        <h4 className="text-lg font-bold text-text border-b border-border/80 pb-1 font-serif italic">{cleanItem}</h4>
+                      </div>
+                    );
+                  }
+                  return (
+                    <label key={item} className="flex items-start gap-4 p-3 rounded-xl hover:bg-white transition-colors cursor-pointer group">
+                      <input type="checkbox" className="mt-1 w-5 h-5 rounded-md border-border text-primary focus:ring-primary" />
+                      <span className="text-text-muted group-hover:text-text transition-colors">{item}</span>
+                    </label>
+                  );
+                })}
               </div>
             </section>
 
