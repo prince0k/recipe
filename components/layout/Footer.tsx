@@ -8,10 +8,17 @@ export function Footer() {
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8 xl:col-span-1">
-            <span className="font-serif text-2xl md:text-3xl font-bold text-primary flex flex-col line-tight">
-              NutriGuide 
-              <span className="text-xs md:text-sm font-medium opacity-80 italic -mt-1 tracking-wide">by Stewart Lucas</span>
-            </span>
+            <Link href="/" className="flex items-center group gap-3">
+              <img 
+                src="/logo.svg" 
+                alt="NutriGuide Logo" 
+                className="h-12 w-12 transition-transform duration-500 group-hover:rotate-12" 
+              />
+              <span className="font-serif text-2xl md:text-3xl font-bold text-primary group-hover:text-secondary transition-colors flex flex-col line-tight">
+                NutriGuide 
+                <span className="text-xs md:text-sm font-medium opacity-80 italic -mt-1 tracking-wide">by Stewart Lucas</span>
+              </span>
+            </Link>
             <p className="text-text-muted text-base max-w-xs">
               Simple recipes for real life. Wholesome food inspiration and budget-friendly home cooking.
             </p>

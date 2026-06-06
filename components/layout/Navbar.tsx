@@ -29,7 +29,12 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0 flex items-center group">
+            <Link href="/" className="flex-shrink-0 flex items-center group gap-3">
+              <img 
+                src="/logo.svg" 
+                alt="NutriGuide Logo" 
+                className="h-12 w-12 transition-transform duration-500 group-hover:rotate-12" 
+              />
               <span className="font-serif text-2xl md:text-3xl font-bold text-primary group-hover:text-secondary transition-colors flex flex-col line-tight">
                 NutriGuide 
                 <span className="text-xs md:text-sm font-medium opacity-80 italic -mt-1 tracking-wide">by Stewart Lucas</span>
