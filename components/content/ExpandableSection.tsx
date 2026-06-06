@@ -147,8 +147,10 @@ export function ExpandableSection({ title, html }: ExpandableSectionProps) {
     );
   }
 
-  // If section only has 1 paragraph, render normally without collapse features
-  if (!hasMultipleParagraphs) {
+  const isFaqSection = /faq|frequently asked questions|questions/i.test(title);
+
+  // If section only has 1 paragraph or is an FAQ/questions section, render normally without collapse features
+  if (!hasMultipleParagraphs || isFaqSection) {
     return (
       <section className="space-y-4">
         <h2 className="text-3xl font-bold font-serif text-text border-b border-border/60 pb-2">
