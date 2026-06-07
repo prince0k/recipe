@@ -284,29 +284,36 @@ OUTPUT FORMAT RULES
 - NEVER use emojis (such as clock, fire, leaves, green dots, meat, or vegetables) anywhere in the output. Keep it strictly textual.
 - Every section must feel written FOR ${userName} — not for a generic reader`;
 
-    // 2. Call Gemini to generate the personalized plan with retries
+    const modelsToTry = ['gemini-3.1-flash-lite', 'gemini-2.5-flash-lite'];
     let generatedContent = "Generation pending. (Error: AI service currently unavailable.)";
-    let attempts = 0;
-    const maxAttempts = 3;
+    let success = false;
 
-    while (attempts < maxAttempts) {
-      try {
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt,
-        });
-        generatedContent = response.text || generatedContent;
-        break; // Success!
-      } catch (aiError: any) {
-        attempts++;
-        console.error(`Gemini Attempt ${attempts} Failed:`, aiError.message);
-        generatedContent = `[AI Generation Failed] ${aiError.message}`;
-        
-        if (attempts < maxAttempts) {
-          // Wait 5 seconds before retrying (increased for rate limits)
-          await new Promise(resolve => setTimeout(resolve, 5000));
+    for (const modelName of modelsToTry) {
+      let attempts = 0;
+      const maxAttempts = 2;
+
+      while (attempts < maxAttempts) {
+        try {
+          console.log(`Calling Gemini API (${modelName}) for personalization...`);
+          const response = await ai.models.generateContent({
+            model: modelName,
+            contents: prompt,
+          });
+          generatedContent = response.text || generatedContent;
+          success = true;
+          break; // Success!
+        } catch (aiError: any) {
+          attempts++;
+          console.error(`Gemini (${modelName}) Attempt ${attempts} Failed:`, aiError.message);
+          generatedContent = `[AI Generation Failed] ${aiError.message}`;
+          
+          if (attempts < maxAttempts) {
+            // Wait 5 seconds before retrying
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          }
         }
       }
+      if (success) break;
     }
 
     // 3. Create the Personalized Request with the output

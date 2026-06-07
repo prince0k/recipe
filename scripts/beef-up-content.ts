@@ -185,27 +185,35 @@ JSON Format:
     if (execute) {
       try {
         let text = "";
-        let retries = 3;
-        while (retries > 0) {
-          try {
-            console.log(`    Calling Gemini API to expand content (attempts remaining: ${retries})...`);
-            const response = await ai.models.generateContent({
-              model: "gemini-2.5-flash",
-              contents: prompt,
-              config: {
-                responseMimeType: "application/json",
+        const modelsToTry = ["gemini-3.1-flash-lite", "gemini-2.5-flash-lite"];
+        for (const modelName of modelsToTry) {
+          let retries = 2;
+          while (retries > 0) {
+            try {
+              console.log(`    Calling Gemini API (${modelName}) to expand content (attempts remaining: ${retries})...`);
+              const response = await ai.models.generateContent({
+                model: modelName,
+                contents: prompt,
+                config: {
+                  responseMimeType: "application/json",
+                }
+              });
+              text = response.text || "";
+              break; // success
+            } catch (geminiErr: any) {
+              retries--;
+              if (retries === 0) {
+                if (modelName === modelsToTry[modelsToTry.length - 1]) {
+                  throw geminiErr;
+                }
+                console.warn(`    ⚠️ ${modelName} failed completely. Falling back to next model...`);
+                break;
               }
-            });
-            text = response.text || "";
-            break; // success
-          } catch (geminiErr: any) {
-            retries--;
-            if (retries === 0) {
-              throw geminiErr;
+              console.warn(`    ⚠️ Gemini API (${modelName}) failed with error: ${geminiErr.message}. Retrying in 8 seconds...`);
+              await new Promise(r => setTimeout(r, 8000));
             }
-            console.warn(`    ⚠️ Gemini API failed with error: ${geminiErr.message}. Retrying in 8 seconds...`);
-            await new Promise(r => setTimeout(r, 8000));
           }
+          if (text) break;
         }
 
         text = sanitizeContent(text);
