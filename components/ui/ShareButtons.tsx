@@ -10,11 +10,12 @@ interface Props {
 
 export function ShareButtons({ url, title, image }: Props) {
   const fullUrl = `https://stewartlucas.com${url}`;
+  const fullImageUrl = image && image.startsWith('/') ? `https://stewartlucas.com${image}` : (image ?? '');
 
   const buttons = [
     {
       label: 'Pinterest',
-      href: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(fullUrl)}&media=${encodeURIComponent(image ?? '')}&description=${encodeURIComponent(title)}`,
+      href: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(fullUrl)}&media=${encodeURIComponent(fullImageUrl)}&description=${encodeURIComponent(title)}`,
       icon: (
         <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
           <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.966 1.406-5.966s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.76-2.245 3.76-5.488 0-2.868-2.061-4.869-5.004-4.869-3.41 0-5.413 2.561-5.413 5.204 0 1.03.399 2.137.899 2.742.098.12.112.223.083.345-.09.375-.293 1.199-.334 1.363-.053.211-.174.256-.4.149-1.492-.697-2.428-2.882-2.428-4.634 0-3.77 2.739-7.234 7.906-7.234 4.15 0 7.373 2.957 7.373 6.9 0 4.124-2.6 7.447-6.206 7.447-1.213 0-2.354-.63-2.744-1.371l-.748 2.852c-.271 1.043-1.008 2.35-1.5 3.146 1.122.348 2.309.537 3.54.537 6.623 0 11.99-5.372 11.99-11.993C23.99 5.367 18.623 0 12.017 0z" />
