@@ -33,13 +33,11 @@ AI Search Optimization (AEO) Guidelines:
 4. Structured Data: Focus on factual accuracy and clear definitions.
 `;
 
-const JSON_FORMATTING_RULES = `
-CRITICAL JSON FORMATTING RULES:
-1. Return a single valid JSON object containing only the "body" key with the full expanded HTML content as its value.
-2. Do NOT wrap the JSON output in markdown code blocks. Return only the raw JSON.
-3. Inside the HTML content (in the "body" key value), you MUST use SINGLE QUOTES (') for all HTML attributes (e.g. style='background: #FFF8F0;' or class='tip-box'). Never use double quotes inside HTML attributes.
-4. Ensure all double quotes inside text values are escaped as \\".
-5. Do NOT output raw control characters (tabs, raw carriage returns, raw vertical tabs, or raw backslashes) inside the JSON value. Use \\n for newlines.
+const HTML_FORMATTING_RULES = `
+CRITICAL HTML FORMATTING RULES:
+1. Return ONLY the raw HTML content. Do NOT wrap it in a JSON object or JSON string.
+2. You can wrap the HTML in a markdown code block (e.g. \`\`\`html ... \`\`\`), but ensure there is no text before or after the code block.
+3. Use single quotes (') for all HTML attributes (e.g. style='background: #FFF8F0;' or class='tip-box').
 `;
 
 const DESIGN_THEME = `
@@ -146,7 +144,7 @@ async function main() {
     const prompt = `
 ${BRAND_VOICE}
 ${AEO_GUIDELINES}
-${JSON_FORMATTING_RULES}
+${HTML_FORMATTING_RULES}
 ${DESIGN_THEME}
 
 You are Stewart Lucas, Certified Nutritionist & Culinary Coach.
@@ -174,12 +172,7 @@ Instructions:
    - **Meal Prep & Storage Guide**: Explain how to store leftovers (fridge/freezer life), reheat them without losing texture, or prep components in advance.
    - **Flavor Variations**: Provide 3-4 creative swaps (e.g., low-carb alternatives, protein swaps, vegan/vegetarian options).
    - **FAQ Section**: Include 3-5 frequently asked questions using <details><summary> accordion format.
-8. Output the result as a single valid JSON object matching the CRITICAL JSON FORMATTING RULES.
-
-JSON Format:
-{
-  "body": "Full expanded HTML content..."
-}
+8. Output the result as raw HTML. Do NOT wrap it in JSON. You can wrap it in a markdown block (e.g. \`\`\`html ... \`\`\`), but ensure there is no text before or after the code block.
 `;
 
     if (execute) {
@@ -194,9 +187,6 @@ JSON Format:
               const response = await ai.models.generateContent({
                 model: modelName,
                 contents: prompt,
-                config: {
-                  responseMimeType: "application/json",
-                }
               });
               text = response.text || "";
               break; // success
@@ -216,29 +206,18 @@ JSON Format:
           if (text) break;
         }
 
-        text = sanitizeContent(text);
-        text = text.replace(/```json\n?/, "").replace(/\n?```/, "").trim();
+        let expandedBody = sanitizeContent(text);
+        
+        // Clean markdown HTML wraps if any
+        expandedBody = expandedBody
+          .replace(/^```html\s*/i, "")
+          .replace(/```\s*$/g, "")
+          .trim();
 
-        let data: any;
-        try {
-          data = JSON.parse(text);
-        } catch (jsonErr: any) {
-          try {
-            // Remove control characters (e.g. raw tabs, newlines inside string values)
-            const cleanText = text
-              .replace(/[\u0000-\u0019]+/g, " ")
-              .trim();
-            data = JSON.parse(cleanText);
-          } catch (secondErr) {
-            console.error("Raw response that failed to parse:\n", text.substring(0, 500) + "...\n");
-            throw jsonErr;
-          }
-        }
-        const expandedBody = data.body;
         const newWords = countWords(expandedBody);
 
         if (newWords < 800) {
-          console.warn(`    ⚠️ Generated content is only ${newWords} words. Retrying with explicit demand...`);
+          console.warn(`    ⚠️ Generated content is only ${newWords} words.`);
         }
 
         await prisma.content.update({
