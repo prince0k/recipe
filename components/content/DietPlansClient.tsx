@@ -43,7 +43,7 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
       t === "nut-free" || t === "nut free" ||
       t === "low-oxalate" || t === "low oxalate"
     ) {
-      return "bg-teal-500/10 text-teal-600 border border-teal-200/50";
+      return "bg-teal-500/10 text-teal-700 border border-teal-200/40";
     }
     // Amber = style
     if (
@@ -56,7 +56,7 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
       t.includes("meal-prep") || t.includes("meal prep") ||
       t.includes("protein-cycling") || t.includes("protein cycling")
     ) {
-      return "bg-amber-500/10 text-amber-600 border border-amber-200/50";
+      return "bg-amber-500/10 text-amber-700 border border-amber-200/40";
     }
     // Purple = condition-specific
     if (
@@ -73,9 +73,9 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
       t === "liver" || t.includes("fatty-liver") || t.includes("fatty liver") ||
       t === "candida" || t.includes("renal")
     ) {
-      return "bg-purple-500/10 text-purple-600 border border-purple-200/50";
+      return "bg-purple-500/10 text-purple-700 border border-purple-200/40";
     }
-    return "bg-gray-500/10 text-gray-600 border border-gray-200/50";
+    return "bg-gray-500/10 text-gray-700 border border-gray-200/40";
   };
 
   // Filter categorization logic
@@ -191,23 +191,23 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-background">
-      {/* Premium Hero with Value Proposition */}
-      <section className="w-full bg-[#faf9f6] dark:bg-[#141211] border-b border-border py-12 md:py-20">
+    <div className="w-full min-h-screen bg-[#FAF9F6]">
+      {/* Clean Brand-Aligned Hero with value proposition */}
+      <section className="w-full bg-[#F5F5DC]/45 border-b border-[#E0D4C3] py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="text-xs uppercase tracking-widest font-extrabold text-primary mb-3 block">
+          <span className="text-xs uppercase tracking-widest font-extrabold text-[#B35412] mb-3 block">
             NutriGuide Protocols
           </span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold font-serif text-text tracking-tight leading-[1.15]">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-serif text-[#2C1E11] tracking-tight leading-[1.2]">
             Science-Backed Diet Plans
           </h1>
-          <p className="mt-5 text-lg sm:text-xl text-text-muted max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-4 text-base sm:text-lg text-[#5D4037] max-w-2xl mx-auto leading-relaxed">
             Expert-curated diet plans designed to balance hormones, optimize gut health, build muscle, and accelerate recovery. Simple home cooking, no guesswork.
           </p>
 
           {/* Search Bar at Top */}
-          <div className="mt-10 max-w-2xl mx-auto relative group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted group-focus-within:text-primary transition-colors duration-300">
+          <div className="mt-8 max-w-2xl mx-auto relative group">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#5D4037]/60 group-focus-within:text-[#B35412] transition-colors duration-300">
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -217,12 +217,12 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder='Search "soy free", "keto", "fatty liver"...'
-              className="block w-full pl-12 pr-10 py-4 border border-border bg-surface text-text shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-base transition-all duration-300 rounded-none"
+              className="block w-full pl-12 pr-10 py-3.5 border border-[#E0D4C3] bg-white text-[#2C1E11] shadow-sm focus:outline-none focus:ring-1 focus:ring-[#B35412] focus:border-[#B35412] text-base transition-all duration-300 rounded-none"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-text-muted hover:text-text"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-[#5D4037]/60 hover:text-[#2C1E11]"
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -234,17 +234,17 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
       </section>
 
       {/* Categories Filter Pills */}
-      <section className="w-full bg-background border-b border-border/40 py-6 sticky top-[0px] z-20 backdrop-blur-md bg-background/90">
+      <section className="w-full bg-[#FAF9F6] border-b border-[#E0D4C3]/40 py-5 sticky top-[0px] z-20 backdrop-blur-md bg-[#FAF9F6]/90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap justify-center gap-2.5">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-5 py-2 text-sm font-semibold tracking-wide uppercase transition-all duration-300 rounded-none border ${
+                className={`px-5 py-2 text-xs font-bold tracking-wide uppercase transition-all duration-300 rounded-none border ${
                   selectedCategory === cat.id
-                    ? "bg-text text-background border-text"
-                    : "bg-surface text-text-muted border-border hover:bg-[#faf9f6] hover:text-text"
+                    ? "bg-[#B35412] text-white border-[#B35412]"
+                    : "bg-white text-[#5D4037] border-[#E0D4C3] hover:bg-[#FAF9F6] hover:text-[#2C1E11]"
                 }`}
               >
                 {cat.label}
@@ -261,44 +261,44 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
           {/* Featured Plan Hero Card */}
           {showFeaturedHero && featuredPlan && (
             <div className="mb-16">
-              <span className="text-xs uppercase tracking-widest font-extrabold text-primary mb-4 block">
+              <span className="text-xs uppercase tracking-widest font-extrabold text-[#B35412] mb-4 block">
                 Featured Meal Protocol
               </span>
               <Link href={`/diet-plan/${featuredPlan.slug}`} className="block group">
-                <div className="flex flex-col lg:flex-row bg-surface border border-border overflow-hidden hover:shadow-2xl transition-all duration-500 rounded-none">
+                <div className="flex flex-col lg:flex-row bg-white border border-[#E0D4C3] overflow-hidden hover:shadow-2xl transition-all duration-500 rounded-none">
                   {/* Image Block */}
-                  <div className="relative w-full lg:w-1/2 h-64 sm:h-80 md:h-[400px] bg-[#141211]">
+                  <div className="relative w-full lg:w-1/2 h-64 sm:h-80 md:h-[380px] bg-[#FAF9F6]">
                     {featuredPlan.coverImage ? (
                       <Image
                         src={featuredPlan.coverImage}
                         alt={featuredPlan.title}
                         fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="object-cover transition-transform duration-700 group-hover:scale-103"
                         sizes="(max-width: 1024px) 100vw, 50vw"
                         loader={featuredPlan.coverImage.startsWith('/uploads/images/') && featuredPlan.coverImage.endsWith('.webp') ? uploadsLoader : undefined}
                         unoptimized={!featuredPlan.coverImage.startsWith('/uploads/images/') && featuredPlan.coverImage.startsWith('/uploads')}
                       />
                     ) : (
-                      <div className="absolute inset-0 flex items-center justify-center text-white/20">
+                      <div className="absolute inset-0 flex items-center justify-center text-[#5D4037]/30">
                         <span className="text-lg font-serif italic">Diet Plan</span>
                       </div>
                     )}
                     <div className="absolute top-4 left-4">
-                      <span className="bg-amber-500 text-white text-[11px] font-bold px-4 py-1.5 shadow-lg tracking-wide uppercase border-none">
+                      <span className="bg-[#B35412] text-white text-[11px] font-bold px-4 py-1.5 shadow-lg tracking-wide uppercase border-none">
                         Most Popular
                       </span>
                     </div>
                   </div>
 
                   {/* Info Block */}
-                  <div className="p-8 lg:p-12 w-full lg:w-1/2 flex flex-col justify-center">
-                    <span className="text-xs font-semibold text-text-muted tracking-wider uppercase mb-3">
+                  <div className="p-8 lg:p-12 w-full lg:w-1/2 flex flex-col justify-center bg-white">
+                    <span className="text-xs font-semibold text-[#5D4037] tracking-wider uppercase mb-3">
                       By Stewart Lucas • 7-Day Protocol
                     </span>
-                    <h2 className="text-2xl sm:text-3xl font-bold font-serif text-text group-hover:text-primary transition-colors leading-tight mb-4">
+                    <h2 className="text-2xl sm:text-3xl font-bold font-serif text-[#2C1E11] group-hover:text-[#B35412] transition-colors leading-tight mb-4">
                       {featuredPlan.title}
                     </h2>
-                    <p className="text-text-muted text-sm sm:text-base mb-6 leading-relaxed italic">
+                    <p className="text-[#5D4037] text-sm sm:text-base mb-6 leading-relaxed italic">
                       {featuredPlan.excerpt}
                     </p>
 
@@ -326,7 +326,7 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
                     })()}
 
                     <div>
-                      <span className="text-primary font-bold text-sm flex items-center group-hover:translate-x-1.5 transition-transform duration-300">
+                      <span className="text-[#8B0000] font-bold text-sm flex items-center group-hover:translate-x-1.5 transition-transform duration-300">
                         Explore Plan Details <span className="ml-2">→</span>
                       </span>
                     </div>
@@ -339,14 +339,14 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
           {/* Grid of Other Plans */}
           <div>
             {showFeaturedHero && (
-              <span className="text-xs uppercase tracking-widest font-extrabold text-text-muted mb-8 block">
+              <span className="text-xs uppercase tracking-widest font-extrabold text-[#5D4037] mb-8 block">
                 All Diet Plans
               </span>
             )}
             
             {filteredPlans.length === 0 ? (
-              <div className="text-center py-20 bg-surface border border-border">
-                <p className="text-text-muted text-lg font-serif italic">
+              <div className="text-center py-20 bg-white border border-[#E0D4C3]">
+                <p className="text-[#5D4037] text-lg font-serif italic">
                   No diet plans match your search or filter. Try another keyword!
                 </p>
               </div>
@@ -358,37 +358,37 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
                     href={`/diet-plan/${plan.slug}`}
                     className="block group h-full"
                   >
-                    <div className="h-full flex flex-col transition-all duration-500 hover:-translate-y-2 bg-surface border border-border overflow-hidden hover:shadow-xl rounded-none">
+                    <div className="h-full flex flex-col transition-all duration-500 hover:-translate-y-2 bg-white border border-[#E0D4C3] overflow-hidden hover:shadow-xl rounded-none">
                       {/* Image Block */}
-                      <div className="relative w-full h-48 sm:h-56 overflow-hidden bg-[#141211]">
+                      <div className="relative w-full h-48 sm:h-56 overflow-hidden bg-[#FAF9F6]">
                         {plan.coverImage ? (
                           <Image
                             src={plan.coverImage}
                             alt={plan.title}
                             fill
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            className="object-cover transition-transform duration-700 group-hover:scale-103"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             loader={plan.coverImage.startsWith('/uploads/images/') && plan.coverImage.endsWith('.webp') ? uploadsLoader : undefined}
                             unoptimized={!plan.coverImage.startsWith('/uploads/images/') && plan.coverImage.startsWith('/uploads')}
                           />
                         ) : (
-                          <div className="absolute inset-0 flex items-center justify-center text-white/20">
+                          <div className="absolute inset-0 flex items-center justify-center text-[#5D4037]/30">
                             <span className="text-sm font-serif italic">Diet Plan</span>
                           </div>
                         )}
                       </div>
 
                       {/* Info Block */}
-                      <div className="p-6 flex flex-col flex-grow">
-                        <span className="text-[10px] font-semibold text-text-muted tracking-wider uppercase mb-2 block">
+                      <div className="p-6 flex flex-col flex-grow bg-white">
+                        <span className="text-[10px] font-semibold text-[#5D4037] tracking-wider uppercase mb-2 block">
                           By Stewart Lucas • 7-Day Protocol
                         </span>
                         
-                        <h3 className="text-lg sm:text-xl font-bold font-serif text-text mb-3 group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                        <h3 className="text-lg sm:text-xl font-bold font-serif text-[#2C1E11] mb-3 group-hover:text-[#B35412] transition-colors line-clamp-2 leading-snug">
                           {plan.title}
                         </h3>
                         
-                        <p className="text-text-muted text-xs sm:text-sm line-clamp-2 mb-4 flex-grow leading-relaxed italic">
+                        <p className="text-[#5D4037] text-xs sm:text-sm line-clamp-2 mb-4 flex-grow leading-relaxed italic">
                           {plan.excerpt}
                         </p>
 
@@ -402,7 +402,7 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
                           }
                           if (planTags.length === 0) return null;
                           return (
-                            <div className="flex flex-wrap gap-1.5 mt-auto pt-4 border-t border-border/40">
+                            <div className="flex flex-wrap gap-1.5 mt-auto pt-4 border-t border-[#E0D4C3]/40">
                               {planTags.slice(0, 3).map((t: string) => (
                                 <span
                                   key={t}
@@ -412,7 +412,7 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
                                 </span>
                               ))}
                               {planTags.length > 3 && (
-                                <span className="text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider text-text-muted bg-border/40 border border-none">
+                                <span className="text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider text-[#5D4037] bg-[#E0D4C3]/30 border border-none">
                                   +{planTags.length - 3} More
                                 </span>
                               )}
@@ -428,12 +428,12 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
           </div>
 
           {/* Expandable FAQ SEO Accordion below the fold */}
-          <div className="mt-24 border-t border-border pt-16 max-w-4xl mx-auto">
+          <div className="mt-24 border-t border-[#E0D4C3] pt-16 max-w-4xl mx-auto">
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold font-serif text-text tracking-tight">
+              <h2 className="text-3xl font-bold font-serif text-[#2C1E11] tracking-tight">
                 Choosing the Right Nutrition Protocol
               </h2>
-              <p className="mt-3 text-text-muted text-sm sm:text-base">
+              <p className="mt-3 text-[#5D4037] text-sm sm:text-base">
                 Find answers to common questions about selecting and starting our 7-Day meal plans.
               </p>
             </div>
@@ -444,14 +444,14 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
                 return (
                   <div
                     key={index}
-                    className="border border-border bg-surface transition-all duration-300"
+                    className="border border-[#E0D4C3] bg-white transition-all duration-300"
                   >
                     <button
                       onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                      className="w-full flex items-center justify-between p-5 text-left text-base sm:text-lg font-bold font-serif text-text focus:outline-none transition-colors duration-200"
+                      className="w-full flex items-center justify-between p-5 text-left text-base sm:text-lg font-bold font-serif text-[#2C1E11] focus:outline-none transition-colors duration-200 hover:bg-[#FAF9F6]"
                     >
                       <span>{faq.question}</span>
-                      <span className="ml-4 flex-shrink-0 text-text-muted transition-transform duration-300">
+                      <span className="ml-4 flex-shrink-0 text-[#5D4037]/60 transition-transform duration-300">
                         {isOpen ? (
                           <svg className="h-5 w-5 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
@@ -466,10 +466,10 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
                     
                     <div
                       className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                        isOpen ? "max-h-[500px] border-t border-border/60" : "max-h-0"
+                        isOpen ? "max-h-[500px] border-t border-[#E0D4C3]/60" : "max-h-0"
                       }`}
                     >
-                      <div className="p-5 text-sm sm:text-base text-text-muted leading-relaxed">
+                      <div className="p-5 text-sm sm:text-base text-[#5D4037] leading-relaxed bg-[#FAF9F6]">
                         {faq.answer}
                       </div>
                     </div>
