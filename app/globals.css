@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+*, *::before, *::after {
+  border-radius: 0 !important;
+}
+
 @theme {
   --color-primary: #8B0000; /* Deep Red */
   --color-primary-dark: #660000;
