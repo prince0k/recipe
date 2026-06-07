@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { AUTHOR_BLOCK, PUBLISHER_BLOCK } from "@/lib/schema/authorBlock";
 import { buildImageObject } from "@/lib/schema/buildImageObject";
 import { parseFaqs } from "@/lib/schema/parseFaqs";
+import { formatPageTitle } from "@/lib/seo";
 
 export async function generateMetadata(
   props: { params: Promise<{ slug: string }> }
@@ -27,14 +28,7 @@ export async function generateMetadata(
     }
   })();
 
-  const rawTitle = content.seoTitle || content.title;
-  let titleText = rawTitle;
-  if (!content.seoTitle && titleText.length + 13 <= 60) {
-    titleText = `${titleText} | NutriGuide`;
-  }
-  if (titleText.length > 60) {
-    titleText = titleText.slice(0, 57) + "...";
-  }
+  const titleText = formatPageTitle(content.seoTitle, content.title);
 
   const description = content.seoDesc || content.excerpt?.slice(0, 155) || 'Free downloadable cheat sheet from NutriGuide.';
 
