@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { GoogleGenAI } from "@google/genai";
-import { OpenAI } from "openai";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -8,9 +7,6 @@ dotenv.config();
 const prisma = new PrismaClient();
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
-});
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "",
 });
 
 const BRAND_VOICE = `
@@ -189,27 +185,26 @@ JSON Format:
     if (execute) {
       try {
         let text = "";
-        try {
-          console.log(`    Calling Gemini API to expand content...`);
-          const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: prompt,
-            config: {
-              responseMimeType: "application/json",
-            }
-          });
-          text = response.text || "";
-        } catch (geminiErr: any) {
-          console.warn(`    ⚠️ Gemini API failed: ${geminiErr.message}. Trying OpenAI fallback...`);
-          if (process.env.OPENAI_API_KEY) {
-            const completion = await openai.chat.completions.create({
-              model: "gpt-4o-mini",
-              messages: [{ role: "user", content: prompt }],
-              response_format: { type: "json_object" }
+        let retries = 3;
+        while (retries > 0) {
+          try {
+            console.log(`    Calling Gemini API to expand content (attempts remaining: ${retries})...`);
+            const response = await ai.models.generateContent({
+              model: "gemini-2.5-flash",
+              contents: prompt,
+              config: {
+                responseMimeType: "application/json",
+              }
             });
-            text = completion.choices[0]?.message?.content || "";
-          } else {
-            throw geminiErr;
+            text = response.text || "";
+            break; // success
+          } catch (geminiErr: any) {
+            retries--;
+            if (retries === 0) {
+              throw geminiErr;
+            }
+            console.warn(`    ⚠️ Gemini API failed with error: ${geminiErr.message}. Retrying in 8 seconds...`);
+            await new Promise(r => setTimeout(r, 8000));
           }
         }
 
