@@ -134,7 +134,7 @@ export function ContentDetailView({
           })()}
 
           {/* Bottom Call to Action for Downloading PDF */}
-          {content.type !== "BLOG" && (
+          {content.type !== "BLOG" && content.type !== "DIET_PLAN" && (
             <div className="mt-12 p-8 rounded-[2rem] border border-border bg-surface cinematic-shadow flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="max-w-md text-left">
                 <h3 className="font-serif text-xl font-bold text-text">
