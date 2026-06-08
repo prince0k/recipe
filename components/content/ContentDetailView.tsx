@@ -96,7 +96,11 @@ export function ContentDetailView({
             <ShareButtons 
               url={contentUrl} 
               title={content.title} 
-              image={content.coverImage || undefined}
+              image={
+                content.slug === "7-day-soy-free-meal-plan"
+                  ? "/uploads/soy-free-pinterest.png"
+                  : (content.coverImage || undefined)
+              }
               theme="light"
             />
           </div>
@@ -162,7 +166,11 @@ export function ContentDetailView({
             <ShareButtons 
               url={contentUrl} 
               title={content.title} 
-              image={content.coverImage || undefined}
+              image={
+                content.slug === "7-day-soy-free-meal-plan"
+                  ? "/uploads/soy-free-pinterest.png"
+                  : (content.coverImage || undefined)
+              }
               theme="light"
             />
           </div>
