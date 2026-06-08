@@ -146,9 +146,9 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
     return normalizedTitle.includes(q) || normalizedExcerpt.includes(q) || tagsMatch;
   };
 
-  // Extract featured plan (7-Day Soy-Free Vegan Reset)
+  // Extract featured plan (7-Day Soy-Free Meal Plan)
   const featuredPlan = useMemo(() => {
-    return list.find(p => p.slug === "7-day-soy-free-vegan-reset-fueling-vitality-without-tofu");
+    return list.find(p => p.slug === "7-day-soy-free-meal-plan");
   }, [list]);
 
   // Filter plans list (exclude featured from grid if displayed as hero)
@@ -178,7 +178,7 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
     },
     {
       question: "Are these plans fully plant-based?",
-      answer: "We offer dedicated Vegan and Vegetarian resets (such as our 7-Day Soy-Free Vegan Reset and clean-eating plans). Other plans focus on clean, whole foods with high-quality animal proteins, but they can easily be customized to fit your preferences."
+      answer: "We offer dedicated Vegan and Vegetarian resets (such as our 7-Day Soy-Free Meal Plan and clean-eating plans). Other plans focus on clean, whole foods with high-quality animal proteins, but they can easily be customized to fit your preferences."
     },
     {
       question: "How do I download the full guide?",
