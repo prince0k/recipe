@@ -15,10 +15,18 @@ export async function generateMetadata(
   const { slug } = await props.params;
   const content = await prisma.content.findUnique({
     where: { slug, type: 'DIET_PLAN' },
-    select: { title: true, excerpt: true, coverImage: true, seoTitle: true, seoDesc: true }
+    select: { title: true, excerpt: true, coverImage: true, seoTitle: true, seoDesc: true, tags: true }
   });
 
   if (!content) return { title: 'Diet Plan Not Found' };
+
+  const parsedTags = (() => {
+    try {
+      return JSON.parse(content.tags || "[]");
+    } catch {
+      return [];
+    }
+  })();
 
   const titleText = formatPageTitle(content.seoTitle, content.title);
 
@@ -35,6 +43,7 @@ export async function generateMetadata(
     metadataBase: new URL('https://stewartlucas.com'),
     title: { absolute: titleText },
     description,
+    keywords: parsedTags,
     alternates: {
       canonical: `https://stewartlucas.com/diet-plan/${slug}`,
     },
@@ -158,16 +167,34 @@ export default async function DietPlanPage(props: { params: Promise<{ slug: stri
     try {
       const dbSchema = JSON.parse(content.schema);
       if (dbSchema) {
-        const postIndex = builtSchema["@graph"].findIndex((item: any) => item["@type"] === "BlogPosting");
-        if (postIndex !== -1) {
-          const dbPosting = dbSchema["@graph"]
-            ? dbSchema["@graph"].find((item: any) => item["@type"] === "BlogPosting")
-            : dbSchema;
-
-          builtSchema["@graph"][postIndex] = {
-            ...dbPosting,
-            ...builtSchema["@graph"][postIndex]
-          };
+        if (dbSchema["@graph"] && Array.isArray(dbSchema["@graph"])) {
+          for (const item of dbSchema["@graph"]) {
+            if (item["@type"] === "BlogPosting") {
+              const postIndex = builtSchema["@graph"].findIndex((g: any) => g["@type"] === "BlogPosting");
+              if (postIndex !== -1) {
+                builtSchema["@graph"][postIndex] = {
+                  ...builtSchema["@graph"][postIndex],
+                  ...item
+                };
+              }
+            } else if (item["@type"] !== "BreadcrumbList") {
+              // Append other schemas (like HowTo, FAQPage, etc.)
+              builtSchema["@graph"].push(item);
+            }
+          }
+        } else {
+          // If it's a single schema object
+          if (dbSchema["@type"] === "BlogPosting") {
+            const postIndex = builtSchema["@graph"].findIndex((g: any) => g["@type"] === "BlogPosting");
+            if (postIndex !== -1) {
+              builtSchema["@graph"][postIndex] = {
+                ...builtSchema["@graph"][postIndex],
+                ...dbSchema
+              };
+            }
+          } else {
+            builtSchema["@graph"].push(dbSchema);
+          }
         }
       }
     } catch (e) {

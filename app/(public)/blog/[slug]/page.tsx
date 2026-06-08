@@ -15,10 +15,18 @@ export async function generateMetadata(
   const { slug } = await props.params;
   const content = await prisma.content.findUnique({
     where: { slug, type: 'BLOG' },
-    select: { title: true, excerpt: true, coverImage: true, seoTitle: true, seoDesc: true }
+    select: { title: true, excerpt: true, coverImage: true, seoTitle: true, seoDesc: true, tags: true }
   });
 
   if (!content) return { title: 'Article Not Found' };
+
+  const parsedTags = (() => {
+    try {
+      return JSON.parse(content.tags || "[]");
+    } catch {
+      return [];
+    }
+  })();
 
   const titleText = formatPageTitle(content.seoTitle, content.title);
 
@@ -35,6 +43,7 @@ export async function generateMetadata(
     metadataBase: new URL('https://stewartlucas.com'),
     title: { absolute: titleText },
     description,
+    keywords: parsedTags,
     alternates: {
       canonical: `https://stewartlucas.com/blog/${slug}`,
     },
