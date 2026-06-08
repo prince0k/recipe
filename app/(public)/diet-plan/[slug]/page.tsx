@@ -115,17 +115,26 @@ export default async function DietPlanPage(props: { params: Promise<{ slug: stri
   })();
   const articleSection = tagsList[0] || "Nutrition";
 
+  const calorieMatch = content.body ? content.body.match(/Plan Nutritional Targets:.*?(\d{3,4})\s*kcal/i) : null;
+  const avgCal = calorieMatch ? parseInt(calorieMatch[1], 10) : (content.calories || 1600);
+
+  const aboutList = tagsList.map((tag: string) => ({
+    "@type": "Thing",
+    "name": tag.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+  }));
+
   const builtSchema: Record<string, any> = {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "BlogPosting",
+        "@type": "Article",
         "@id": `https://stewartlucas.com/diet-plan/${content.slug}#article`,
         "headline": content.title,
         "description": content.excerpt || 'A free science-backed diet plan from NutriGuide.',
+        "url": `https://stewartlucas.com/diet-plan/${content.slug}`,
         "image": imageObject,
-        "datePublished": content.createdAt?.toISOString(),
-        "dateModified": content.updatedAt?.toISOString(),
+        "datePublished": content.createdAt?.toISOString().split('T')[0],
+        "dateModified": content.updatedAt?.toISOString().split('T')[0],
         "author": AUTHOR_BLOCK,
         "publisher": PUBLISHER_BLOCK,
         "inLanguage": "en-GB",
@@ -134,6 +143,12 @@ export default async function DietPlanPage(props: { params: Promise<{ slug: stri
         "mainEntityOfPage": {
           "@type": "WebPage",
           "@id": `https://stewartlucas.com/diet-plan/${content.slug}`
+        },
+        "keywords": tagsList,
+        "about": aboutList,
+        "nutrition": {
+          "@type": "NutritionInformation",
+          "calories": `${avgCal} calories`
         }
       },
       {
@@ -169,8 +184,8 @@ export default async function DietPlanPage(props: { params: Promise<{ slug: stri
       if (dbSchema) {
         if (dbSchema["@graph"] && Array.isArray(dbSchema["@graph"])) {
           for (const item of dbSchema["@graph"]) {
-            if (item["@type"] === "BlogPosting") {
-              const postIndex = builtSchema["@graph"].findIndex((g: any) => g["@type"] === "BlogPosting");
+            if (item["@type"] === "Article" || item["@type"] === "BlogPosting") {
+              const postIndex = builtSchema["@graph"].findIndex((g: any) => g["@type"] === "Article" || g["@type"] === "BlogPosting");
               if (postIndex !== -1) {
                 builtSchema["@graph"][postIndex] = {
                   ...builtSchema["@graph"][postIndex],
@@ -184,8 +199,8 @@ export default async function DietPlanPage(props: { params: Promise<{ slug: stri
           }
         } else {
           // If it's a single schema object
-          if (dbSchema["@type"] === "BlogPosting") {
-            const postIndex = builtSchema["@graph"].findIndex((g: any) => g["@type"] === "BlogPosting");
+          if (dbSchema["@type"] === "Article" || dbSchema["@type"] === "BlogPosting") {
+            const postIndex = builtSchema["@graph"].findIndex((g: any) => g["@type"] === "Article" || g["@type"] === "BlogPosting");
             if (postIndex !== -1) {
               builtSchema["@graph"][postIndex] = {
                 ...builtSchema["@graph"][postIndex],
