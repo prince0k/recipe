@@ -311,6 +311,11 @@ const nextConfig: NextConfig = {
         destination: "/recipes/banana-protein-shake-recipe",
         permanent: true,
       },
+      {
+        source: "/recipes/protein-banana-shake",
+        destination: "/recipes/banana-protein-shake-recipe",
+        permanent: true,
+      },
       // 6. Greek Yogurt Bowl
       {
         source: "/recipes/creamy-greek-yogurt-flaxseed-power-bowl",
