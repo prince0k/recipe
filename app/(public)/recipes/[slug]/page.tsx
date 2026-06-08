@@ -261,10 +261,17 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
         "prepTime": `PT${prepTimeMinutes}M`,
         "cookTime": `PT${durationMinutes}M`,
         "totalTime": `PT${prepTimeMinutes + durationMinutes}M`,
-        "recipeYield": [
-          recipe.servings ? recipe.servings.toString() : "4",
-          recipe.servings ? `${recipe.servings} servings` : "4 servings"
-        ],
+        "recipeYield": recipe.servings ? `${recipe.servings} servings` : "4 servings",
+        "suitableForDiet": (() => {
+          const diets: string[] = [];
+          const lowerTags = tags.map((t: string) => t.toLowerCase());
+          if (lowerTags.includes("vegan")) diets.push("https://schema.org/VeganDiet");
+          if (lowerTags.includes("vegetarian")) diets.push("https://schema.org/VegetarianDiet");
+          if (lowerTags.includes("gluten-free") || lowerTags.includes("gluten free")) diets.push("https://schema.org/GlutenFreeDiet");
+          if (lowerTags.includes("keto") || lowerTags.includes("ketogenic")) diets.push("https://schema.org/KetogenicDiet");
+          if (lowerTags.includes("low-carb") || lowerTags.includes("low carb")) diets.push("https://schema.org/LowCarbDiet");
+          return diets.length > 0 ? diets : undefined;
+        })(),
         "recipeIngredient": (() => {
           const filtered = ingredientsList.filter((item: string) => !item.startsWith("##") && !item.endsWith(":"));
           return filtered.length > 0 ? filtered : ["1 recipe ingredients list"];
