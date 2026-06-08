@@ -11,6 +11,7 @@ import { ShareButton } from "./ShareButton";
 import { Reviews } from "./Reviews";
 import { uploadsLoader } from "@/lib/image-loader";
 import { Breadcrumbs, BreadcrumbItem } from "@/components/ui/Breadcrumbs";
+import { ShareButtons } from "@/components/ui/ShareButtons";
 
 export function ContentDetailView({ 
   content, 
@@ -37,6 +38,21 @@ export function ContentDetailView({
   } catch (e) {
     // ignore parse errors
   }
+
+  const contentUrl = (() => {
+    switch (content.type) {
+      case "DIET_PLAN":
+        return `/diet-plan/${content.slug}`;
+      case "BLOG":
+        return `/blog/${content.slug}`;
+      case "CHEAT_SHEET":
+        return `/cheat-sheets/${content.slug}`;
+      case "RECIPE":
+        return `/recipes/${content.slug}`;
+      default:
+        return `/recipes/${content.slug}`;
+    }
+  })();
 
   const mediaOverlay = (
     <div className="absolute top-4 right-4 flex gap-2.5 z-10">
@@ -76,6 +92,14 @@ export function ContentDetailView({
           <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
             {content.excerpt}
           </p>
+          <div className="mt-6 flex justify-center">
+            <ShareButtons 
+              url={contentUrl} 
+              title={content.title} 
+              image={content.coverImage || undefined}
+              theme="light"
+            />
+          </div>
         </div>
 
         {/* Fallback actions if no cover media exists */}
@@ -132,6 +156,16 @@ export function ContentDetailView({
               />
             );
           })()}
+
+          {/* Bottom Social Share Bar */}
+          <div className="mt-8 pt-6 border-t border-border/60 flex justify-center sm:justify-start">
+            <ShareButtons 
+              url={contentUrl} 
+              title={content.title} 
+              image={content.coverImage || undefined}
+              theme="light"
+            />
+          </div>
 
           {/* Bottom Call to Action for Downloading PDF */}
           {content.type !== "BLOG" && content.type !== "DIET_PLAN" && (

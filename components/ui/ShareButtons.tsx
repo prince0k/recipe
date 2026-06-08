@@ -6,11 +6,13 @@ interface Props {
   url: string;
   title: string;
   image?: string;
+  theme?: 'light' | 'dark';
 }
 
-export function ShareButtons({ url, title, image }: Props) {
+export function ShareButtons({ url, title, image, theme = 'dark' }: Props) {
   const fullUrl = `https://stewartlucas.com${url}`;
   const fullImageUrl = image && image.startsWith('/') ? `https://stewartlucas.com${image}` : (image ?? '');
+  const isLight = theme === 'light';
 
   const buttons = [
     {
@@ -53,9 +55,14 @@ export function ShareButtons({ url, title, image }: Props) {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  const labelClass = isLight ? "text-xs uppercase tracking-wider font-bold text-muted-foreground/60" : "text-xs uppercase tracking-wider font-bold text-white/40";
+  const btnBaseClass = isLight ? "border-border text-foreground/70" : "border-white/10 text-white/70";
+  const copyBtnHoverClass = isLight ? "hover:bg-foreground/5 hover:border-foreground/20 hover:text-foreground" : "hover:bg-white/10 hover:border-white/30 hover:text-white";
+  const copiedClass = isLight ? "bg-green-500/10 border-green-500 text-green-600" : "bg-green-500/10 border-green-500 text-green-500";
+
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <span className="text-xs uppercase tracking-wider font-bold text-white/40">Share:</span>
+      <span className={labelClass}>Share:</span>
       {buttons.map((b) => (
         <a
           key={b.label}
@@ -64,7 +71,7 @@ export function ShareButtons({ url, title, image }: Props) {
           rel="noopener noreferrer"
           title={b.label}
           aria-label={b.label}
-          className={`w-10 h-10 flex items-center justify-center border border-white/10 text-white/70 transition duration-300 cursor-pointer ${b.hoverClass}`}
+          className={`w-10 h-10 flex items-center justify-center border transition duration-300 cursor-pointer rounded-lg ${btnBaseClass} ${b.hoverClass}`}
         >
           {b.icon}
         </a>
@@ -73,10 +80,10 @@ export function ShareButtons({ url, title, image }: Props) {
         onClick={copyLink}
         title={copied ? 'Link Copied!' : 'Copy Link'}
         aria-label={copied ? 'Link Copied!' : 'Copy Link'}
-        className={`w-10 h-10 flex items-center justify-center border border-white/10 text-white/70 transition duration-300 cursor-pointer ${
+        className={`w-10 h-10 flex items-center justify-center border transition duration-300 cursor-pointer rounded-lg ${
           copied 
-            ? 'bg-green-500/10 border-green-500 text-green-500' 
-            : 'hover:bg-white/10 hover:border-white/30 hover:text-white'
+            ? copiedClass 
+            : `${btnBaseClass} ${copyBtnHoverClass}`
         }`}
       >
         {copied ? (
