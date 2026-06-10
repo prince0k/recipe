@@ -62,6 +62,12 @@ export function ThirdPartyScripts() {
           `,
         }}
       />
+      {/* Ahrefs Analytics */}
+      <script
+        async
+        src="https://analytics.ahrefs.com/analytics.js"
+        data-key="mNKE0tlFh3necvI6xztO1Q"
+      />
     </>
   );
 }
