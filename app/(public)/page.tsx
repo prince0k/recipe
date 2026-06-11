@@ -73,7 +73,10 @@ const homepageJsonLd = {
         "width": 1200,
         "height": 630
       },
-      "sameAs": [],
+      "sameAs": [
+        "https://stewartlucas.com",
+        "https://www.pinterest.com/stewartlucasfood/"
+      ],
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "customer support",
@@ -94,7 +97,10 @@ const homepageJsonLd = {
       "url": "https://stewartlucas.com/about",
       "image": "https://stewartlucas.com/assets/stewart_lucas.webp",
       "description": "Stewart Lucas is a Certified Nutritionist and culinary consultant with over a decade of clinical experience in nutrition, hormone balance, and dietetic consulting.",
-      "sameAs": [],
+      "sameAs": [
+        "https://stewartlucas.com",
+        "https://www.pinterest.com/stewartlucasfood/"
+      ],
       "knowsAbout": ["Nutrition", "Healthy Cooking", "Meal Prep", "Diet Plans", "Hormone Balance", "Insulin Resistance"],
       "hasCredential": [
         {

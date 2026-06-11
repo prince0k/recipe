@@ -6,7 +6,10 @@ export const AUTHOR_BLOCK = {
   "url": "https://stewartlucas.com/about",
   "image": "https://stewartlucas.com/assets/stewart_lucas.webp",
   "description": "Stewart Lucas is a Certified Nutritionist and culinary consultant with over a decade of clinical experience in nutrition, hormone balance, and dietetic consulting, and the founder of NutriGuide.",
-  "sameAs": [],
+  "sameAs": [
+    "https://stewartlucas.com",
+    "https://www.pinterest.com/stewartlucasfood/"
+  ],
   "knowsAbout": ["Nutrition", "Healthy Cooking", "Meal Prep", "Diet Plans", "Hormone Balance", "Insulin Resistance"],
   "hasCredential": [
     {
@@ -28,7 +31,10 @@ export const PUBLISHER_BLOCK = {
     "height": 630
   },
   "description": "NutriGuide offers science-backed diet plans, healthy recipes, and easy culinary techniques to simplify home cooking and promote wellness.",
-  "sameAs": [],
+  "sameAs": [
+    "https://stewartlucas.com",
+    "https://www.pinterest.com/stewartlucasfood/"
+  ],
   "contactPoint": {
     "@type": "ContactPoint",
     "contactType": "customer support",

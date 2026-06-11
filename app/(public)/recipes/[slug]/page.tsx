@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AUTHOR_BLOCK } from "@/lib/schema/authorBlock";
+import { AUTHOR_BLOCK, PUBLISHER_BLOCK } from "@/lib/schema/authorBlock";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { formatPageTitle } from "@/lib/seo";
 import { parseFaqs } from "@/lib/schema/parseFaqs";
@@ -119,14 +119,29 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount 
     : 0;
 
-  const relatedItems = await prisma.content.findMany({
+  // Fetch related content filtered by same type, then prioritize shared tags
+  const allRelatedCandidates = await prisma.content.findMany({
     where: { 
       id: { not: recipe.id },
-      published: true 
+      published: true,
+      type: recipe.type
     },
-    take: 3,
+    take: 20,
     orderBy: { createdAt: "desc" }
   });
+
+  // Score by shared tags for topical relevance
+  const recipeTags = new Set(tags.map((t: string) => t.toLowerCase()));
+  const scored = allRelatedCandidates.map(item => {
+    let tagScore = 0;
+    try {
+      const itemTags: string[] = JSON.parse(item.tags || "[]");
+      tagScore = itemTags.filter(t => recipeTags.has(t.toLowerCase())).length;
+    } catch { /* ignore */ }
+    return { item, tagScore };
+  });
+  scored.sort((a, b) => b.tagScore - a.tagScore);
+  const relatedItems = scored.slice(0, 3).map(s => s.item);
 
   const cleanBody = recipe.body
     ? recipe.body.replace(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi, '')
@@ -221,8 +236,8 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     return undefined;
   })();
 
-  const prepTimeMinutes = parsedPrep || 15;
-  const durationMinutes = parsedCook || 25;
+  const prepTimeMinutes = parsedPrep;
+  const durationMinutes = parsedCook;
 
   const cleanRecipeCover = recipe.coverImage
     ? recipe.coverImage.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/g, '')
@@ -243,6 +258,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
         "description": recipe.excerpt || "A delicious healthy recipe from Stewart Lucas.",
         "url": `https://stewartlucas.com/recipes/${recipe.slug}`,
         "author": AUTHOR_BLOCK,
+        "publisher": PUBLISHER_BLOCK,
         "image": [baseImageUrl],
         "datePublished": recipe.createdAt?.toISOString().split('T')[0],
         "dateModified": recipe.updatedAt?.toISOString().split('T')[0],
@@ -259,10 +275,10 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
           const cuis = tags.find((t: string) => ["mediterranean", "american", "italian", "mexican", "asian", "french", "greek"].includes(t.toLowerCase())) || "Healthy";
           return cuis.charAt(0).toUpperCase() + cuis.slice(1);
         })(),
-        "prepTime": `PT${prepTimeMinutes}M`,
-        "cookTime": `PT${durationMinutes}M`,
-        "totalTime": `PT${prepTimeMinutes + durationMinutes}M`,
-        "recipeYield": recipe.servings ? `${recipe.servings} servings` : "4 servings",
+        ...(prepTimeMinutes != null && { "prepTime": `PT${prepTimeMinutes}M` }),
+        ...(durationMinutes != null && { "cookTime": `PT${durationMinutes}M` }),
+        ...(prepTimeMinutes != null && durationMinutes != null && { "totalTime": `PT${prepTimeMinutes + durationMinutes}M` }),
+        ...(recipe.servings && { "recipeYield": `${recipe.servings} servings` }),
         "suitableForDiet": (() => {
           const diets: string[] = [];
           const lowerTags = tags.map((t: string) => t.toLowerCase());
@@ -304,14 +320,16 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
             "contentUrl": recipe.coverVideo.startsWith('http') ? recipe.coverVideo : `https://stewartlucas.com${recipe.coverVideo.startsWith('/') ? '' : '/'}${recipe.coverVideo}`
           }
         }),
-        "nutrition": {
-          "@type": "NutritionInformation",
-          "calories": recipe.calories ? `${recipe.calories} calories` : "350 calories",
-          "servingSize": "1 serving",
-          ...(recipe.protein && { "proteinContent": recipe.protein }),
-          ...(recipe.fat && { "fatContent": recipe.fat }),
-          ...(recipe.carbs && { "carbohydrateContent": recipe.carbs })
-        }
+        ...((recipe.calories || recipe.protein || recipe.fat || recipe.carbs) && {
+          "nutrition": {
+            "@type": "NutritionInformation",
+            "servingSize": "1 serving",
+            ...(recipe.calories && { "calories": `${recipe.calories} calories` }),
+            ...(recipe.protein && { "proteinContent": recipe.protein }),
+            ...(recipe.fat && { "fatContent": recipe.fat }),
+            ...(recipe.carbs && { "carbohydrateContent": recipe.carbs })
+          }
+        })
       },
       {
         "@type": "BreadcrumbList",
