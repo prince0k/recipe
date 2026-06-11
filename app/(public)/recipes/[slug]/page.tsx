@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AUTHOR_BLOCK } from "@/lib/schema/authorBlock";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { formatPageTitle } from "@/lib/seo";
+import { parseFaqs } from "@/lib/schema/parseFaqs";
 
 export async function generateMetadata(
   props: { params: Promise<{ slug: string }> }
@@ -322,6 +323,21 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
       }
     ]
   };
+
+  const faqs = parseFaqs(recipe.body || "");
+  if (faqs.length > 0) {
+    builtSchema["@graph"].push({
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    });
+  }
 
   // Merge any DB-stored schema overrides on top
   let schemaJson = builtSchema;
