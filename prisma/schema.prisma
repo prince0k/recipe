@@ -257,3 +257,15 @@ model Ad {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  imageUrl    String?
+  tag         String   // The search tag in content (e.g., "breakfast")
+  order       Int      @default(0) // Order of display
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+

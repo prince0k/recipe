@@ -85,6 +85,11 @@ export default async function RecipesPage({
   // Fetch matching recipes from server cache
   const { data: recipes, totalPages } = await getCachedRecipes(category, page, pageSize, time, dietary, sort);
 
+  // Fetch categories from the database
+  const categories = await prisma.category.findMany({
+    orderBy: { order: "asc" },
+  });
+
   const itemListSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -163,6 +168,7 @@ export default async function RecipesPage({
               recipes={recipes} 
               totalPages={totalPages} 
               currentPage={page} 
+              categories={categories}
             />
           </Suspense>
 

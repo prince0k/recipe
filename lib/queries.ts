@@ -331,7 +331,14 @@ export async function getCachedRecipes(
 
       // Category filter
       if (cat) {
-        Object.assign(where, getCategoryFilter(cat));
+        const dbCategory = await prisma.category.findUnique({
+          where: { slug: cat.toLowerCase() }
+        });
+        if (dbCategory) {
+          where.tags = { contains: dbCategory.tag, ...getInsensitiveMode() };
+        } else {
+          Object.assign(where, getCategoryFilter(cat));
+        }
       }
 
       // Dietary filter (can be multiple)

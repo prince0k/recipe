@@ -6,11 +6,13 @@ import { RecipeCard } from "./RecipeCard";
 import { FilterPillBar } from "./FilterPillBar";
 import { FilterModal } from "./FilterModal";
 import { RecipeFilters, RecipeSort } from "./RecipeFilters";
+import { CategoryPanel } from "./CategoryPanel";
 
 interface RecipesClientProps {
   recipes: any[];
   totalPages: number;
   currentPage: number;
+  categories: any[];
 }
 
 const CATEGORIES = ["Quick Recipes", "Healthy Eating", "Budget Friendly", "Breakfast", "Lunch", "Dinner"];
@@ -81,7 +83,7 @@ function matchesCategory(recipe: any, category: string) {
   return tagsStr.includes(catLower);
 }
 
-export function RecipesClient({ recipes, totalPages, currentPage }: RecipesClientProps) {
+export function RecipesClient({ recipes, totalPages, currentPage, categories }: RecipesClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -140,7 +142,15 @@ export function RecipesClient({ recipes, totalPages, currentPage }: RecipesClien
   const hasActiveAdvancedFilters = !!selectedTime || selectedDietary.length > 0;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 w-full">
+    <div className="w-full flex flex-col">
+      {/* Category Selection Panel */}
+      <CategoryPanel
+        categories={categories}
+        activeCategory={activeCategory}
+        onSelectCategory={handleSelectCategory}
+      />
+
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 w-full">
       {/* Category Pill Bar (visible < 1024px) */}
       <FilterPillBar
         activeCategory={activeCategory}
@@ -205,6 +215,7 @@ export function RecipesClient({ recipes, totalPages, currentPage }: RecipesClien
           </div>
         )}
       </main>
+      </div>
     </div>
   );
 }
