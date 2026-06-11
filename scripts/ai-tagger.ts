@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 async function main() {
-  console.log("🚀 Starting AI-powered content tagging...");
+  console.log("🚀 Starting concurrent AI-powered content tagging...");
 
   // Fetch all content items
   const contentItems = await prisma.content.findMany({
@@ -15,20 +15,27 @@ async function main() {
 
   console.log(`Found ${contentItems.length} content items to analyze and tag.`);
 
-  for (let i = 0; i < contentItems.length; i++) {
-    const item = contentItems[i];
-    console.log(`\n[${i + 1}/${contentItems.length}] Analyzing: "${item.title}" (Type: ${item.type})`);
+  const batchSize = 10;
+  const totalBatches = Math.ceil(contentItems.length / batchSize);
 
-    // Clean body text (remove HTML tags for better AI parsing and token savings)
-    const cleanBody = (item.body || "")
-      .replace(/<[^>]*>/g, " ")
-      .replace(/\s+/g, " ")
-      .slice(0, 3000); // Take first 3000 chars
+  for (let i = 0; i < contentItems.length; i += batchSize) {
+    const batch = contentItems.slice(i, i + batchSize);
+    const batchNumber = Math.floor(i / batchSize) + 1;
+    console.log(`\n--- Processing Batch ${batchNumber}/${totalBatches} (${i + 1} to ${Math.min(i + batchSize, contentItems.length)} of ${contentItems.length}) ---`);
 
-    const cleanExcerpt = (item.excerpt || "").slice(0, 500);
+    await Promise.all(
+      batch.map(async (item) => {
+        try {
+          // Clean body text (remove HTML tags for better AI parsing and token savings)
+          const cleanBody = (item.body || "")
+            .replace(/<[^>]*>/g, " ")
+            .replace(/\s+/g, " ")
+            .slice(0, 3000); // Take first 3000 chars
 
-    // Construct AI Prompt
-    const prompt = `
+          const cleanExcerpt = (item.excerpt || "").slice(0, 500);
+
+          // Construct AI Prompt
+          const prompt = `
 You are an expert SEO metadata and taxonomy specialist for a premium health and cooking website called NutriGuide.
 Analyze the following content title, excerpt, and body text:
 
@@ -50,39 +57,40 @@ Return ONLY a JSON array of strings.
 Example: ["Gut Health", "Vegan", "Microbiome", "breakfast", "veg"]
 `;
 
-    try {
-      // Call Gemini in JSON mode
-      const responseText = await getGeminiResponse(prompt, true);
-      let tags: string[] = JSON.parse(responseText);
+          // Call Gemini in JSON mode
+          const responseText = await getGeminiResponse(prompt, true);
+          let tags: string[] = JSON.parse(responseText);
 
-      if (Array.isArray(tags)) {
-        // Clean up tags
-        tags = tags
-          .map(t => t.trim())
-          .filter(t => t.length > 0 && t.toLowerCase() !== "recipe" && t.toLowerCase() !== "healthy");
+          if (Array.isArray(tags)) {
+            // Clean up tags
+            tags = tags
+              .map(t => t.trim())
+              .filter(t => t.length > 0 && t.toLowerCase() !== "recipe" && t.toLowerCase() !== "healthy");
 
-        console.log(`- Generated Tags: ${JSON.stringify(tags)}`);
+            console.log(`✅ [${item.type}] "${item.title}" -> Tags: ${JSON.stringify(tags)}`);
 
-        // Save tags in database (both in tags field and keywords field to align SEO metadata)
-        await prisma.content.update({
-          where: { id: item.id },
-          data: {
-            tags: JSON.stringify(tags),
-            keywords: JSON.stringify(tags)
+            // Save tags in database (both in tags field and keywords field to align SEO metadata)
+            await prisma.content.update({
+              where: { id: item.id },
+              data: {
+                tags: JSON.stringify(tags),
+                keywords: JSON.stringify(tags)
+              }
+            });
+          } else {
+            console.warn(`⚠️ [${item.type}] "${item.title}" -> Non-array response: ${responseText}`);
           }
-        });
-      } else {
-        console.warn(`- Failed to parse tags (not an array): ${responseText}`);
-      }
-    } catch (err: any) {
-      console.error(`- Error processing "${item.title}":`, err.message);
-    }
+        } catch (err: any) {
+          console.error(`❌ [${item.type}] "${item.title}" -> Error:`, err.message);
+        }
+      })
+    );
 
-    // Rate limiting delay (1 second between API calls)
-    await delay(1000);
+    // Rate limiting delay between batches (1.5 seconds to prevent rate limits)
+    await delay(1500);
   }
 
-  console.log("\n✅ AI content tagging completed successfully.");
+  console.log("\n✅ Concurrent AI content tagging completed successfully.");
 }
 
 main()
