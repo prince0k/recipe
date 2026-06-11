@@ -48,39 +48,39 @@ function matchesCategory(recipe: any, category: string) {
     }
   } catch (e) {}
   
-  const tagsStr = tagsList.join(" ").toLowerCase();
+  const tagsListLower = tagsList.map(t => t.toLowerCase().trim());
 
   if (catLower === "quick-recipes" || catLower === "quick recipes") {
     return ["quick", "easy", "one-pan", "sheet-pan", "breakfast", "meal-prep", "fast"].some(
-      tag => tagsStr.includes(tag)
+      tag => tagsListLower.includes(tag)
     );
   }
   if (catLower === "healthy-eating" || catLower === "healthy eating") {
     return ["healthy", "nutrition", "plant-based", "vegan", "vegetarian", "gluten-free", "low-carb", "sugar-free", "fiber", "wellness", "gut-health", "biohacking"].some(
-      tag => tagsStr.includes(tag)
+      tag => tagsListLower.includes(tag)
     );
   }
   if (catLower === "budget-friendly" || catLower === "budget friendly" || catLower === "budget") {
     return ["budget", "inflation-proof", "cheap", "pantry"].some(
-      tag => tagsStr.includes(tag)
+      tag => tagsListLower.includes(tag)
     );
   }
   if (catLower === "dinner-ideas" || catLower === "dinner") {
     return ["dinner", "roast", "bowl", "skillet", "main", "lunch", "meal"].some(
-      tag => tagsStr.includes(tag)
+      tag => tagsListLower.includes(tag)
     );
   }
   if (catLower === "breakfast") {
     return ["breakfast", "smoothie", "loaf", "baking", "skillet"].some(
-      tag => tagsStr.includes(tag)
+      tag => tagsListLower.includes(tag)
     );
   }
   if (catLower === "lunch") {
     return ["lunch", "bowl", "skillet", "salad", "soup"].some(
-      tag => tagsStr.includes(tag)
+      tag => tagsListLower.includes(tag)
     );
   }
-  return tagsStr.includes(catLower);
+  return tagsListLower.includes(catLower);
 }
 
 export function RecipesClient({ recipes, totalPages, currentPage, categories }: RecipesClientProps) {

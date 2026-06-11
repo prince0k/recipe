@@ -335,7 +335,7 @@ export async function getCachedRecipes(
           where: { slug: cat.toLowerCase() }
         });
         if (dbCategory) {
-          where.tags = { contains: dbCategory.tag, ...getInsensitiveMode() };
+          where.tags = { contains: `"${dbCategory.tag}"`, ...getInsensitiveMode() };
         } else {
           Object.assign(where, getCategoryFilter(cat));
         }
