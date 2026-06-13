@@ -22,6 +22,15 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://stewartlucas.com',
   },
+  icons: {
+    icon: [
+      { url: '/favicon-v2.png', sizes: '96x96', type: 'image/png' },
+      { url: '/logo.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/apple-icon-v2.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
   title: {
     default: 'NutriGuide by Stewart Lucas | Diet Plans & Recipes',
     template: '%s | NutriGuide',
