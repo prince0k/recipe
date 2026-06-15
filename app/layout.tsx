@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     ],
   },
   title: {
-    default: 'NutriGuide by Stewart Lucas | Diet Plans & Recipes',
+    default: 'NutriGuide by Stewart Lucas | Free Diet Plans & Recipes',
     template: '%s | NutriGuide',
   },
   description: 'Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.',

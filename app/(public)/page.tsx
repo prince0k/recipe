@@ -13,7 +13,7 @@ import { ContentCard } from "@/components/content/ContentCard";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "NutriGuide by Stewart Lucas | Diet Plans & Recipes",
+    absolute: "NutriGuide by Stewart Lucas | Free Diet Plans & Recipes",
   },
   description: "Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.",
   alternates: {
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    title: "NutriGuide by Stewart Lucas | Diet Plans & Recipes",
+    title: "NutriGuide by Stewart Lucas | Free Diet Plans & Recipes",
     description: "Free science-backed diet plans, healthy recipes, and meal prep guides from NutriGuide by Stewart Lucas.",
     url: "https://stewartlucas.com/",
     images: [
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "NutriGuide by Stewart Lucas | Diet Plans & Recipes",
+    title: "NutriGuide by Stewart Lucas | Free Diet Plans & Recipes",
     description: "Free science-backed diet plans and healthy recipes.",
     images: ["https://stewartlucas.com/assets/og-image.jpg"],
   },

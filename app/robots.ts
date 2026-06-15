@@ -9,12 +9,24 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/admin/', '/auth/'],
       },
       {
-        userAgent: ['GPTBot', 'CCBot', 'Anthropic-AI', 'PerplexityBot'],
-        allow: '/',
-        disallow: ['/api/', '/admin/', '/auth/'],
+        userAgent: 'GPTBot',
+        disallow: '/',
+      },
+      {
+        userAgent: 'CCBot',
+        disallow: '/',
+      },
+      {
+        userAgent: 'Anthropic-AI',
+        disallow: '/',
+      },
+      {
+        userAgent: 'PerplexityBot',
+        disallow: '/',
       },
     ],
     sitemap: 'https://stewartlucas.com/sitemap.xml',
   };
 }
+
 

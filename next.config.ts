@@ -322,6 +322,16 @@ const nextConfig: NextConfig = {
         destination: "/recipes/greek-yogurt-flaxseed-bowl",
         permanent: true,
       },
+      {
+        source: "/recipes/greek-yogurt-with-toasted-sunflower-seeds",
+        destination: "/recipes/creamy-greek-yogurt-with-toasted-sunflower-seeds",
+        permanent: true,
+      },
+      {
+        source: "/recipes/creamy-greek-yogurt-with-golden-toasted-sunflower-seeds",
+        destination: "/recipes/creamy-greek-yogurt-with-toasted-sunflower-seeds",
+        permanent: true,
+      },
       // 7. Tuna Salad
       {
         source: "/recipes/zesty-tuna-salad-with-toasted-flax-seeds",
