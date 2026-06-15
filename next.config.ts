@@ -405,6 +405,48 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
 
+      // --- RECIPE SLUG OPTIMIZATION REDIRECTS ---
+      {
+        source: "/recipes/sizzling-velvet-beef-crisp-broccoli-stir-fry",
+        destination: "/recipes/sizzling-beef-crisp-broccoli-stir-fry",
+        permanent: true,
+      },
+      {
+        source: "/recipes/rustic-roasted-chicken-root-vegetables-an-authentic-masterpiece",
+        destination: "/recipes/rustic-roasted-chicken-root-vegetables",
+        permanent: true,
+      },
+      {
+        source: "/recipes/authentic-turkey-avocado-wrap-a-crisp-nourished-lunch",
+        destination: "/recipes/turkey-avocado-wrap",
+        permanent: true,
+      },
+      {
+        source: "/recipes/golden-turmeric-chicken-with-jeweled-couscous",
+        destination: "/recipes/turmeric-chicken-with-jeweled-couscous",
+        permanent: true,
+      },
+      {
+        source: "/recipes/the-golden-hour-grilled-chicken-avocado-salad",
+        destination: "/recipes/grilled-chicken-avocado-salad",
+        permanent: true,
+      },
+      {
+        source: "/recipes/sun-kissed-lemon-herb-salmon-an-authentic-masterpiece",
+        destination: "/recipes/lemon-herb-salmon-with-blistered-peppers",
+        permanent: true,
+      },
+      {
+        source: "/recipes/zucchini-noodles-with-turkey-marinara-an-authentic-light-supper",
+        destination: "/recipes/zucchini-noodles-with-turkey-marinara",
+        permanent: true,
+      },
+      {
+        source: "/recipes/slow-cooked-pulled-pork-a-tender-wholesome-family-meal",
+        destination: "/recipes/slow-cooked-pulled-pork",
+        permanent: true,
+      },
+
       // --- HISTORICAL CLEANUP REDIRECTS ---
       {
         source: "/blog/:slug*(kings-island|kfc|cincinnati|weather|greenland|frost-bank)",
