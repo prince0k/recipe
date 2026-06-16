@@ -164,13 +164,9 @@ export default async function PinterestDashboard() {
                     <td className="px-6 py-4">
                       <div className="relative w-16 h-24 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
                         <img 
-                          src={pin.imageUrl} 
+                          src={pin.imageUrl || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"} 
                           alt={pin.title} 
                           className="w-full h-full object-cover"
-                          onError={(e) => {
-                            // Fallback image if local file fails to resolve in preview
-                            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150";
-                          }}
                         />
                       </div>
                     </td>
@@ -244,12 +240,9 @@ export default async function PinterestDashboard() {
                     <td className="px-6 py-4">
                       <div className="relative w-16 h-24 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
                         <img 
-                          src={pin.imageUrl} 
+                          src={pin.imageUrl || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"} 
                           alt={pin.title} 
                           className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150";
-                          }}
                         />
                       </div>
                     </td>
