@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getGeminiResponse, generateImage, STEWART_LUCAS_VOICE } from "@/lib/ai";
-import { sendPersonalisedPlanReadyEmail } from "@/lib/email";
+import { sendPinterestAlertEmail } from "@/lib/email";
 import { applyTextOverlay, uploadToImgBB } from "@/lib/pinterest-utils";
 import fs from "fs";
 import path from "path";
@@ -286,12 +286,33 @@ Return response strictly as raw JSON:
     const siteUrl = process.env.SITE_URL || process.env.AUTH_URL || "https://stewartlucas.com";
     const reviewUrl = `${siteUrl.replace(/\/$/, "")}/admin/pinterest/approve-pin`;
 
+    const htmlContent = `
+      <p>Hello Stewart Lucas,</p>
+      <p>Gemini has successfully generated the draft recipe/blog article and the custom Pinterest Pin graphics (with text overlays) for your approved idea:</p>
+      
+      <div style="margin: 20px 0; padding: 15px; border-left: 4px solid #e60023; border-radius: 4px; background: #fafafa;">
+        <h3 style="margin: 0 0 8px 0; color: #111; font-family: serif; font-size: 18px;">${idea.title}</h3>
+        <p style="margin: 0; color: #555; font-size: 14px; line-height: 1.5;">${idea.concept}</p>
+      </div>
+
+      <p>A matching evergreen "old post" has also been selected and drafted to maintain traffic-balancing on your Pinterest boards.</p>
+      
+      <p>Click the button below to review the article drafts and check the visual layout of the overlay graphics before scheduled posting.</p>
+      
+      <div class="cta-container">
+        <a href="${reviewUrl}" class="cta-button">Review & Approve Pins</a>
+      </div>
+      
+      <p>To your health and success,</p>
+      <p><strong>The NutriGuide Team</strong></p>
+    `;
+
     console.log(`📧 Sending draft ready email to: ${adminEmail}...`);
     try {
-      await sendPersonalisedPlanReadyEmail({
+      await sendPinterestAlertEmail({
         to: adminEmail,
-        name: "Stewart Lucas",
-        viewUrl: reviewUrl
+        subject: "Pinterest Pin Graphics & Drafts Ready! 📌",
+        htmlContent
       });
       console.log("✅ Email notification sent!");
     } catch (err: any) {

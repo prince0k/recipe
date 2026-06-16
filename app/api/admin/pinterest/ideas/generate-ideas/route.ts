@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getGeminiResponse } from "@/lib/ai";
-import { sendPersonalisedPlanReadyEmail } from "@/lib/email";
+import { sendPinterestAlertEmail } from "@/lib/email";
 
 export async function POST() {
   try {
@@ -73,11 +73,38 @@ Format example:
     const siteUrl = process.env.SITE_URL || process.env.AUTH_URL || "https://stewartlucas.com";
     const reviewUrl = `${siteUrl.replace(/\/$/, "")}/admin/pinterest/ideas`;
 
+    const ideasListHtml = ideas.map((idea: any, index: number) => {
+      return `
+        <div style="margin-bottom: 20px; padding: 15px; border-left: 4px solid #e60023; border-radius: 4px; background: #fafafa;">
+          <h3 style="margin: 0 0 8px 0; color: #111; font-family: serif; font-size: 18px;">${index + 1}. ${idea.title}</h3>
+          <p style="margin: 0; color: #555; font-size: 14px; line-height: 1.5;">${idea.concept}</p>
+        </div>
+      `;
+    }).join("");
+
+    const htmlContent = `
+      <p>Hello Stewart Lucas,</p>
+      <p>Gemini has analyzed your content and brainstormed <strong>5 brand-new, unique recipe/blog ideas</strong> for your Pinterest posting pipeline:</p>
+      
+      <div style="margin: 25px 0;">
+        ${ideasListHtml}
+      </div>
+
+      <p>Click the button below to approve or reject these ideas on your admin dashboard. Approved ideas will automatically generate full draft posts and visual Pin graphics.</p>
+      
+      <div class="cta-container">
+        <a href="${reviewUrl}" class="cta-button">Review & Approve Ideas</a>
+      </div>
+      
+      <p>To your health and success,</p>
+      <p><strong>The NutriGuide Team</strong></p>
+    `;
+
     try {
-      await sendPersonalisedPlanReadyEmail({
+      await sendPinterestAlertEmail({
         to: adminEmail,
-        name: "Stewart Lucas",
-        viewUrl: reviewUrl
+        subject: "New Pinterest Ideas Ready for Review! 📌",
+        htmlContent
       });
     } catch (err: any) {
       console.error("❌ Failed to send ideas email notification:", err.message || err);

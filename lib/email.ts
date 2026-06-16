@@ -280,4 +280,60 @@ export async function sendDietPlanGuideEmail({
   }
 }
 
+/**
+ * Send a custom Pinterest notification email with rich HTML content.
+ */
+export async function sendPinterestAlertEmail({
+  to,
+  subject,
+  htmlContent,
+}: {
+  to: string;
+  subject: string;
+  htmlContent: string;
+}) {
+  try {
+    if (!EMAIL_CORE_URL || !EMAIL_CORE_API_KEY) {
+      console.warn("[email] Pinterest alert email skipped: Missing config");
+      return { success: false };
+    }
+
+    const endpoint = `${EMAIL_CORE_URL.replace(/\/$/, "")}/api/welcome/send-custom`;
+
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Internal-Key": EMAIL_CORE_API_KEY,
+      },
+      body: JSON.stringify({
+        email: to,
+        subject,
+        htmlContent,
+        siteName: SITE_NAME,
+      }),
+      signal: AbortSignal.timeout(15000),
+    });
+
+    if (!res.ok) throw new Error("Failed to send custom Pinterest alert email");
+
+    const data = await res.json();
+
+    await prisma.emailLog.create({
+      data: {
+        to,
+        subject,
+        type: "PINTEREST_ALERT",
+        status: "SENT",
+      },
+    });
+
+    return { success: true, messageId: data.messageId };
+
+  } catch (err: any) {
+    console.error("[email] Pinterest alert email error:", err);
+    return { success: false, error: err.message };
+  }
+}
+
 
