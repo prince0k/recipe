@@ -78,14 +78,32 @@ Format example:
 
     const ideasListHtml = ideas.map((idea: any) => {
       const typeLabel = idea.type ? idea.type.toUpperCase().replace("_", " ") : "RECIPE";
-      const badgeBg = typeLabel === "RECIPE" ? "#ecfdf5" : typeLabel === "BLOG" ? "#eff6ff" : "#f5f3ff";
-      const badgeText = typeLabel === "RECIPE" ? "#059669" : typeLabel === "BLOG" ? "#2563eb" : "#7c3aed";
+      
+      let badgeBg = "#f3f4f6";
+      let badgeText = "#4b5563";
+      
+      if (typeLabel === "RECIPE") {
+        badgeBg = "#ecfdf5";
+        badgeText = "#059669";
+      } else if (typeLabel === "BLOG") {
+        badgeBg = "#eff6ff";
+        badgeText = "#2563eb";
+      } else if (typeLabel === "DIET PLAN") {
+        badgeBg = "#fff7ed";
+        badgeText = "#c2410c";
+      } else if (typeLabel === "CHEAT SHEET") {
+        badgeBg = "#f5f3ff";
+        badgeText = "#7c3aed";
+      }
 
       return `
         <div style="margin-bottom: 20px; padding: 15px; border-left: 4px solid #e60023; border-radius: 4px; background: #fafafa;">
           <div style="margin-bottom: 8px;">
             <span style="font-size: 10px; font-weight: bold; background: ${badgeBg}; color: ${badgeText}; padding: 3px 8px; border-radius: 999px; margin-right: 8px; vertical-align: middle; border: 1px solid ${badgeText}15;">${typeLabel}</span>
             <h3 style="margin: 0; color: #111; font-family: serif; font-size: 18px; display: inline-block; vertical-align: middle;">${idea.title}</h3>
+          </div>
+          <div style="margin: 0 0 10px 5px; font-size: 13px; color: #666;">
+            <strong>Content Type:</strong> <span style="color: ${badgeText}; font-weight: bold;">${typeLabel}</span>
           </div>
           <p style="margin: 0; color: #555; font-size: 14px; line-height: 1.5; padding-left: 5px;">${idea.concept}</p>
         </div>
