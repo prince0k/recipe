@@ -22,21 +22,76 @@ async function getAnalytics(token: string | undefined) {
       console.warn("⚠️ Could not fetch Pinterest boards from API:", e.message || e);
     }
 
-    try {
-      console.log("📊 Querying Pinterest user analytics...");
-      const start = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
-      const end = new Date().toISOString().split("T")[0];
-      const analytics = await pinterestRequest(
-        `/user_account/analytics?start_date=${start}&end_date=${end}`,
-        token
-      );
-      
-      const summary = analytics.all?.summary_metrics || {};
-      views = Math.round(summary.IMPRESSION || 0);
-      clicks = Math.round((summary.PIN_CLICK || 0) + (summary.OUTBOUND_CLICK || 0));
-      reactions = Math.round(summary.SAVE || 0);
-    } catch (e: any) {
-      console.warn("⚠️ Could not fetch Pinterest user analytics from API:", e.message || e);
+    // Fetch posted pins with valid pinId from DB
+    const postedPins = await prisma.pinterestPin.findMany({
+      where: {
+        status: "POSTED",
+        pinId: { not: null }
+      },
+      select: { pinId: true }
+    });
+    
+    const pinIds = postedPins.map(p => p.pinId).filter(Boolean) as string[];
+
+    if (pinIds.length > 0) {
+      try {
+        console.log(`📊 Querying Pinterest pin-level analytics for ${pinIds.length} pin(s)...`);
+        const start = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+        const end = new Date().toISOString().split("T")[0];
+        
+        // Construct query parameters repeating pin_ids for each pin
+        const pinIdsQuery = pinIds.map(id => `pin_ids=${id}`).join("&");
+        const endpoint = `/pins/analytics?start_date=${start}&end_date=${end}&metric_types=IMPRESSION,PIN_CLICK,OUTBOUND_CLICK,SAVE&${pinIdsQuery}`;
+        
+        const analyticsData = await pinterestRequest(endpoint, token);
+        
+        // Sum up metrics across all returned pins with safety checks for formats
+        const parsePinMetrics = (item: any) => {
+          const metrics = item.summary_metrics || item.metrics || item.data || item;
+          if (metrics) {
+            views += Number(metrics.IMPRESSION || metrics.impression || 0);
+            reactions += Number(metrics.SAVE || metrics.save || 0);
+            const pinClicks = Number(metrics.PIN_CLICK || metrics.pin_click || 0);
+            const outboundClicks = Number(metrics.OUTBOUND_CLICK || metrics.outbound_click || 0);
+            clicks += (pinClicks + outboundClicks);
+          }
+        };
+
+        if (Array.isArray(analyticsData)) {
+          for (const item of analyticsData) {
+            parsePinMetrics(item);
+          }
+        } else if (typeof analyticsData === "object" && analyticsData !== null) {
+          for (const key of Object.keys(analyticsData)) {
+            const item = analyticsData[key];
+            parsePinMetrics(item);
+          }
+        }
+
+        console.log(`📊 Successfully parsed pin-level analytics: Views=${views}, Clicks=${clicks}, Reactions=${reactions}`);
+      } catch (e: any) {
+        console.warn("⚠️ Could not fetch Pinterest pin-level analytics from API:", e.message || e);
+      }
+    }
+
+    // If pin analytics weren't fetched (e.g. no posted pins or error), try user account analytics as a secondary option
+    if (views === 0 && clicks === 0 && reactions === 0) {
+      try {
+        console.log("📊 Querying Pinterest user account analytics (aggregate fallback)...");
+        const start = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+        const end = new Date().toISOString().split("T")[0];
+        const analytics = await pinterestRequest(
+          `/user_account/analytics?start_date=${start}&end_date=${end}`,
+          token
+        );
+        
+        const summary = analytics.all?.summary_metrics || {};
+        views = Math.round(summary.IMPRESSION || 0);
+        clicks = Math.round((summary.PIN_CLICK || 0) + (summary.OUTBOUND_CLICK || 0));
+        reactions = Math.round(summary.SAVE || 0);
+      } catch (e: any) {
+        console.warn("⚠️ Could not fetch Pinterest user analytics from API:", e.message || e);
+      }
     }
   }
 
