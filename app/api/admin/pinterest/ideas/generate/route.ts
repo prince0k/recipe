@@ -153,6 +153,7 @@ export async function POST(req: Request) {
 We need to generate Pinterest Pin metadata for the following new blog post:
 Title: "${contentData.title || idea.title}"
 Excerpt: "${contentData.excerpt || idea.concept}"
+Content Type: "${contentType}"
 
 Please provide:
 1. An optimized, click-worthy Pin Title (max 100 characters).
@@ -189,6 +190,11 @@ Please provide:
 5. The text overlay string to be written on the Pin image (short, punchy, click-enticing, max 30 characters, e.g. "Soy-Free Vegan Tart").
 6. The overlay position: "top", "center", or "bottom".
 7. The overlay style: "dark", "light", or "accent".
+8. Additional metadata ("meta") matching the content type:
+   - For RECIPE, provide: "prepTime", "cookingTime", "calories", "protein", "carbs", "fat"
+   - For DIET_PLAN or MEAL_PLAN, provide: "benefits" (a short, highly-clickable benefit string like "Balance Hormones" or "Burn Fat Fast")
+   - For CHEAT_SHEET, provide: "dos" (1 key rule to do) and "donts" (1 key rule to avoid)
+   - For BLOG, provide: "category" (e.g. "Gut Health", "Adrenal Fatigue") and "readTime" (e.g. "5 min read")
 
 Return your response strictly in JSON format. Do not return markdown boxes, just return the JSON string.
 Format:
@@ -199,7 +205,20 @@ Format:
   "imagePrompt": "...",
   "textOverlay": "...",
   "overlayPosition": "top|center|bottom",
-  "overlayStyle": "dark|light|accent"
+  "overlayStyle": "dark|light|accent",
+  "meta": {
+    "prepTime": "...", // recipe only
+    "cookingTime": "...", // recipe only
+    "calories": "...", // recipe only
+    "protein": "...", // recipe only
+    "carbs": "...", // recipe only
+    "fat": "...", // recipe only
+    "benefits": "...", // diet_plan/meal_plan only
+    "dos": "...", // cheat_sheet only
+    "donts": "...", // cheat_sheet only
+    "category": "...", // blog only
+    "readTime": "..." // blog only
+  }
 }
 `;
 
@@ -261,7 +280,9 @@ Format:
     const compositeBuffer = await applyTextOverlay(imageBuffer, pinMeta.textOverlay, {
       position: pinMeta.overlayPosition || "bottom",
       style: pinMeta.overlayStyle || "dark",
-      title: "NutriGuide"
+      title: "NutriGuide",
+      contentType: contentType,
+      meta: pinMeta.meta
     });
 
     // Save Pinterest pin image locally
@@ -330,9 +351,10 @@ Format:
 
       // Generate Pin Metadata for the old post
       const oldPinPrompt = `
-We need to generate Pinterest Pin metadata for an existing blog post.
+We need to generate Pinterest Pin metadata for an existing blog post:
 Title: "${oldContent.title}"
 Excerpt: "${oldContent.excerpt}"
+Content Type: "${oldContent.type}"
 
 Please provide:
 1. An optimized, click-worthy Pin Title (max 100 characters).
@@ -342,6 +364,11 @@ Please provide:
 5. The text overlay string to be written on the Pin image (short, punchy, click-enticing, max 30 characters, e.g. "Low-Carb Harvest Bowl").
 6. The overlay position: "top", "center", or "bottom".
 7. The overlay style: "dark", "light", or "accent".
+8. Additional metadata ("meta") matching the content type:
+   - For RECIPE, provide: "prepTime", "cookingTime", "calories", "protein", "carbs", "fat"
+   - For DIET_PLAN or MEAL_PLAN or DIETPLAN, provide: "benefits" (a short, highly-clickable benefit string like "Balance Hormones" or "Burn Fat Fast")
+   - For CHEAT_SHEET or CHEATSHEET, provide: "dos" (1 key rule to do) and "donts" (1 key rule to avoid)
+   - For BLOG, provide: "category" (e.g. "Gut Health", "Adrenal Fatigue") and "readTime" (e.g. "5 min read")
 
 Return response strictly as raw JSON:
 {
@@ -351,7 +378,20 @@ Return response strictly as raw JSON:
   "imagePrompt": "...",
   "textOverlay": "...",
   "overlayPosition": "top|center|bottom",
-  "overlayStyle": "dark|light|accent"
+  "overlayStyle": "dark|light|accent",
+  "meta": {
+    "prepTime": "...", // recipe only
+    "cookingTime": "...", // recipe only
+    "calories": "...", // recipe only
+    "protein": "...", // recipe only
+    "carbs": "...", // recipe only
+    "fat": "...", // recipe only
+    "benefits": "...", // diet_plan/meal_plan only
+    "dos": "...", // cheat_sheet only
+    "donts": "...", // cheat_sheet only
+    "category": "...", // blog only
+    "readTime": "..." // blog only
+  }
 }
 `;
 
@@ -373,7 +413,9 @@ Return response strictly as raw JSON:
       const oldCompositeBuffer = await applyTextOverlay(oldImageBuffer, oldPinMeta.textOverlay, {
         position: oldPinMeta.overlayPosition || "bottom",
         style: oldPinMeta.overlayStyle || "dark",
-        title: "NutriGuide"
+        title: "NutriGuide",
+        contentType: oldContent.type,
+        meta: oldPinMeta.meta
       });
 
       const oldFileName = `pin-old-${oldContent.id}-${Date.now()}.jpg`;
