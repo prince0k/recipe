@@ -35,8 +35,8 @@ const STABLE_MODELS = [
 const IMAGE_PREVIEW_MODEL = "gemini-2.5-flash-image";
 const IMAGE_PRO_MODEL = "gemini-2.5-flash-image";
 
-const DAILY_BUDGET_CAP_INR = 200;
-const DAILY_IMAGE_LIMIT = 10;
+const DAILY_BUDGET_CAP_INR = 2000; // Temporarily raised from 200
+const DAILY_IMAGE_LIMIT = 100;    // Temporarily raised from 10
 const COST_PER_IMAGE_INR = 0.5; // Estimated
 const COST_PER_1K_TOKENS_INR = 0.05; // Estimated
 
