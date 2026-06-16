@@ -63,48 +63,95 @@ export async function POST(req: Request) {
     try {
       const getNextUSTimeSlots = (): [Date, Date] => {
         const now = new Date();
-        // Get the current New York time string representation
-        const nyString = now.toLocaleString("en-US", { timeZone: "America/New_York" });
-        const nyDate = new Date(nyString);
         
-        // Define target times on New York timeline
-        const sixAM = new Date(nyDate);
-        sixAM.setHours(6, 0, 0, 0);
-        
-        const sixPM = new Date(nyDate);
-        sixPM.setHours(18, 0, 0, 0);
-        
+        // Define formatter for America/New_York
+        const formatter = new Intl.DateTimeFormat("en-US", {
+          timeZone: "America/New_York",
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+          hourCycle: "h23",
+        });
+
+        // Helper to get local NY representation as a UTC Date
+        const getNYLocalRepresentationAsUTC = (d: Date): Date => {
+          const parts = formatter.formatToParts(d);
+          const partValue = (type: string) => parseInt(parts.find(p => p.type === type)!.value, 10);
+          return new Date(Date.UTC(
+            partValue("year"),
+            partValue("month") - 1,
+            partValue("day"),
+            partValue("hour"),
+            partValue("minute"),
+            0,
+            0
+          ));
+        };
+
+        // Helper to convert NY local fields back to true UTC
+        const nyToUTC = (year: number, month: number, day: number, hour: number, minute: number): Date => {
+          const approxUTC = new Date(Date.UTC(year, month - 1, day, hour, minute, 0, 0));
+          const approxNY = getNYLocalRepresentationAsUTC(approxUTC);
+          const offsetMs = approxNY.getTime() - approxUTC.getTime();
+          return new Date(approxUTC.getTime() - offsetMs);
+        };
+
+        const nowNYAsUTC = getNYLocalRepresentationAsUTC(now);
+
+        const today6AM = new Date(nowNYAsUTC);
+        today6AM.setUTCHours(6, 0, 0, 0);
+
+        const today6PM = new Date(nowNYAsUTC);
+        today6PM.setUTCHours(18, 0, 0, 0);
+
         const slots: Date[] = [];
-        
-        // If 6:00 AM today is in the future
-        if (nyDate.getTime() < sixAM.getTime()) {
-          slots.push(sixAM);
+
+        // If today 6:00 AM NY is in the future
+        if (today6AM.getTime() > nowNYAsUTC.getTime()) {
+          slots.push(today6AM);
         }
-        
-        // If 6:00 PM today is in the future
-        if (nyDate.getTime() < sixPM.getTime()) {
-          slots.push(sixPM);
+
+        // If today 6:00 PM NY is in the future
+        if (today6PM.getTime() > nowNYAsUTC.getTime()) {
+          slots.push(today6PM);
         }
-        
+
         // Tomorrow slots
-        const tomorrowAM = new Date(sixAM);
-        tomorrowAM.setDate(tomorrowAM.getDate() + 1);
-        slots.push(tomorrowAM);
-        
-        const tomorrowPM = new Date(sixPM);
-        tomorrowPM.setDate(tomorrowPM.getDate() + 1);
-        slots.push(tomorrowPM);
-        
-        // Pick the first 2 future slots
-        const futureSlots = slots
-          .filter(slot => slot.getTime() > nyDate.getTime())
-          .slice(0, 2);
-          
-        // Convert New York local representation back to system UTC time
-        const localNYTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
-        const offsetMs = localNYTime.getTime() - now.getTime();
-        
-        return futureSlots.map(slot => new Date(slot.getTime() - offsetMs)) as [Date, Date];
+        const tomorrow6AM = new Date(today6AM);
+        tomorrow6AM.setUTCDate(tomorrow6AM.getUTCDate() + 1);
+        slots.push(tomorrow6AM);
+
+        const tomorrow6PM = new Date(today6PM);
+        tomorrow6PM.setUTCDate(tomorrow6PM.getUTCDate() + 1);
+        slots.push(tomorrow6PM);
+
+        // Sort ascending
+        slots.sort((a, b) => a.getTime() - b.getTime());
+
+        // Get the first 2 slots
+        const [slot1, slot2] = slots.slice(0, 2);
+
+        // Convert the NY representations to actual UTC Date objects
+        const actualUTC1 = nyToUTC(
+          slot1.getUTCFullYear(),
+          slot1.getUTCMonth() + 1,
+          slot1.getUTCDate(),
+          slot1.getUTCHours(),
+          slot1.getUTCMinutes()
+        );
+
+        const actualUTC2 = nyToUTC(
+          slot2.getUTCFullYear(),
+          slot2.getUTCMonth() + 1,
+          slot2.getUTCDate(),
+          slot2.getUTCHours(),
+          slot2.getUTCMinutes()
+        );
+
+        return [actualUTC1, actualUTC2];
       };
 
       const [slot1, slot2] = getNextUSTimeSlots();

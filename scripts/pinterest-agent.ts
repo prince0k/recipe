@@ -17,7 +17,6 @@ async function generateIdeas() {
   
   console.log(`📊 Found ${existingTitles.length} existing content items to check against.`);
 
-  // 2. Query Gemini
   const prompt = `
 You are Stewart Lucas, the expert culinary coach and nutritionist representing NutriGuide.
 We want to expand our website and Pinterest pipeline with 5 brand-new, unique, science-backed recipe or healthy diet/lifestyle blog post ideas.
@@ -26,10 +25,11 @@ Here is a list of our existing content titles:
 ${existingTitles.map((t) => `- ${t}`).join("\n")}
 
 CRITICAL BRAINSTORMING CONDITIONS:
-1. ABSOLUTE UNIQUENESS: Do not reuse, rephrase, or duplicate any title or exact concept from the existing list above. The new ideas must be completely fresh.
-2. CORE HEALTH TOPICS: Focus on trending wellness topics: gut health, hormone balancing, anti-inflammatory meals, blood sugar regulation (insulin resistance), clean eating, daily routines, or science-backed nutrition plans.
-3. CULINARY BRAND TONE: The brand voice represents Stewart Lucas—approachable, highly credible, expert, and focused on delicious, practical home cooking.
-4. CATEGORIES: Each idea must fall strictly into one of the four types: "RECIPE", "BLOG", "DIET_PLAN", or "CHEAT_SHEET".
+1. ABSOLUTE UNIQUENESS: The new titles and concepts must be completely unique and have ZERO semantic or keyword duplication/overlap with any of the 1,300+ existing titles. Do not just rephrase or swap adjectives (e.g., if "Anti-Inflammatory Ginger Tea" exists, do not suggest "Anti-Inflammatory Turmeric Ginger Tea").
+2. CORE HEALTH TOPICS: Every idea must have a strong health and wellness angle (e.g., healing gut health, balancing hormones, managing insulin resistance/blood sugar, reducing chronic inflammation, clean whole-food nutrition, or daily wellness routines).
+3. STEWART LUCAS BRAND VOICE: Written in the voice of Stewart Lucas—approachable, highly credible, expert, conversational, warm, kitchen-practical, and science-backed.
+4. STRICT CATEGORIZATION: The "type" field MUST be exactly one of: "RECIPE", "BLOG", "DIET_PLAN", or "CHEAT_SHEET".
+5. PINTEREST & SEO OPTIMIZED TITLE: The title must be catchy, click-worthy, keyword-rich, and strictly under 75 characters.
 
 Return your response strictly as a JSON array of objects. Do not include markdown formatting (like \`\`\`json), do not include any prefix or suffix, just return the raw JSON string.
 
