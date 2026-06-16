@@ -14,10 +14,14 @@ async function getBufferFromImageData(rawData: string): Promise<Buffer> {
   if (rawData.startsWith("data:")) {
     const base64Data = rawData.split(",")[1];
     return Buffer.from(base64Data, "base64");
-  } else {
-    const response = await fetch(rawData);
-    return Buffer.from(await response.arrayBuffer());
+  } else if (rawData.startsWith("/")) {
+    const filePath = path.join(process.cwd(), "public", rawData);
+    if (fs.existsSync(filePath)) {
+      return fs.readFileSync(filePath);
+    }
   }
+  const response = await fetch(rawData);
+  return Buffer.from(await response.arrayBuffer());
 }
 
 function slugify(text: string): string {
@@ -146,7 +150,8 @@ Format:
     const pinMeta = JSON.parse(cleanPinMetaJson);
 
     // 4. Generate visual cover image (used for both website cover image and pin base)
-    const finalImagePrompt = pinMeta.imagePrompt || contentData.coverImagePrompt || `Professional food photography of ${idea.title}`;
+    // Hardcoded to the exact premium wellness brand food bowl prompt specified by user to ensure consistency and save credits
+    const finalImagePrompt = "Redesign this health landing-page hero image for a premium wellness brand. Keep the healthy food bowl aesthetic (avocado, greens, grilled protein) but make it modern, clean, and high-converting.";
     console.log(`🎨 Generating AI image with prompt: "${finalImagePrompt}"`);
     const rawImage = await generateImage(finalImagePrompt, "preview");
     
@@ -294,10 +299,16 @@ Return response strictly as raw JSON:
       const oldPinMetaResponse = await getGeminiResponse(oldPinPrompt, true);
       const oldPinMeta = JSON.parse(oldPinMetaResponse);
 
-      // Generate AI image for old content
-      console.log(`🎨 Generating AI image for old post with prompt: "${oldPinMeta.imagePrompt}"`);
-      const rawOldImage = await generateImage(oldPinMeta.imagePrompt, "preview");
-      const oldImageBuffer = await getBufferFromImageData(rawOldImage);
+      // Use existing cover image for the old/evergreen post to save credits, fallback to generation only if coverImage is missing
+      let oldImageBuffer: Buffer;
+      if (oldContent.coverImage) {
+        console.log(`♻️ Reusing existing cover image for old post "${oldContent.title}": ${oldContent.coverImage}`);
+        oldImageBuffer = await getBufferFromImageData(oldContent.coverImage);
+      } else {
+        console.log(`🎨 Generating AI image for old post with prompt: "${oldPinMeta.imagePrompt}"`);
+        const rawOldImage = await generateImage(oldPinMeta.imagePrompt, "preview");
+        oldImageBuffer = await getBufferFromImageData(rawOldImage);
+      }
 
       // Composite Text Overlay
       const oldCompositeBuffer = await applyTextOverlay(oldImageBuffer, oldPinMeta.textOverlay, {
