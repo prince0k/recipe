@@ -20,13 +20,16 @@ async function generateIdeas() {
   // 2. Query Gemini
   const prompt = `
 You are Stewart Lucas, the expert culinary coach and nutritionist representing NutriGuide.
-We want to expand our blog with 5 brand-new, unique, science-backed recipe or healthy diet/lifestyle blog post ideas.
+We want to expand our website and Pinterest pipeline with 5 brand-new, unique, science-backed recipe or healthy diet/lifestyle blog post ideas.
 
 Here is a list of our existing content titles:
 ${existingTitles.map((t) => `- ${t}`).join("\n")}
 
-Please brainstorm 5 new ideas. They must be completely unique, scientifically sound, clean, and highly appealing to health/nutrition seekers.
-Do not reuse or duplicate any title or exact concept from the existing list above.
+CRITICAL BRAINSTORMING CONDITIONS:
+1. ABSOLUTE UNIQUENESS: Do not reuse, rephrase, or duplicate any title or exact concept from the existing list above. The new ideas must be completely fresh.
+2. CORE HEALTH TOPICS: Focus on trending wellness topics: gut health, hormone balancing, anti-inflammatory meals, blood sugar regulation (insulin resistance), clean eating, daily routines, or science-backed nutrition plans.
+3. CULINARY BRAND TONE: The brand voice represents Stewart Lucas—approachable, highly credible, expert, and focused on delicious, practical home cooking.
+4. CATEGORIES: Each idea must fall strictly into one of the four types: "RECIPE", "BLOG", "DIET_PLAN", or "CHEAT_SHEET".
 
 Return your response strictly as a JSON array of objects. Do not include markdown formatting (like \`\`\`json), do not include any prefix or suffix, just return the raw JSON string.
 

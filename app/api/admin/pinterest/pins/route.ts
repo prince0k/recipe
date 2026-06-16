@@ -56,50 +56,71 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No draft pins found to schedule" }, { status: 400 });
     }
 
-    // 2. Query Gemini for the best 2 posting times
-    console.log("⏰ Asking Gemini for the best 2 Pinterest posting times...");
-    const prompt = `
-We are scheduling Pinterest posts for a wellness/nutrition website (NutriGuide).
-Please determine the best 2 distinct future posting times within the next 48 hours for maximum engagement.
-Pinterest peak hours are generally evenings, between 7:00 PM and 10:00 PM EST (Eastern Standard Time).
-
-Return strictly a JSON array containing 2 future date-time strings in ISO 8601 format, ordered chronologically.
-Do not include markdown tags, markdown blocks (like \`\`\`json), or any other wrapper text.
-
-Format:
-[
-  "2026-06-17T20:00:00.000Z",
-  "2026-06-18T20:30:00.000Z"
-]
-`;
-
+    // 2. Calculate the next available 6:00 AM and 6:00 PM US Eastern Time (New York) slots
     let time1: Date;
     let time2: Date;
 
     try {
-      const gResponse = await getGeminiResponse(prompt, true);
-      const times = JSON.parse(gResponse.replace(/```json\n?/, "").replace(/\n?```/, "").trim());
-      
-      time1 = new Date(times[0]);
-      time2 = new Date(times[1]);
+      const getNextUSTimeSlots = (): [Date, Date] => {
+        const now = new Date();
+        // Get the current New York time string representation
+        const nyString = now.toLocaleString("en-US", { timeZone: "America/New_York" });
+        const nyDate = new Date(nyString);
+        
+        // Define target times on New York timeline
+        const sixAM = new Date(nyDate);
+        sixAM.setHours(6, 0, 0, 0);
+        
+        const sixPM = new Date(nyDate);
+        sixPM.setHours(18, 0, 0, 0);
+        
+        const slots: Date[] = [];
+        
+        // If 6:00 AM today is in the future
+        if (nyDate.getTime() < sixAM.getTime()) {
+          slots.push(sixAM);
+        }
+        
+        // If 6:00 PM today is in the future
+        if (nyDate.getTime() < sixPM.getTime()) {
+          slots.push(sixPM);
+        }
+        
+        // Tomorrow slots
+        const tomorrowAM = new Date(sixAM);
+        tomorrowAM.setDate(tomorrowAM.getDate() + 1);
+        slots.push(tomorrowAM);
+        
+        const tomorrowPM = new Date(sixPM);
+        tomorrowPM.setDate(tomorrowPM.getDate() + 1);
+        slots.push(tomorrowPM);
+        
+        // Pick the first 2 future slots
+        const futureSlots = slots
+          .filter(slot => slot.getTime() > nyDate.getTime())
+          .slice(0, 2);
+          
+        // Convert New York local representation back to system UTC time
+        const localNYTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+        const offsetMs = localNYTime.getTime() - now.getTime();
+        
+        return futureSlots.map(slot => new Date(slot.getTime() - offsetMs)) as [Date, Date];
+      };
 
-      // Simple validation: make sure they are valid dates and in the future
-      if (isNaN(time1.getTime()) || isNaN(time2.getTime())) {
-        throw new Error("Invalid dates returned by AI");
-      }
+      const [slot1, slot2] = getNextUSTimeSlots();
+      time1 = slot1;
+      time2 = slot2;
     } catch (err: any) {
-      console.warn("⚠️ AI Time generation failed or returned malformed date. Using fallback times:", err.message);
+      console.warn("⚠️ Direct Time calculation failed. Using fallback times:", err.message);
       
-      // Fallback: Tomorrow 8:00 PM EST (translated roughly to UTC) and Day After 8:30 PM EST
       const now = new Date();
-      
       time1 = new Date(now);
       time1.setDate(now.getDate() + 1);
-      time1.setUTCHours(20, 0, 0, 0); // 8:00 PM UTC/EST placeholder
+      time1.setUTCHours(10, 0, 0, 0); // 6:00 AM EDT (10:00 AM UTC) fallback
       
       time2 = new Date(now);
-      time2.setDate(now.getDate() + 2);
-      time2.setUTCHours(20, 30, 0, 0); // 8:30 PM UTC/EST placeholder
+      time2.setDate(now.getDate() + 1);
+      time2.setUTCHours(22, 0, 0, 0); // 6:00 PM EDT (10:00 PM UTC) fallback
     }
 
     console.log(`⏰ Scheduled times determined: \n  - Time 1: ${time1.toISOString()}\n  - Time 2: ${time2.toISOString()}`);
