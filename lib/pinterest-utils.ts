@@ -327,9 +327,9 @@ export async function applyTextOverlay(
 
   const svgOverlay = `
     <svg width="${width}" height="${height}">
-      <!-- Left solid column background -->
-      <rect x="0" y="0" width="${panelW}" height="${height}" fill="#121214" />
-      <line x1="${panelW}" y1="0" x2="${panelW}" y2="${height}" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+      <!-- Left translucent glassmorphism column background -->
+      <rect x="0" y="0" width="${panelW}" height="${height}" fill="rgba(18, 18, 20, 0.82)" />
+      <line x1="${panelW}" y1="0" x2="${panelW}" y2="${height}" stroke="rgba(255,255,255,0.12)" stroke-width="2" />
       
       <!-- Brand Badge -->
       <text x="${panelW / 2}" y="100" font-family="'Inter', system-ui, -apple-system, sans-serif" font-weight="800" font-size="14px" fill="#E60023" text-anchor="middle" letter-spacing="4px">${badgeText}</text>
