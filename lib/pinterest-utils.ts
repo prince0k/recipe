@@ -244,9 +244,10 @@ export async function applyTextOverlay(
     let macroVal = proteinText;
     if (meta.carbs || meta.fat) {
       macroLabel = "MACROS";
-      const carbsText = meta.carbs ? (String(meta.carbs).includes("g") ? String(meta.carbs) : `${meta.carbs}g carbs`) : "";
-      const fatText = meta.fat ? (String(meta.fat).includes("g") ? String(meta.fat) : `${meta.fat}g fat`) : "";
-      macroVal = `${proteinText.replace(" Protein", "g P")} | ${carbsText.replace(" carbs", "g C")} | ${fatText.replace(" fat", "g F")}`.trim().replace(/^\||\|$/g, "").trim();
+      const p = String(meta.protein || "0").replace(/[^0-9]/g, "");
+      const c = String(meta.carbs || "0").replace(/[^0-9]/g, "");
+      const f = String(meta.fat || "0").replace(/[^0-9]/g, "");
+      macroVal = `${p}g P | ${c}g C | ${f}g F`;
     }
 
     metaSvg = `
