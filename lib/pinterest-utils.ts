@@ -212,7 +212,7 @@ export async function applyTextOverlay(
 
   const textElements = displayLines
     .map((line, index) => {
-      return `<text x="50%" y="${startTextY + index * lineSpacing}" font-family="'Inter', system-ui, -apple-system, sans-serif" font-weight="900" font-size="${fontSize}px" fill="${textColor}" text-anchor="middle">${escapeXml(line)}</text>`;
+      return `<text x="50%" y="${boxY + startTextY + index * lineSpacing}" font-family="'Inter', system-ui, -apple-system, sans-serif" font-weight="900" font-size="${fontSize}px" fill="${textColor}" text-anchor="middle">${escapeXml(line)}</text>`;
     })
     .join("\n");
 
