@@ -14,14 +14,46 @@ async function getBufferFromImageData(rawData: string): Promise<Buffer> {
   if (rawData.startsWith("data:")) {
     const base64Data = rawData.split(",")[1];
     return Buffer.from(base64Data, "base64");
-  } else if (rawData.startsWith("/")) {
+  }
+  
+  if (rawData.startsWith("/")) {
     const filePath = path.join(process.cwd(), "public", rawData);
     if (fs.existsSync(filePath)) {
       return fs.readFileSync(filePath);
     }
+    // Fallback: if it starts with "/" and is missing locally, try to fetch from production URL
+    const siteUrl = process.env.SITE_URL || "https://stewartlucas.com";
+    const absoluteUrl = `${siteUrl.replace(/\/$/, "")}${rawData}`;
+    try {
+      console.log(`♻️ Fetching missing local file from production: ${absoluteUrl}`);
+      const response = await fetch(absoluteUrl);
+      if (response.ok) {
+        return Buffer.from(await response.arrayBuffer());
+      }
+      console.warn(`⚠️ Failed to fetch from production (Status ${response.status}): ${absoluteUrl}`);
+    } catch (err: any) {
+      console.warn(`⚠️ Error fetching from production: ${err.message}`);
+    }
   }
-  const response = await fetch(rawData);
-  return Buffer.from(await response.arrayBuffer());
+
+  // Treat as absolute URL
+  try {
+    const response = await fetch(rawData);
+    if (response.ok) {
+      return Buffer.from(await response.arrayBuffer());
+    }
+    throw new Error(`Fetch returned status ${response.status}`);
+  } catch (err: any) {
+    console.warn(`⚠️ Failed to fetch image from URL: ${rawData}. Generating fallback...`);
+    const fallbackPrompt = "Redesign this health landing-page hero image for a premium wellness brand. Keep the healthy food bowl aesthetic (avocado, greens, grilled protein) but make it modern, clean, and high-converting.";
+    const rawImage = await generateImage(fallbackPrompt, "preview");
+    if (rawImage.startsWith("data:")) {
+      const base64Data = rawImage.split(",")[1];
+      return Buffer.from(base64Data, "base64");
+    }
+    const response = await fetch(rawImage);
+    return Buffer.from(await response.arrayBuffer());
+  }
 }
 
 function slugify(text: string): string {
