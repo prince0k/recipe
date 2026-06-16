@@ -30,6 +30,49 @@ function slugify(text: string): string {
     .replace(/\-\-+/g, "-");
 }
 
+function extractFirstJSONObject(str: string): string {
+  const startIdx = str.indexOf("{");
+  if (startIdx === -1) {
+    throw new Error("Could not find start of JSON object");
+  }
+  
+  let braceCount = 0;
+  let inString = false;
+  let escapeNext = false;
+  
+  for (let i = startIdx; i < str.length; i++) {
+    const char = str[i];
+    
+    if (escapeNext) {
+      escapeNext = false;
+      continue;
+    }
+    
+    if (char === "\\") {
+      escapeNext = true;
+      continue;
+    }
+    
+    if (char === '"') {
+      inString = !inString;
+      continue;
+    }
+    
+    if (!inString) {
+      if (char === "{") {
+        braceCount++;
+      } else if (char === "}") {
+        braceCount--;
+        if (braceCount === 0) {
+          return str.substring(startIdx, i + 1);
+        }
+      }
+    }
+  }
+  
+  throw new Error("Could not find matching closing brace for JSON object");
+}
+
 export async function POST(req: Request) {
   try {
     const session = await auth();
@@ -66,12 +109,7 @@ export async function POST(req: Request) {
     console.log(`🧠 Generating standard ${contentType} content draft for "${idea.title}"...`);
     const contentResponseText = await getGeminiResponse(contentPrompt, true);
     
-    // Clean the JSON response just in case
-    const cleanContentJson = contentResponseText
-      .replace(/```json\n?/, "")
-      .replace(/\n?```/, "")
-      .trim();
-
+    const cleanContentJson = extractFirstJSONObject(contentResponseText);
     const contentData = JSON.parse(cleanContentJson);
 
     // 3. Generate Pinterest Pin Metadata for the new post
@@ -104,10 +142,7 @@ Format:
 
     console.log("📌 Generating Pinterest pin metadata...");
     const pinMetaResponse = await getGeminiResponse(pinMetadataPrompt, true);
-    const cleanPinMetaJson = pinMetaResponse
-      .replace(/```json\n?/, "")
-      .replace(/\n?```/, "")
-      .trim();
+    const cleanPinMetaJson = extractFirstJSONObject(pinMetaResponse);
     const pinMeta = JSON.parse(cleanPinMetaJson);
 
     // 4. Generate visual cover image (used for both website cover image and pin base)
