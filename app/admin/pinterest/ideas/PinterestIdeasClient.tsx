@@ -8,6 +8,7 @@ interface Idea {
   id: string;
   title: string;
   concept: string;
+  type: string;
   status: string;
   createdAt: Date;
 }
@@ -191,9 +192,19 @@ export function PinterestIdeasClient({ initialIdeas }: Props) {
                 </div>
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <h3 className="font-bold text-gray-900 text-lg leading-tight font-serif">
-                      {idea.title}
-                    </h3>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                        idea.type === "RECIPE" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                        idea.type === "BLOG" ? "bg-blue-50 text-blue-700 border-blue-200" :
+                        idea.type === "DIET_PLAN" ? "bg-purple-50 text-purple-700 border-purple-200" :
+                        "bg-amber-50 text-amber-700 border-amber-200"
+                      }`}>
+                        {idea.type ? idea.type.toUpperCase().replace("_", " ") : "RECIPE"}
+                      </span>
+                      <h3 className="font-bold text-gray-900 text-lg leading-tight font-serif">
+                        {idea.title}
+                      </h3>
+                    </div>
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 w-fit">
                       PENDING
                     </span>

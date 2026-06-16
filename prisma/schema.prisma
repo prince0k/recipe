@@ -274,6 +274,7 @@ model PinterestIdea {
   id          String   @id @default(cuid())
   title       String
   concept     String   // Short summary of the recipe/blog concept
+  type        String   @default("RECIPE") // RECIPE, BLOG, DIET_PLAN, CHEAT_SHEET
   status      String   @default("PENDING") // PENDING, APPROVED, REJECTED, PROCESSED
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

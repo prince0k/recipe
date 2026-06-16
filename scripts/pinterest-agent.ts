@@ -32,13 +32,15 @@ Return your response strictly as a JSON array of objects. Do not include markdow
 
 Each object in the array must have:
 - "title": A catchy, click-worthy, keyword-rich title for Pinterest and search engines (max 75 characters).
-- "concept": A brief 2-3 sentence summary explaining the concept, the core health benefit (e.g. soy-free, gut health, weight loss), and what makes it exciting.
+- "concept": A brief 2-3 sentence summary explaining the concept, the core health benefit, and what makes it exciting.
+- "type": The content category. Must be strictly one of these values: "RECIPE", "BLOG", "DIET_PLAN", or "CHEAT_SHEET".
 
 Format example:
 [
   {
     "title": "Vibrant Citrus Avocado Summer Salad",
-    "concept": "A refreshing low-carb salad combining healthy fats from avocado with zesty antioxidants from seasonal citrus. Perfect for thyroid support and morning freshness."
+    "concept": "A refreshing low-carb salad combining healthy fats from avocado with zesty antioxidants from seasonal citrus. Perfect for thyroid support and morning freshness.",
+    "type": "RECIPE"
   }
 ]
 `;
@@ -57,7 +59,7 @@ Format example:
     .replace(/\n?```/, "")
     .trim();
 
-  let ideas: Array<{ title: string; concept: string }>;
+  let ideas: Array<{ title: string; concept: string; type: string }>;
   try {
     ideas = JSON.parse(cleanJsonText);
   } catch (err: any) {
@@ -79,11 +81,12 @@ Format example:
       data: {
         title: idea.title,
         concept: idea.concept,
+        type: idea.type || "RECIPE",
         status: "PENDING"
       }
     });
     createdIds.push(saved.id);
-    console.log(`  - [PENDING] ${saved.title}`);
+    console.log(`  - [PENDING] [${saved.type}] ${saved.title}`);
   }
 
   // 4. Send email alert to admin
@@ -92,10 +95,17 @@ Format example:
   const reviewUrl = `${siteUrl.replace(/\/$/, "")}/admin/pinterest/ideas`;
 
   const ideasListHtml = ideas.map((idea, index) => {
+    const typeLabel = idea.type ? idea.type.toUpperCase().replace("_", " ") : "RECIPE";
+    const badgeBg = typeLabel === "RECIPE" ? "#ecfdf5" : typeLabel === "BLOG" ? "#eff6ff" : "#f5f3ff";
+    const badgeText = typeLabel === "RECIPE" ? "#059669" : typeLabel === "BLOG" ? "#2563eb" : "#7c3aed";
+
     return `
       <div style="margin-bottom: 20px; padding: 15px; border-left: 4px solid #e60023; border-radius: 4px; background: #fafafa;">
-        <h3 style="margin: 0 0 8px 0; color: #111; font-family: serif; font-size: 18px;">${index + 1}. ${idea.title}</h3>
-        <p style="margin: 0; color: #555; font-size: 14px; line-height: 1.5;">${idea.concept}</p>
+        <div style="margin-bottom: 8px;">
+          <span style="font-size: 10px; font-weight: bold; background: ${badgeBg}; color: ${badgeText}; padding: 3px 8px; border-radius: 999px; margin-right: 8px; vertical-align: middle; border: 1px solid ${badgeText}15;">${typeLabel}</span>
+          <h3 style="margin: 0; color: #111; font-family: serif; font-size: 18px; display: inline-block; vertical-align: middle;">${idea.title}</h3>
+        </div>
+        <p style="margin: 0; color: #555; font-size: 14px; line-height: 1.5; padding-left: 5px;">${idea.concept}</p>
       </div>
     `;
   }).join("");
