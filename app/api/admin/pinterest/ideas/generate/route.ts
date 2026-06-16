@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { getGeminiResponse, generateImage, STEWART_LUCAS_VOICE } from "@/lib/ai";
 import { sendPinterestAlertEmail } from "@/lib/email";
 import { applyTextOverlay, uploadToImgBB } from "@/lib/pinterest-utils";
+import { getPromptByType } from "@/lib/prompts";
+import { saveAndCompressImage } from "@/lib/image-utils";
 import fs from "fs";
 import path from "path";
 
@@ -57,46 +59,26 @@ export async function POST(req: Request) {
       fs.mkdirSync(draftUploadDir, { recursive: true });
     }
 
-    // 2. Generate Full Recipe / Blog Post Draft using Gemini (Stewart Lucas tone)
-    const contentPrompt = `
-You are Stewart Lucas, the expert culinary coach and nutritionist at NutriGuide.
-Tone guidelines:
-${STEWART_LUCAS_VOICE}
+    // 2. Determine type and generate content draft (HTML)
+    const contentType = idea.type || (idea.title.toLowerCase().includes("recipe") || idea.concept.toLowerCase().includes("recipe") ? "RECIPE" : "BLOG");
+    const contentPrompt = getPromptByType(contentType, idea.title);
 
-Please write a complete, high-quality, professional, science-backed recipe or healthy nutrition blog post based on the following approved idea:
-Title: "${idea.title}"
-Concept: "${idea.concept}"
-
-Include:
-- An engaging introduction written in your conversational, sensory-rich voice.
-- For a recipe: prep time, cook time, list of ingredients (in JSON-friendly array notation if possible, but write normally), and clear step-by-step instructions.
-- For a blog post: clear section headings (H2/H3) and practical wellness tips.
-- A "Key Takeaways" or quick summary at the start.
-- An FAQ section with 3 frequently asked questions at the end.
-
-Provide your response strictly in clean Markdown format. Do not use block codes or wrapper text outside the markdown.
-`;
-
-    const generatedBody = await getGeminiResponse(contentPrompt, false);
+    console.log(`🧠 Generating standard ${contentType} content draft for "${idea.title}"...`);
+    const contentResponseText = await getGeminiResponse(contentPrompt, true);
     
-    // Save draft Content in database
-    const slug = slugify(idea.title) + "-" + Math.floor(Math.random() * 1000);
-    const contentDraft = await prisma.content.create({
-      data: {
-        title: idea.title,
-        slug,
-        type: idea.title.toLowerCase().includes("recipe") || idea.concept.toLowerCase().includes("recipe") ? "RECIPE" : "BLOG",
-        excerpt: idea.concept.substring(0, 160),
-        body: generatedBody,
-        published: false // Starts as Draft
-      }
-    });
+    // Clean the JSON response just in case
+    const cleanContentJson = contentResponseText
+      .replace(/```json\n?/, "")
+      .replace(/\n?```/, "")
+      .trim();
+
+    const contentData = JSON.parse(cleanContentJson);
 
     // 3. Generate Pinterest Pin Metadata for the new post
     const pinMetadataPrompt = `
 We need to generate Pinterest Pin metadata for the following new blog post:
-Title: "${idea.title}"
-Concept: "${idea.concept}"
+Title: "${contentData.title || idea.title}"
+Excerpt: "${contentData.excerpt || idea.concept}"
 
 Please provide:
 1. An optimized, click-worthy Pin Title (max 100 characters).
@@ -120,30 +102,77 @@ Format:
 }
 `;
 
+    console.log("📌 Generating Pinterest pin metadata...");
     const pinMetaResponse = await getGeminiResponse(pinMetadataPrompt, true);
-    const pinMeta = JSON.parse(pinMetaResponse);
+    const cleanPinMetaJson = pinMetaResponse
+      .replace(/```json\n?/, "")
+      .replace(/\n?```/, "")
+      .trim();
+    const pinMeta = JSON.parse(cleanPinMetaJson);
 
-    // 4. Generate Pin Image for the new post
-    console.log(`🎨 Generating AI image for new post with prompt: "${pinMeta.imagePrompt}"`);
-    const rawImage = await generateImage(pinMeta.imagePrompt, "preview");
-    const imageBuffer = await getBufferFromImageData(rawImage);
+    // 4. Generate visual cover image (used for both website cover image and pin base)
+    const finalImagePrompt = pinMeta.imagePrompt || contentData.coverImagePrompt || `Professional food photography of ${idea.title}`;
+    console.log(`🎨 Generating AI image with prompt: "${finalImagePrompt}"`);
+    const rawImage = await generateImage(finalImagePrompt, "preview");
+    
+    // Save/compress local cover image for website
+    console.log("💾 Saving and compressing cover image for website...");
+    const coverImageUrl = await saveAndCompressImage(rawImage, contentData.title || idea.title);
 
-    // 5. Composite Text Overlay onto new image
+    // Save draft Content in database (fully populated!)
+    const slug = slugify(contentData.title || idea.title) + "-" + Math.floor(Math.random() * 1000);
+    
+    // Auto-classification of tags (supporting both what Gemini returns and standard category fallbacks)
+    const tags: string[] = Array.isArray(contentData.tags) ? contentData.tags : [];
+    const lowerTitle = (contentData.title || idea.title).toLowerCase();
+    if (lowerTitle.includes("breakfast") && !tags.includes("Breakfast")) tags.push("Breakfast");
+    if (lowerTitle.includes("lunch") && !tags.includes("Lunch")) tags.push("Lunch");
+    if (lowerTitle.includes("dinner") && !tags.includes("Dinner")) tags.push("Dinner");
+    if (lowerTitle.includes("snack") && !tags.includes("Snacks")) tags.push("Snacks");
+
+    const contentDraft = await prisma.content.create({
+      data: {
+        title: contentData.title || idea.title,
+        slug,
+        type: contentType,
+        excerpt: contentData.excerpt || idea.concept.substring(0, 160),
+        body: contentData.body,
+        coverImage: coverImageUrl,
+        coverImagePrompt: finalImagePrompt,
+        ingredients: contentData.ingredients ? JSON.stringify(contentData.ingredients) : "[]",
+        cookingTime: contentData.cookingTime || null,
+        prepTime: contentData.prepTime || null,
+        difficulty: contentData.difficulty || null,
+        servings: contentData.servings || null,
+        calories: contentData.calories || null,
+        fat: contentData.fat || null,
+        carbs: contentData.carbs || null,
+        protein: contentData.protein || null,
+        tags: JSON.stringify([...new Set(tags)]),
+        seoTitle: contentData.seoTitle || null,
+        seoDesc: contentData.seoDesc || null,
+        schema: typeof contentData.schema === 'object' ? JSON.stringify(contentData.schema) : (contentData.schema || null),
+        published: false // Starts as Draft
+      }
+    });
+
+    // 5. Composite Text Overlay onto new image for the Pinterest pin
     console.log(`✍️ Compositing text overlay: "${pinMeta.textOverlay}"`);
+    const imageBuffer = await getBufferFromImageData(rawImage);
     const compositeBuffer = await applyTextOverlay(imageBuffer, pinMeta.textOverlay, {
       position: pinMeta.overlayPosition || "bottom",
       style: pinMeta.overlayStyle || "dark",
       title: "NutriGuide"
     });
 
-    // Save image locally
+    // Save Pinterest pin image locally
     const fileName = `pin-new-${contentDraft.id}-${Date.now()}.jpg`;
     const localFilePath = path.join(draftUploadDir, fileName);
     fs.writeFileSync(localFilePath, compositeBuffer);
     
     let publicImageUrl = `/uploads/pinterest/drafts/${fileName}`;
 
-    // Upload to ImgBB if key is present (great for local testing)
+    // Upload to ImgBB if key is present
     const imgbbKey = process.env.IMGBB_API_KEY;
     if (imgbbKey) {
       try {
