@@ -68,6 +68,7 @@ model Content {
   favorites            Favorite[]
   personalizedRequests PersonalizedRequest[]
   reviews              Review[]
+  pinterestPins        PinterestPin[]
 
   @@index([createdAt])
   @@index([type, published])
@@ -268,4 +269,39 @@ model Category {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model PinterestIdea {
+  id          String   @id @default(cuid())
+  title       String
+  concept     String   // Short summary of the recipe/blog concept
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED, PROCESSED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  pins        PinterestPin[]
+}
+
+model PinterestPin {
+  id               String   @id @default(cuid())
+  ideaId           String?
+  contentId        String?
+  title            String
+  description      String
+  boardName        String
+  imageUrl         String   // Path to image (with overlay)
+  textOverlay      String   // The text rendered on the image
+  overlayPosition  String   // top, center, bottom
+  overlayStyle     String   // dark, light, accent
+  status           String   @default("DRAFT") // DRAFT, SCHEDULED, POSTED, FAILED
+  scheduledAt      DateTime?
+  postedAt         DateTime?
+  pinUrl           String?
+  pinId            String?
+  isNew            Boolean  @default(true) // True = from new idea, False = from existing content
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  idea             PinterestIdea? @relation(fields: [ideaId], references: [id])
+  content          Content?       @relation(fields: [contentId], references: [id])
+}
+
 

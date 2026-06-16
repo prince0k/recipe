@@ -14,6 +14,7 @@ export function AdminSidebar() {
     { name: "Subscribers", href: "/admin/subscribers", icon: "📬" },
     { name: "Content", href: "/admin/content", icon: "📝" },
     { name: "AI Content Gen", href: "/admin/content/ai-generator", icon: "✨" },
+    { name: "Pinterest Poster", href: "/admin/pinterest", icon: "📌" },
     { name: "Categories", href: "/admin/categories", icon: "🗂️" },
     { name: "Reviews", href: "/admin/reviews", icon: "⭐" },
     { name: "Partners", href: "/admin/partners", icon: "🤝" },
