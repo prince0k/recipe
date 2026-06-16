@@ -231,3 +231,44 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const session = await auth();
+    if (session?.user?.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { pinIds } = await req.json();
+
+    if (!pinIds || !Array.isArray(pinIds)) {
+      return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
+    }
+
+    const pins = await prisma.pinterestPin.findMany({
+      where: {
+        id: { in: pinIds }
+      }
+    });
+
+    for (const pin of pins) {
+      // Delete the PinterestPin draft
+      await prisma.pinterestPin.delete({
+        where: { id: pin.id }
+      });
+
+      // If it's a new pin, delete its associated draft content
+      if (pin.isNew && pin.contentId) {
+        await prisma.content.delete({
+          where: { id: pin.contentId }
+        });
+        console.log(`🧹 Deleted content draft: ${pin.contentId}`);
+      }
+    }
+
+    return NextResponse.json({ success: true, message: `Successfully deleted ${pins.length} pin draft(s)` });
+  } catch (error: any) {
+    console.error("Delete pin drafts error:", error);
+    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+  }
+}

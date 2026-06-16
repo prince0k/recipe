@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Pin, FileText, CheckCircle2, RefreshCw, ArrowLeft, ArrowRight, Eye, Calendar, X } from "lucide-react";
+import { Pin, FileText, CheckCircle2, RefreshCw, ArrowLeft, ArrowRight, Eye, Calendar, X, Trash2, CheckSquare, Square } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -31,6 +31,7 @@ interface Props {
 export function PinterestApproveClient({ initialPins }: Props) {
   const router = useRouter();
   const [pins, setPins] = useState<PinData[]>(initialPins);
+  const [selectedIds, setSelectedIds] = useState<string[]>(initialPins.map(p => p.id));
   const [previewContent, setPreviewContent] = useState<{ title: string; body: string } | null>(null);
   
   // Scheduling Actions States
@@ -38,15 +39,33 @@ export function PinterestApproveClient({ initialPins }: Props) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [scheduleDetails, setScheduleDetails] = useState<{ count: number; t1: string; t2: string } | null>(null);
 
-  const handleApproveAll = async () => {
-    if (!confirm("Confirm Approval: This will publish the new blog posts live and schedule all pins for their peak traffic hours?")) return;
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === pins.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(pins.map(p => p.id));
+    }
+  };
+
+  const handleApproveSelected = async () => {
+    if (selectedIds.length === 0) {
+      alert("Please select at least one pin to approve.");
+      return;
+    }
+    if (!confirm(`Confirm Approval: This will publish the new blog posts live and schedule the ${selectedIds.length} selected pins for their peak traffic hours?`)) return;
 
     setLoading(true);
     try {
       const res = await fetch("/api/admin/pinterest/pins", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "approve_all" })
+        body: JSON.stringify({ action: "approve_selected", pinIds: selectedIds })
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -56,6 +75,9 @@ export function PinterestApproveClient({ initialPins }: Props) {
           t2: data.time2
         });
         setIsSuccess(true);
+        // Remove approved pins from local view list
+        setPins(prev => prev.filter(p => !selectedIds.includes(p.id)));
+        setSelectedIds([]);
       } else {
         alert(`Error: ${data.error || "Failed to schedule pins"}`);
       }
@@ -67,28 +89,118 @@ export function PinterestApproveClient({ initialPins }: Props) {
     }
   };
 
+  const handleDeleteSelected = async () => {
+    if (selectedIds.length === 0) {
+      alert("Please select at least one pin to reject.");
+      return;
+    }
+    if (!confirm(`Are you sure you want to REJECT and DELETE the ${selectedIds.length} selected pin drafts and their draft articles?`)) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/pinterest/pins", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pinIds: selectedIds })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert(data.message || "Successfully deleted pin drafts");
+        setPins(prev => prev.filter(p => !selectedIds.includes(p.id)));
+        setSelectedIds([]);
+        router.refresh();
+      } else {
+        alert(`Error: ${data.error || "Failed to delete pins"}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error deleting pins.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteIndividual = async (id: string) => {
+    if (!confirm("Are you sure you want to REJECT and DELETE this pin draft and its draft article?")) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/pinterest/pins", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pinIds: [id] })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setPins(prev => prev.filter(p => p.id !== id));
+        setSelectedIds(prev => prev.filter(x => x !== id));
+        router.refresh();
+      } else {
+        alert(`Error: ${data.error || "Failed to delete pin"}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error deleting pin.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Top Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
         <div>
-          <h3 className="font-bold text-gray-900">Approve and Schedule Release</h3>
-          <p className="text-gray-500 text-xs mt-0.5">
-            Review the generated Pin graphics and write-ups below. approving them launches the scheduler.
+          <h3 className="font-bold text-gray-900 text-lg leading-tight">Approve and Schedule Release</h3>
+          <p className="text-gray-500 text-xs mt-1">
+            Select which pins to publish. Approving will publish their draft articles and queue the pin graphics.
           </p>
-        </div>
-        <button
-          onClick={handleApproveAll}
-          disabled={pins.length === 0 || loading}
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-[#e60023] hover:bg-[#b80018] disabled:opacity-40 text-white font-bold rounded-lg text-sm transition-colors cursor-pointer shadow-sm"
-        >
-          {loading ? (
-            <RefreshCw className="w-4 h-4 animate-spin" />
-          ) : (
-            <CheckCircle2 className="w-4 h-4" />
+          {pins.length > 0 && (
+            <button
+              onClick={toggleSelectAll}
+              className="mt-3 flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-800 transition-colors cursor-pointer"
+            >
+              {selectedIds.length === pins.length ? (
+                <CheckSquare className="w-4 h-4 text-[#e60023]" />
+              ) : (
+                <Square className="w-4 h-4 text-slate-400" />
+              )}
+              <span>
+                {selectedIds.length === pins.length 
+                  ? "Deselect All Drafts" 
+                  : `Select All Drafts (${pins.length})`}
+              </span>
+            </button>
           )}
-          Publish Posts & Schedule Queue
-        </button>
+        </div>
+
+        {pins.length > 0 && (
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Delete Selected */}
+            <button
+              onClick={handleDeleteSelected}
+              disabled={selectedIds.length === 0 || loading}
+              className="flex items-center justify-center gap-2 px-5 py-3 border border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-40 font-bold rounded-xl text-sm transition-colors cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4" />
+              Reject Selected ({selectedIds.length})
+            </button>
+
+            {/* Approve Selected */}
+            <button
+              onClick={handleApproveSelected}
+              disabled={selectedIds.length === 0 || loading}
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#e60023] hover:bg-[#b80018] disabled:opacity-40 text-white font-bold rounded-xl text-sm transition-colors cursor-pointer shadow-sm"
+            >
+              {loading ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : (
+                <CheckCircle2 className="w-4 h-4" />
+              )}
+              Approve & Schedule ({selectedIds.length})
+            </button>
+          </div>
+        )}
       </div>
 
       {pins.length === 0 ? (
@@ -107,66 +219,102 @@ export function PinterestApproveClient({ initialPins }: Props) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {pins.map((pin) => (
-            <div 
-              key={pin.id} 
-              className={`bg-white border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between ${
-                pin.isNew ? "border-emerald-200 bg-emerald-50/5" : "border-blue-200 bg-blue-50/5"
-              }`}
-            >
-              {/* Header Badge */}
-              <div className={`px-4 py-2 text-xs font-bold flex items-center justify-between ${
-                pin.isNew ? "bg-emerald-500/10 text-emerald-800" : "bg-blue-500/10 text-blue-800"
-              }`}>
-                <span>{pin.isNew ? "Fresh AI Content (New Recipe)" : "Evergreen Mixer (Existing Recipe)"}</span>
-                <span className="font-mono text-[10px]">Board: {pin.boardName}</span>
-              </div>
-
-              {/* Pin Presentation */}
-              <div className="p-6 flex flex-col sm:flex-row gap-6 items-start">
-                {/* Image Graphic with Overlay */}
-                <div className="w-full sm:w-44 shrink-0 flex flex-col gap-2">
-                  <div className="relative aspect-[2/3] bg-slate-100 rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-                    <img 
-                      src={pin.imageUrl} 
-                      alt={pin.title} 
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200";
-                      }}
-                    />
+          {pins.map((pin) => {
+            const isSelected = selectedIds.includes(pin.id);
+            return (
+              <div 
+                key={pin.id} 
+                className={`relative bg-white border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between ${
+                  isSelected 
+                    ? pin.isNew 
+                      ? "border-emerald-400 ring-2 ring-emerald-400/20 bg-emerald-50/5" 
+                      : "border-blue-400 ring-2 ring-blue-400/20 bg-blue-50/5"
+                    : "border-gray-200 grayscale-[10%]"
+                }`}
+              >
+                {/* Checkbox Header Overlay */}
+                <div 
+                  className={`px-4 py-3 text-xs font-bold flex items-center justify-between cursor-pointer border-b select-none transition-colors ${
+                    isSelected
+                      ? pin.isNew 
+                        ? "bg-emerald-500/10 text-emerald-800 border-emerald-100" 
+                        : "bg-blue-500/10 text-blue-800 border-blue-100"
+                      : "bg-gray-50 text-gray-600 border-gray-100"
+                  }`}
+                  onClick={() => toggleSelect(pin.id)}
+                >
+                  <div className="flex items-center gap-2">
+                    {isSelected ? (
+                      <CheckSquare className={`w-4 h-4 ${pin.isNew ? "text-emerald-600" : "text-blue-600"}`} />
+                    ) : (
+                      <Square className="w-4 h-4 text-gray-400" />
+                    )}
+                    <span>{pin.isNew ? "Fresh AI Content (New Recipe)" : "Evergreen Mixer (Existing Recipe)"}</span>
                   </div>
-                  <span className="text-[10px] text-center text-slate-400 italic">
-                    Text Overlay: "{pin.textOverlay}" ({pin.overlayStyle} / {pin.overlayPosition})
-                  </span>
+                  <span className="font-mono text-[10px]">Board: {pin.boardName}</span>
                 </div>
 
-                {/* Details */}
-                <div className="flex-1 space-y-4">
-                  <div>
-                    <h4 className="font-bold text-gray-900 text-lg leading-tight font-serif">{pin.title}</h4>
-                    <p className="text-gray-600 text-xs mt-2 leading-relaxed">{pin.description}</p>
-                  </div>
-
-                  {pin.content && (
-                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 flex items-center justify-between">
-                      <div className="truncate pr-4">
-                        <span className="text-[10px] text-gray-400 font-bold block uppercase">Linked Article</span>
-                        <span className="text-xs text-slate-700 font-medium truncate block">{pin.content.title}</span>
-                      </div>
-                      
-                      <button
-                        onClick={() => setPreviewContent({ title: pin.content!.title, body: pin.content!.body })}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold rounded transition-colors shrink-0 cursor-pointer"
-                      >
-                        <Eye className="w-3.5 h-3.5" /> Read
-                      </button>
+                {/* Pin Presentation */}
+                <div className="p-6 flex flex-col sm:flex-row gap-6 items-start">
+                  {/* Image Graphic with Overlay */}
+                  <div className="w-full sm:w-44 shrink-0 flex flex-col gap-2">
+                    <div 
+                      className="relative aspect-[2/3] bg-slate-100 rounded-xl overflow-hidden border border-gray-200 shadow-sm cursor-pointer"
+                      onClick={() => toggleSelect(pin.id)}
+                    >
+                      <img 
+                        src={pin.imageUrl} 
+                        alt={pin.title} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200";
+                        }}
+                      />
                     </div>
-                  )}
+                    <span className="text-[10px] text-center text-slate-400 italic">
+                      Text Overlay: "{pin.textOverlay}" ({pin.overlayStyle} / {pin.overlayPosition})
+                    </span>
+                  </div>
+
+                  {/* Details */}
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-lg leading-tight font-serif">{pin.title}</h4>
+                      <p className="text-gray-600 text-xs mt-2 leading-relaxed">{pin.description}</p>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      {pin.content && (
+                        <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 flex items-center justify-between">
+                          <div className="truncate pr-4">
+                            <span className="text-[10px] text-gray-400 font-bold block uppercase">Linked Article</span>
+                            <span className="text-xs text-slate-700 font-medium truncate block">{pin.content.title}</span>
+                          </div>
+                          
+                          <button
+                            onClick={() => setPreviewContent({ title: pin.content!.title, body: pin.content!.body })}
+                            className="flex items-center gap-1 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold rounded transition-colors shrink-0 cursor-pointer"
+                          >
+                            <Eye className="w-3.5 h-3.5" /> Read
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Card Rejection Action */}
+                      <div className="flex justify-end pt-1">
+                        <button
+                          onClick={() => handleDeleteIndividual(pin.id)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 border border-red-100 hover:border-red-200 font-bold rounded-lg transition-all cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Reject Draft
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -212,7 +360,7 @@ export function PinterestApproveClient({ initialPins }: Props) {
             <div className="space-y-2">
               <h3 className="text-2xl font-bold text-slate-800">Queue Active!</h3>
               <p className="text-slate-500 text-sm leading-relaxed">
-                Successfully published new draft blog articles and scheduled <strong>{scheduleDetails.count} Pins</strong> for maximum Pinterest engagement.
+                Successfully published selected draft articles and scheduled <strong>{scheduleDetails.count} Pins</strong> for peak Pinterest traffic times.
               </p>
             </div>
 
@@ -236,7 +384,7 @@ export function PinterestApproveClient({ initialPins }: Props) {
               }}
               className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-all cursor-pointer shadow"
             >
-              Return to Pinterest command Center
+              Return to Pinterest Command Center
             </button>
           </div>
         </div>
