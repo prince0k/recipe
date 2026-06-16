@@ -159,6 +159,33 @@ Please provide:
 2. An optimized Pin Description (max 500 characters, including 3 relevant hashtags, keywords, and a clear call-to-action).
 3. A recommended Pinterest Board Name (e.g. "Healthy Breakfasts", "Gut Health Tips", "Keto Diet Recipes").
 4. A visual image prompt suitable for a professional food photography shot of this topic.
+   CRITICAL REQUIREMENT FOR THE "imagePrompt" VALUE:
+   You must combine the core topic of the post with the design template and styling guidelines below. The resulting prompt must be a single cohesive, highly descriptive paragraph describing a premium photo (with NO UI elements like buttons, panels, or literal text) that incorporates these aesthetics:
+   --- DESIGN TEMPLATE ---
+   Redesign and enhance this content/image to look premium, modern, visually polished, and high-converting while maintaining the original core message and subject.
+   Improve:
+   • Visual hierarchy (clear focal point and information flow)
+   • Typography (clean, bold, highly readable)
+   • Spacing and alignment (balanced, intentional layout)
+   • Contrast and readability (better text visibility)
+   • Composition (strong focal point, less clutter)
+   • Color balance and lighting (professional, cohesive)
+   • Brand consistency (premium, trustworthy aesthetic)
+   • Engagement and conversion appeal
+   Design guidelines:
+   • Use clean, modern, minimal aesthetics
+   • Add subtle depth with soft shadows, gradients, or glassmorphism where appropriate
+   • Improve readability using overlays if text sits on busy backgrounds
+   • Make the layout feel intentional, structured, and visually balanced
+   • Remove unnecessary clutter and empty spaces
+   • Ensure mobile-first readability and social media optimization
+   • Create strong visual hierarchy: headline → supporting content → CTA → visual focus
+   • Keep the design premium, professional, and scroll-stopping
+   Style direction:
+   Modern, high-end, aesthetically pleasing, minimal yet impactful, premium brand feel, polished UI/UX, clean composition, natural lighting, subtle luxury aesthetic.
+   Output goal:
+   Make it look like it was designed by a top-tier creative agency for maximum engagement, trust, and conversion while keeping it authentic and not overly gimmicky.
+   -----------------------
 5. The text overlay string to be written on the Pin image (short, punchy, click-enticing, max 30 characters, e.g. "Soy-Free Vegan Tart").
 6. The overlay position: "top", "center", or "bottom".
 7. The overlay style: "dark", "light", or "accent".
@@ -182,8 +209,8 @@ Format:
     const pinMeta = JSON.parse(cleanPinMetaJson);
 
     // 4. Generate visual cover image (used for both website cover image and pin base)
-    // Hardcoded to the exact premium wellness brand food bowl prompt specified by user to ensure consistency and save credits
-    const finalImagePrompt = "Redesign this health landing-page hero image for a premium wellness brand. Keep the healthy food bowl aesthetic (avocado, greens, grilled protein) but make it modern, clean, and high-converting.";
+    // Uses the dynamically generated prompt which combines the topic and the premium design template guidelines
+    const finalImagePrompt = pinMeta.imagePrompt || `Professional food photography shot of ${idea.title}, premium wellness brand aesthetic, modern, clean, minimal composition, natural lighting`;
     console.log(`🎨 Generating AI image with prompt: "${finalImagePrompt}"`);
     const rawImage = await generateImage(finalImagePrompt, "preview");
     
