@@ -20,6 +20,87 @@ function sanitizeContent(text: string): string {
     .trim();
 }
 
+/**
+ * Robustly extracts the first JSON object ({}) or array ([]) from a string
+ * that may contain markdown code fences, conversational text, or other noise.
+ * Handles nested braces/brackets and escaped strings correctly.
+ */
+export function extractFirstJSON(str: string): string {
+  // Strip markdown code fences first
+  const cleaned = str
+    .replace(/```json\s*/gi, "")
+    .replace(/```\s*/g, "")
+    .trim();
+
+  // Find the first { or [
+  const objStart = cleaned.indexOf("{");
+  const arrStart = cleaned.indexOf("[");
+
+  let startIdx: number;
+  let openChar: string;
+  let closeChar: string;
+
+  if (objStart === -1 && arrStart === -1) {
+    throw new Error("Could not find start of JSON object or array in response");
+  } else if (objStart === -1) {
+    startIdx = arrStart;
+    openChar = "[";
+    closeChar = "]";
+  } else if (arrStart === -1) {
+    startIdx = objStart;
+    openChar = "{";
+    closeChar = "}";
+  } else {
+    // Pick whichever comes first
+    if (arrStart < objStart) {
+      startIdx = arrStart;
+      openChar = "[";
+      closeChar = "]";
+    } else {
+      startIdx = objStart;
+      openChar = "{";
+      closeChar = "}";
+    }
+  }
+
+  let depth = 0;
+  let inString = false;
+  let escapeNext = false;
+
+  for (let i = startIdx; i < cleaned.length; i++) {
+    const char = cleaned[i];
+
+    if (escapeNext) {
+      escapeNext = false;
+      continue;
+    }
+
+    if (char === "\\") {
+      escapeNext = true;
+      continue;
+    }
+
+    if (char === '"') {
+      inString = !inString;
+      continue;
+    }
+
+    if (!inString) {
+      if (char === openChar) {
+        depth++;
+      } else if (char === closeChar) {
+        depth--;
+        if (depth === 0) {
+          return cleaned.substring(startIdx, i + 1);
+        }
+      }
+    }
+  }
+
+  throw new Error("Could not find matching closing brace/bracket for JSON");
+}
+
+
 // Reliable text models list
 // Stage 1: Cost-optimized prompt/text generation
 const STABLE_MODELS = [

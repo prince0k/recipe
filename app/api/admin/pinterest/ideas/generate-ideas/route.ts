@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { getGeminiResponse } from "@/lib/ai";
+import { getGeminiResponse, extractFirstJSON } from "@/lib/ai";
 import { sendPinterestAlertEmail } from "@/lib/email";
 
 export async function POST() {
@@ -52,11 +52,7 @@ Format example:
 `;
 
     const responseText = await getGeminiResponse(prompt, true);
-    const cleanJsonText = responseText
-      .replace(/```json\n?/, "")
-      .replace(/\n?```/, "")
-      .trim();
-
+    const cleanJsonText = extractFirstJSON(responseText);
     const ideas = JSON.parse(cleanJsonText);
 
     if (!Array.isArray(ideas) || ideas.length === 0) {

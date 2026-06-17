@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { getGeminiResponse, generateImage, STEWART_LUCAS_VOICE } from "@/lib/ai";
+import { getGeminiResponse, generateImage, STEWART_LUCAS_VOICE, extractFirstJSON } from "@/lib/ai";
 import { sendPinterestAlertEmail } from "@/lib/email";
 import { applyTextOverlay, uploadToImgBB } from "@/lib/pinterest-utils";
 import { getPromptByType } from "@/lib/prompts";
@@ -396,7 +396,8 @@ Return response strictly as raw JSON:
 `;
 
       const oldPinMetaResponse = await getGeminiResponse(oldPinPrompt, true);
-      const oldPinMeta = JSON.parse(oldPinMetaResponse);
+      const cleanOldPinMetaJson = extractFirstJSONObject(oldPinMetaResponse);
+      const oldPinMeta = JSON.parse(cleanOldPinMetaJson);
 
       // Use existing cover image for the old/evergreen post to save credits, fallback to generation only if coverImage is missing
       let oldImageBuffer: Buffer;

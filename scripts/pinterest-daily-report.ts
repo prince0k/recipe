@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import { getGeminiResponse } from "../lib/ai";
+import { getGeminiResponse, extractFirstJSON } from "../lib/ai";
 import { sendPinterestAlertEmail } from "../lib/email";
 import { pinterestRequest } from "../lib/pinterest-utils";
 
@@ -143,12 +143,8 @@ Each object in the array must have:
 - "type": The content category. Must be strictly one of these values: "RECIPE", "BLOG", "DIET_PLAN", or "CHEAT_SHEET".
 `;
 
-  let responseText = await getGeminiResponse(prompt, true);
-  const cleanJsonText = responseText
-    .replace(/```json\n?/, "")
-    .replace(/\n?```/, "")
-    .trim();
-
+  const responseText = await getGeminiResponse(prompt, true);
+  const cleanJsonText = extractFirstJSON(responseText);
   const ideas = JSON.parse(cleanJsonText);
   if (!Array.isArray(ideas) || ideas.length === 0) {
     throw new Error("Invalid array returned by Gemini");

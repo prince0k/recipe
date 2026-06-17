@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import { getGeminiResponse } from "../lib/ai";
+import { getGeminiResponse, extractFirstJSON } from "../lib/ai";
 import { sendPinterestAlertEmail } from "../lib/email";
 import { getOrCreateBoard, createPinterestPin } from "../lib/pinterest-utils";
 
@@ -56,11 +56,8 @@ Format example:
     return;
   }
 
-  // Clean the response just in case
-  const cleanJsonText = responseText
-    .replace(/```json\n?/, "")
-    .replace(/\n?```/, "")
-    .trim();
+  // Clean the response using robust JSON extractor
+  const cleanJsonText = extractFirstJSON(responseText);
 
   let ideas: Array<{ title: string; concept: string; type: string }>;
   try {
@@ -213,7 +210,13 @@ async function runScheduler() {
 
       let destinationLink = process.env.SITE_URL || "https://stewartlucas.com";
       if (pin.content) {
-        const pathPrefix = pin.content.type === "RECIPE" ? "recipes" : "blog";
+        const typeToPath: Record<string, string> = {
+          RECIPE: "recipes",
+          BLOG: "blog",
+          DIET_PLAN: "diet-plan",
+          CHEAT_SHEET: "cheat-sheets",
+        };
+        const pathPrefix = typeToPath[pin.content.type] || pin.content.type.toLowerCase().replace("_", "-");
         destinationLink = `${destinationLink.replace(/\/$/, "")}/${pathPrefix}/${pin.content.slug}`;
       }
 
