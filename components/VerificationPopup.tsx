@@ -5,6 +5,18 @@ import { useSearchParams } from "next/navigation";
 import { CheckCircle2, X } from "lucide-react";
 
 export function VerificationPopup() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  return <VerificationPopupInner />;
+}
+
+function VerificationPopupInner() {
   const searchParams = useSearchParams();
   const [show, setShow] = useState(false);
   const [isError, setIsError] = useState(false);
