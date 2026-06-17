@@ -17,8 +17,14 @@ export default function robots(): MetadataRoute.Robots {
         disallow: '/',
       },
       {
-        userAgent: 'Anthropic-AI',
-        disallow: '/',
+        userAgent: 'ClaudeBot',
+        allow: '/',
+        disallow: ['/api/', '/admin/', '/auth/'],
+      },
+      {
+        userAgent: 'Claude-SearchBot',
+        allow: '/',
+        disallow: ['/api/', '/admin/', '/auth/'],
       },
       {
         userAgent: 'PerplexityBot',
