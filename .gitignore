@@ -50,3 +50,7 @@ certificates
 # workspaces and notes
 *.code-workspace
 * - Science-Backed Diet Plans.txt
+
+# User Uploads
+/public/uploads
+/public/uploads/*
