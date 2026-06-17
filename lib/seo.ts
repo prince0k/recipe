@@ -14,23 +14,6 @@ export function formatPageTitle(
   seoTitle: string | null | undefined,
   rawTitle: string
 ): string {
-  if (seoTitle && seoTitle.trim() !== "") {
-    return seoTitle.trim();
-  }
-
-  const title = rawTitle.trim();
-  const siteName = "NutriGuide";
-  const suffix = ` | ${siteName}`;
-
-  // Check if title already contains "nutriguide" case-insensitively
-  if (title.toLowerCase().includes(siteName.toLowerCase())) {
-    return title;
-  }
-
-  // Only append site name if it fits within a reasonable page title length
-  if (title.length + suffix.length <= 65) {
-    return `${title}${suffix}`;
-  }
-
-  return title;
+  const title = (seoTitle && seoTitle.trim() !== "") ? seoTitle.trim() : rawTitle.trim();
+  return title.replace(/\s*\|\s*NutriGuide(?:\s+Recipe)?/gi, "");
 }
