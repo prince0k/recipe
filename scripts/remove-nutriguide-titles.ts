@@ -30,8 +30,8 @@ async function main() {
   for (const item of items) {
     if (!item.seoTitle) continue;
 
-    // Remove " | NutriGuide" or " | NutriGuide Recipe" case insensitively
-    const cleanedTitle = item.seoTitle.replace(/\s*\|\s*NutriGuide(?:\s+Recipe)?/gi, "").trim();
+    // Remove " | NutriGuide" and any variations case insensitively
+    const cleanedTitle = item.seoTitle.replace(/\s*\|\s*[^|]*NutriGuide[^|]*/gi, "").trim();
 
     if (cleanedTitle !== item.seoTitle) {
       console.log(`Updating ID: ${item.id}`);

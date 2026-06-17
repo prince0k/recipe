@@ -15,5 +15,5 @@ export function formatPageTitle(
   rawTitle: string
 ): string {
   const title = (seoTitle && seoTitle.trim() !== "") ? seoTitle.trim() : rawTitle.trim();
-  return title.replace(/\s*\|\s*NutriGuide(?:\s+Recipe)?/gi, "");
+  return title.replace(/\s*\|\s*[^|]*NutriGuide[^|]*/gi, "");
 }
