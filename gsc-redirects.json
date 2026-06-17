@@ -1,0 +1,767 @@
+[
+  {
+    "source": "/recipes/mushroom-and-goat-cheese-omelet-a-perfectly-balanced-breakfast",
+    "destination": "/recipes/mushroom-and-goat-cheese-omelet",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-glow-authentic-poached-eggs-on-avocado-toast",
+    "destination": "/recipes/poached-eggs-on-avocado-toast",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/hearty-golden-lentil-soup-a-wholesome-one-pot-meal",
+    "destination": "/recipes/hearty-lemon-and-herb-chicken-lentil-soup",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-authentic-egg-white-spinach-omelet-a-morning-masterpiece",
+    "destination": "/recipes/light-vitalizing-spinach-egg-white-omelet",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/perfect-pan-seared-white-fish-a-simple-healthy-guide",
+    "destination": "/recipes/pan-seared-white-fish-with-garlic-saut-ed-kale",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-perfect-poached-egg-a-simple-guide",
+    "destination": "/recipes/avocado-and-poached-egg-on-rye",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-turkey-meatballs-with-garden-zucchini-ribbons",
+    "destination": "/recipes/turkey-meatballs-with-garden-zucchini-ribbons",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/slow-baked-white-fish-with-proven-al-herbs-an-authentic-masterpiece",
+    "destination": "/recipes/slow-baked-white-fish-with-proven-al-herbs",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/hearty-flaxseed-oatmeal-a-balanced-morning-bowl",
+    "destination": "/recipes/hearty-flaxseed-oatmeal",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-kissed-lemon-garlic-grilled-cod-bowls",
+    "destination": "/recipes/lemon-garlic-grilled-cod-bowls",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/hearty-lentil-veggie-soup-a-wholesome-one-pot-meal",
+    "destination": "/recipes/hearty-lentil-veggie-soup",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/golden-herb-roasted-chicken-with-silken-sweet-potato-mash",
+    "destination": "/recipes/herb-roasted-chicken-with-silken-sweet-potato-mash",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/baked-cod-with-vibrant-sweet-potato-mash",
+    "destination": "/recipes/baked-cod",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/zesty-artisan-black-bean-salad-a-vibrant-nourished-feast",
+    "destination": "/recipes/zesty-black-bean-salad",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/velvet-scrambled-eggs-with-authentic-chives-creamy-avocado",
+    "destination": "/recipes/creamy-scrambled-eggs-with-fresh-chives-and-avocado",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/perfectly-poached-eggs-with-vibrant-wilted-spinach",
+    "destination": "/recipes/perfectly-poached-eggs-with-wilted-spinach",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-artisan-chia-berry-nourish-bowl-a-great-morning-ritual",
+    "destination": "/recipes/chia-berry-nourish-bowl",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-perfect-pan-seared-ribeye-steak",
+    "destination": "/recipes/pan-seared-ribeye-steak",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-drenched-mediterranean-lentil-salad-with-lemon-tahini-dressing",
+    "destination": "/recipes/mediterranean-lentil-salad-with-lemon-tahini-dressing",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/avocado-and-poached-egg-on-rye-a-balanced-breakfast",
+    "destination": "/recipes/avocado-and-poached-egg-on-rye",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/zesty-lime-shrimp-salad-a-refreshing-high-protein-meal",
+    "destination": "/recipes/zesty-lime-shrimp-salad",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/vibrant-quinoa-vegetable-bowl-with-lemon-tahini-drizzle",
+    "destination": "/recipes/quinoa-vegetable-bowl-with-lemon-tahini-drizzle",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-velvet-berry-spinach-power-smoothie",
+    "destination": "/recipes/the-daily-berry-power-smoothie",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-pan-seared-tempeh-steaks-with-balsamic-reduction",
+    "destination": "/recipes/pan-seared-tempeh-steaks-with-balsamic-reduction",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/warm-vanilla-poached-stewed-pears-a-simple-elegant-dessert",
+    "destination": "/recipes/warm-vanilla-poached-stewed-pears",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/pan-seared-pork-chop-with-garlic-saut-ed-broccoli-a-expert-guide-to-healthy-cooking",
+    "destination": "/recipes/pan-seared-pork-chop-with-garlic-saut-ed-broccoli",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-herb-crusted-chicken-with-roasted-sweet-potato",
+    "destination": "/recipes/herb-crusted-chicken-breast-with-roasted-sweet-potato",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-hour-poached-egg-avocado-rye-toast",
+    "destination": "/recipes/poached-egg-avocado-rye-toast",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-kitchen-authentic-lentil-vegetable-soup",
+    "destination": "/recipes/hearty-lentil-vegetable-soup",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-steel-cut-oats-with-creamy-almond-butter",
+    "destination": "/recipes/steel-cut-oats-with-creamy-almond-butter",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-pear-walnut-platter-a-symphony-of-texture",
+    "destination": "/recipes/pear-walnut-platter",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/harvest-bbfr",
+    "destination": "/recipes/harvest",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/vibrant-scrambled-tofu-with-roasted-peppers",
+    "destination": "/recipes/scrambled-tofu-with-roasted-peppers",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-drenched-mediterranean-lentil-salad-with-crumbled-feta",
+    "destination": "/recipes/mediterranean-lentil-salad-with-crumbled-feta",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-wild-mushroom-omelet-a-expert-guide-to-rustic-elegance",
+    "destination": "/recipes/wild-mushroom-omelet",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/grilled-salmon-over-arugula-and-fennel-a-fresh-nutritious-meal",
+    "destination": "/recipes/grilled-salmon-over-arugula-and-fennel",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/smoked-salmon-on-rye-the-authentic-nordic-morning",
+    "destination": "/recipes/smoked-salmon-on-rye",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-kissed-greek-yogurt-with-authentic-hemp-hearts",
+    "destination": "/recipes/greek-yogurt-with-hemp-hearts",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/flame-kissed-sirloin-with-charred-authentic-broccoli",
+    "destination": "/recipes/flame-kissed-sirloin-with-charred-broccoli",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-pan-seared-ribeye-with-garlic-herb-infused-kale",
+    "destination": "/recipes/pan-seared-ribeye-with-garlic-herb-infused-kale",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-artisan-vitality-chicken-wrap-a-great-lunch",
+    "destination": "/recipes/vitality-chicken-wrap",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/smoked-salmon-on-authentic-seed-crackers",
+    "destination": "/recipes/smoked-salmon-on-seed-crackers",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-kissed-chia-and-flax-seed-breakfast-bowl",
+    "destination": "/recipes/energizing-chia-and-flax-seed-breakfast-bowl",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-drenched-grilled-vegetable-feta-wrap",
+    "destination": "/recipes/grilled-vegetable-feta-wrap",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-hour-greek-yogurt-bowl-an-authentic-morning-ritual",
+    "destination": "/recipes/greek-yogurt-power-bowl",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/creamy-coconut-chia-pudding-a-simple-breakfast-staple",
+    "destination": "/recipes/creamy-coconut-chia-pudding",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-authentic-smoked-salmon-plate-a-expert-guide-to-elegance",
+    "destination": "/recipes/smoked-salmon-plate",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/rustic-garden-lentil-soup-an-authentic-bowl-of-nourishment",
+    "destination": "/recipes/rustic-garden-lentil-soup",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-zucchini-noodles-with-toasted-walnut-basil-pesto",
+    "destination": "/recipes/zucchini-noodles-with-toasted-walnut-basil-pesto",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/vibrant-beef-and-vegetable-stir-fry-a-healthy-weeknight-essential",
+    "destination": "/recipes/beef-and-vegetable-stir-fry",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-herb-crusted-cod-with-garlic-saut-ed-kale",
+    "destination": "/recipes/herb-crusted-cod-with-garlic-saut-ed-kale-2",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-artisan-bison-burger-a-great-feast-with-roasted-sweet-potato",
+    "destination": "/recipes/lean-bison-burger-with-crispy-roasted-sweet-potatoes",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/pan-seared-salmon-with-garlic-asparagus-an-authentic-masterpiece",
+    "destination": "/recipes/pan-seared-salmon-with-garlic-asparagus",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/steamed-turmeric-fish-a-vibrant-nutrient-dense-meal",
+    "destination": "/recipes/steamed-turmeric-fish",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-hour-avocado-toast-with-perfect-poached-eggs",
+    "destination": "/recipes/avocado-toast-with-poached-eggs",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-artisan-s-protein-porridge-a-great-morning-ritual",
+    "destination": "/recipes/creamy-high-protein-morning-porridge",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-standard-authentic-herb-roasted-chicken-breast",
+    "destination": "/recipes/simple-herb-roasted-chicken-breast",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-authentic-tempeh-harvest-wrap",
+    "destination": "/recipes/tempeh-harvest-wrap",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-overnight-oats-with-chia-seeds-a-great-morning-ritual",
+    "destination": "/recipes/overnight-oats-with-chia-seeds",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/golden-herb-roasted-chicken-with-zesty-wild-rice-2",
+    "destination": "/recipes/herb-roasted-chicken-with-zesty-lemon-wild-rice",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-authentic-grilled-chicken-salad-with-balsamic-vinaigrette",
+    "destination": "/recipes/fresh-grilled-chicken-salad-with-balsamic-vinaigrette",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/velvet-almond-chia-seed-pudding-an-authentic-morning-ritual",
+    "destination": "/recipes/simple-blueberry-almond-chia-seed-pudding",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/fiery-zest-spicy-black-bean-stew-with-lime-and-cilantro",
+    "destination": "/recipes/fiery-zest",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-kissed-grilled-shrimp-quinoa-harvest-salad",
+    "destination": "/recipes/grilled-shrimp-quinoa-harvest-salad",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/warm-lentil-and-roasted-root-salad-a-harvest-masterpiece",
+    "destination": "/recipes/warm-lentil-and-roasted-root-salad",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/silken-scrambled-eggs-with-vibrant-wilted-spinach",
+    "destination": "/recipes/silken-scrambled-eggs-with-wilted-spinach",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-hour-authentic-steel-cut-oats-with-toasted-walnuts",
+    "destination": "/recipes/hearty-steel-cut-oats-with-toasted-walnuts-and-chia",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/mediterranean-lentil-salad-an-authentic-harvest-bowl",
+    "destination": "/recipes/mediterranean-lentil-salad",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/vibrant-rainbow-slaw-with-toasted-hemp-hearts",
+    "destination": "/recipes/rainbow-slaw-with-toasted-hemp-hearts",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-steel-cut-oats-with-bursting-blueberries-and-chia",
+    "destination": "/recipes/steel-cut-oats-with-bursting-blueberries-and-chia",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/golden-hour-buckwheat-porridge-a-nourishing-morning-ritual",
+    "destination": "/recipes/warm-cinnamon-buckwheat-porridge",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/vibrant-tempeh-stir-fry-with-crisp-snap-peas",
+    "destination": "/recipes/tempeh-stir-fry-with-crisp-snap-peas",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/golden-hour-quinoa-bowl-roasted-chickpeas-authentic-tahini",
+    "destination": "/recipes/roasted-chickpea-quinoa-bowl-with-creamy-tahini-drizzle",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/restorative-ginger-miso-soup-a-simple-healing-bowl",
+    "destination": "/recipes/restorative-ginger-miso-soup",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-morning-bowl-greek-yogurt-flaxseed-ritual",
+    "destination": "/recipes/greek-yogurt-flaxseed-bowl",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/ginger-miso-cod-with-steamed-bok-choy-a-simple-nutrient-dense-dinner",
+    "destination": "/recipes/ginger-miso-cod-with-steamed-bok-choy",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/vibrant-chicken-pesto-zucchini-noodles-an-authentic-low-carb-masterpiece",
+    "destination": "/recipes/chicken-pesto-zucchini-noodles",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/creamy-cinnamon-millet-porridge-a-nourishing-morning-staple",
+    "destination": "/recipes/creamy-cinnamon-millet-porridge",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/pan-seared-cod-with-garlicky-wilted-kale-a-expert-guide-to-healthy-cooking",
+    "destination": "/recipes/pan-seared-cod-with-garlicky-wilted-kale",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/silken-almond-vanilla-chia-seed-pudding-an-authentic-morning-ritual",
+    "destination": "/recipes/silken-almond-vanilla-chia-seed-pudding",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-kissed-grilled-shrimp-skewers-with-peppery-arugula",
+    "destination": "/recipes/grilled-shrimp-skewers-with-peppery-arugula",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/golden-baked-tempeh-with-ginger-garlic-broccoli",
+    "destination": "/recipes/baked-tempeh-with-ginger-garlic-broccoli",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/rustic-harvest-lentil-stew-an-authentic-garden-bowl",
+    "destination": "/recipes/rustic-harvest-lentil-stew",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-drenched-mediterranean-grilled-tuna-salad",
+    "destination": "/recipes/mediterranean-salad-with-grilled-tuna",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/golden-hour-cod-a-great-coconut-turmeric-broth",
+    "destination": "/recipes/coconut-turmeric-cod",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/light-vibrant-egg-white-veggie-omelet",
+    "destination": "/recipes/light-egg-white-veggie-omelet",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-hour-avocado-smash-on-crusty-sourdough",
+    "destination": "/recipes/avocado-smash-on-crusty-sourdough",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/warm-roasted-beet-and-goat-cheese-salad-4q2o",
+    "destination": "/recipes/warm-roasted-beet-and-goat-cheese-salad",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-turkey-avocado-power-salad",
+    "destination": "/recipes/fresh-turkey-and-avocado-power-salad",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/golden-hour-cinnamon-hemp-seed-oatmeal",
+    "destination": "/recipes/cinnamon-hemp-seed-oatmeal",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-cloud-light-herb-omelet-an-authentic-egg-white-comprehensive-guide",
+    "destination": "/recipes/the-cloud-light-herb-omelet",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/fresh-cauliflower-tabbouleh-a-light-grain-free-twist",
+    "destination": "/recipes/fresh-cauliflower-tabbouleh",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-artisan-lean-beef-brown-rice-power-bowl",
+    "destination": "/recipes/lean-beef-brown-rice-power-bowl",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-smoked-salmon-avocado-whole-grain-toast",
+    "destination": "/recipes/smoked-salmon-avocado-whole-grain-toast",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/nourishing-chickpea-curry-a-simple-vibrant-plant-based-dinner",
+    "destination": "/recipes/one-pot-sweet-potato-and-chickpea-curry",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-scrambled-eggs-with-wilted-kale-a-morning-masterpiece",
+    "destination": "/recipes/creamy-scrambled-eggs-with-garlicky-wilted-kale",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-drenched-lentil-salad-with-zesty-lemon-herb-vinaigrette",
+    "destination": "/recipes/zesty-french-lentil-salad-with-lemon-herb-vinaigrette",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-artisan-s-protein-oats-a-great-morning-ritual",
+    "destination": "/recipes/s-protein-oats",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-gluten-free-almond-butter-oats",
+    "destination": "/recipes/gluten-free-almond-butter-oats",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-harvest-roasted-chickpea-quinoa-power-bowl",
+    "destination": "/recipes/roasted-chickpea-quinoa-power-bowl",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/fresh-spinach-and-feta-omelet-a-nutritious-breakfast-classic",
+    "destination": "/recipes/fresh-spinach-and-feta-omelet",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-hour-lentil-salad-an-authentic-harvest-bowl",
+    "destination": "/recipes/hearty-lemon-garlic-lentil-and-kale-power-bowl",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/baked-salmon-with-ginger-steamed-bok-choy-an-authentic-masterpiece",
+    "destination": "/recipes/baked-salmon-with-ginger-steamed-bok-choy",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/slow-roasted-lamb-with-mint-and-quinoa-an-authentic-masterpiece",
+    "destination": "/recipes/slow-roasted-lamb-with-mint-and-quinoa",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-authentic-avocado-toast-a-great-morning-ritual",
+    "destination": "/recipes/avocado-smash-on-sprouted-toast",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-drenched-arugula-charred-tofu-salad",
+    "destination": "/recipes/arugula-charred-tofu-salad",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-drenched-mediterranean-tuna-salad-bowl",
+    "destination": "/recipes/mediterranean-tuna-salad-bowl",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-herb-crusted-turkey-breast-with-blistered-green-beans",
+    "destination": "/recipes/herb-crusted-turkey-breast-with-blistered-green-beans",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-kissed-lemon-herb-roasted-chicken-thighs",
+    "destination": "/recipes/lemon-herb-roasted-chicken-thighs",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-harvest-authentic-vegetable-omelet-with-side-greens",
+    "destination": "/recipes/garden-fresh-vegetable-omelet-with-lemon-dressed-greens",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/golden-herb-roasted-chicken-with-crispy-asparagus",
+    "destination": "/recipes/herb-roasted-chicken-with-crispy-asparagus",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/rustic-golden-lentil-stew-an-authentic-bowl-of-comfort",
+    "destination": "/recipes/rustic-harvest-lentil-stew",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-hour-greek-yogurt-bowl-a-symphony-of-texture",
+    "destination": "/recipes/greek-yogurt-power-bowl",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-avocado-mash-with-hemp-seeds-the-ultimate-morning-fuel",
+    "destination": "/recipes/creamy-avocado-mash-with-toasted-hemp-seeds",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-drenched-mediterranean-quinoa-chickpea-salad",
+    "destination": "/recipes/mediterranean-quinoa-chickpea-salad",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-sardine-flax-crisp-a-mediterranean-masterpiece",
+    "destination": "/recipes/sardine-flax-crisp",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-sunrise-authentic-bell-pepper-omelet",
+    "destination": "/recipes/bell-pepper-omelet",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-velvet-berry-vitality-protein-smoothie",
+    "destination": "/recipes/the-verdant-vitality-protein-smoothie",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-drenched-grilled-chicken-lemon-zest-salad",
+    "destination": "/recipes/grilled-lemon-zest-chicken-salad",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/pan-seared-cod-with-authentic-wild-rice-pilaf",
+    "destination": "/recipes/pan-seared-cod",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/oven-roasted-trout-with-golden-cauliflower",
+    "destination": "/recipes/oven-roasted-trout-with-cauliflower",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-hour-chicken-avocado-bowl",
+    "destination": "/recipes/chicken-avocado-bowl",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/authentic-avocado-mash-on-sourdough-with-hemp-seeds",
+    "destination": "/recipes/avocado-mash-on-sourdough-with-hemp-seeds",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/velvet-wild-blueberry-chia-seed-pudding",
+    "destination": "/recipes/wild-blueberry-chia-seed-pudding",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/golden-turmeric-lentil-soup-a-hearty-healing-bowl",
+    "destination": "/recipes/hearty-lemon-garlic-lentil-and-kale-power-bowl",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-fold-artisan-spinach-mushroom-omelet",
+    "destination": "/recipes/spinach-and-mushroom-omelet",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/warm-roasted-beet-and-goat-cheese-salad-a-masterpiece-of-earth-and-cream",
+    "destination": "/recipes/warm-roasted-beet-and-goat-cheese-salad",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-velvet-blueberry-almond-vitality-smoothie",
+    "destination": "/recipes/the-daily-vitality-blueberry-smoothie",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/pan-seared-salmon-with-vibrant-asparagus-an-authentic-comprehensive-guide",
+    "destination": "/recipes/pan-seared-salmon-with-lemon-garlic-asparagus",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-kissed-grilled-shrimp-and-avocado-salad",
+    "destination": "/recipes/grilled-shrimp-and-avocado-salad",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/rustic-lentil-and-kale-soup-an-authentic-bowl-of-warmth",
+    "destination": "/recipes/rustic-lentil-and-kale-soup",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-emerald-harvest-artisan-turkey-avocado-collard-wraps",
+    "destination": "/recipes/the-emerald-harvest",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-drenched-baked-cod-in-authentic-lemon-herb-butter",
+    "destination": "/recipes/baked-cod-in-lemon-herb-butter",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-velvet-fold-goat-cheese-spinach-omelet",
+    "destination": "/recipes/creamy-goat-cheese-and-spinach-omelet",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/roasted-sea-bass-with-seasonal-greens-a-great-coastal-masterpiece",
+    "destination": "/recipes/roasted-sea-bass-with-seasonal-greens",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/pan-seared-cod-with-authentic-asparagus-a-great-comprehensive-guide",
+    "destination": "/recipes/pan-seared-cod",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/light-vibrant-bell-pepper-egg-white-omelet",
+    "destination": "/recipes/light-bell-pepper-egg-white-omelet",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-velvet-blueberry-vitality-protein-smoothie",
+    "destination": "/recipes/the-verdant-vitality-protein-smoothie",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/sun-kissed-carrot-sticks-velvet-hummus",
+    "destination": "/recipes/carrot-sticks-and-hummus-recipe",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/golden-morning-quinoa-porridge-with-toasted-almonds",
+    "destination": "/recipes/morning-quinoa-porridge-with-toasted-almonds",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-golden-morning-authentic-tofu-scramble",
+    "destination": "/recipes/turmeric-spiced-tofu-scramble",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/nourishing-grass-fed-beef-massaged-kale-bowl",
+    "destination": "/recipes/grass-fed-beef-massaged-kale-bowl",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/turmeric-spiced-tofu-scramble-a-golden-breakfast",
+    "destination": "/recipes/turmeric-spiced-tofu-scramble",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/kitchen-hnkw",
+    "destination": "/recipes/kitchen",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/three-egg-veggie-frittata-a-simple-nutrient-dense-meal",
+    "destination": "/recipes/three-egg-veggie-frittata",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/creamy-cashew-pasta-a-dairy-free-comfort-classic",
+    "destination": "/recipes/creamy-cashew-pasta",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/kitchen-xs3u",
+    "destination": "/recipes/kitchen",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/zesty-tuna-lettuce-wraps-a-fresh-high-protein-lunch-utpjg",
+    "destination": "/recipes/zesty-tuna-lettuce-wraps",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/simple-almond-milk-chia-seed-pudding-ezxp8",
+    "destination": "/recipes/simple-blueberry-almond-chia-seed-pudding",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/perfectly-poached-eggs-on-smashed-avocado-toast-0xan3",
+    "destination": "/recipes/poached-eggs-on-avocado-toast",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/pan-seared-halibut-with-garlic-saut-ed-chard-sw6ve",
+    "destination": "/recipes/pan-seared-halibut-with-garlic-saut-ed-chard",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/fresh-zucchini-noodles-with-vibrant-basil-pesto-i2t9t",
+    "destination": "/recipes/fresh-zucchini-noodles-with-basil-pesto",
+    "permanent": true
+  },
+  {
+    "source": "/recipes/the-artisan-s-pantry-elevating-nutrient-density-on-a-mid-range-budget-drtyw",
+    "destination": "/recipes/poached-eggs-on-a-wilted-spinach-nest",
+    "permanent": true
+  }
+]

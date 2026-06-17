@@ -15,10 +15,12 @@ export async function generateMetadata(
   const { slug } = await props.params;
   const content = await prisma.content.findUnique({
     where: { slug, type: 'CHEAT_SHEET' },
-    select: { title: true, excerpt: true, coverImage: true, tags: true, seoTitle: true, seoDesc: true }
+    select: { title: true, excerpt: true, coverImage: true, tags: true, seoTitle: true, seoDesc: true, published: true }
   });
 
-  if (!content) return { title: 'Cheat Sheet Not Found' };
+  if (!content || !content.published) {
+    return notFound();
+  }
 
   const parsedTags = (() => {
     try {

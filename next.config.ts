@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import gscRedirects from "./gsc-redirects.json";
 
 const nextConfig: NextConfig = {
   images: {
@@ -93,6 +94,7 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      ...gscRedirects,
       /*
        * REDIRECT ORDERING RULES:
        * 1. Specific legacy routes (e.g., precise paths with AI suffixes like -pptnr) MUST be defined 

@@ -13,10 +13,12 @@ export async function generateMetadata(
   const { slug } = await props.params;
   const content = await prisma.content.findUnique({
     where: { slug },
-    select: { title: true, excerpt: true, coverImage: true, tags: true, seoTitle: true, seoDesc: true }
+    select: { title: true, excerpt: true, coverImage: true, tags: true, seoTitle: true, seoDesc: true, published: true }
   });
 
-  if (!content) return { title: 'Recipe Not Found' };
+  if (!content || !content.published) {
+    return notFound();
+  }
 
   const parsedTags = (() => {
     try {
@@ -93,7 +95,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
     }
   });
 
-  if (!recipe || recipe.type !== "RECIPE") {
+  if (!recipe || recipe.type !== "RECIPE" || !recipe.published) {
     return notFound();
   }
 
