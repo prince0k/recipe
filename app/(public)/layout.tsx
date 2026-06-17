@@ -1,9 +1,14 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SubscribePopup } from "@/components/ui/SubscribePopup";
-import { VerificationPopup } from "@/components/VerificationPopup";
 import { AdBanner } from "@/components/ui/AdBanner";
+import dynamic from "next/dynamic";
+
+const VerificationPopup = dynamic(
+  () => import("@/components/VerificationPopup").then(mod => mod.VerificationPopup),
+  { ssr: false }
+);
 
 export default function PublicLayout({
   children,
@@ -13,9 +18,7 @@ export default function PublicLayout({
   return (
     <>
       <Navbar />
-      <Suspense fallback={null}>
-        <VerificationPopup />
-      </Suspense>
+      <VerificationPopup />
       <main id="main-content" className="flex-grow">{children}</main>
       <SubscribePopup />
       <AdBanner placement="GLOBAL_FOOTER" />
