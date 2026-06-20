@@ -14,6 +14,12 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
+  const [featuredImgError, setFeaturedImgError] = useState(false);
+  const [featuredRetryWithoutLoader, setFeaturedRetryWithoutLoader] = useState(false);
+
+  const [gridImgErrors, setGridImgErrors] = useState<Record<string, boolean>>({});
+  const [gridRetryWithoutLoader, setGridRetryWithoutLoader] = useState<Record<string, boolean>>({});
+
   // Categories definition
   const categories = [
     { id: "all", label: "All" },
@@ -268,15 +274,23 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
                 <div className="flex flex-col lg:flex-row bg-white border border-[#E0D4C3] overflow-hidden hover:shadow-2xl transition-all duration-500 rounded-none">
                   {/* Image Block */}
                   <div className="relative w-full lg:w-1/2 h-64 sm:h-80 md:h-[380px] bg-[#FAF9F6]">
-                    {featuredPlan.coverImage ? (
+                    {(featuredPlan.coverImage && !featuredImgError) ? (
                       <Image
                         src={featuredPlan.coverImage}
                         alt={featuredPlan.title}
                         fill
                         className="object-cover transition-transform duration-700 group-hover:scale-103"
                         sizes="(max-width: 1024px) 100vw, 50vw"
-                        loader={featuredPlan.coverImage.startsWith('/uploads/images/') && featuredPlan.coverImage.endsWith('.webp') ? uploadsLoader : undefined}
-                        unoptimized={!featuredPlan.coverImage.startsWith('/uploads/images/') && featuredPlan.coverImage.startsWith('/uploads')}
+                        onError={() => {
+                          const isLocal = featuredPlan.coverImage.startsWith('/uploads/images/') && featuredPlan.coverImage.endsWith('.webp');
+                          if (isLocal && !featuredRetryWithoutLoader) {
+                            setFeaturedRetryWithoutLoader(true);
+                          } else {
+                            setFeaturedImgError(true);
+                          }
+                        }}
+                        loader={featuredPlan.coverImage.startsWith('/uploads/images/') && featuredPlan.coverImage.endsWith('.webp') && !featuredRetryWithoutLoader ? uploadsLoader : undefined}
+                        unoptimized={(!featuredPlan.coverImage.startsWith('/uploads/images/') || featuredRetryWithoutLoader) && featuredPlan.coverImage.startsWith('/uploads')}
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center text-[#5D4037]/30">
@@ -361,15 +375,23 @@ export function DietPlansClient({ list }: DietPlansClientProps) {
                     <div className="h-full flex flex-col transition-all duration-500 hover:-translate-y-2 bg-white border border-[#E0D4C3] overflow-hidden hover:shadow-xl rounded-none">
                       {/* Image Block */}
                       <div className="relative w-full h-48 sm:h-56 overflow-hidden bg-[#FAF9F6]">
-                        {plan.coverImage ? (
+                        {(plan.coverImage && !gridImgErrors[plan.id]) ? (
                           <Image
                             src={plan.coverImage}
                             alt={plan.title}
                             fill
                             className="object-cover transition-transform duration-700 group-hover:scale-103"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            loader={plan.coverImage.startsWith('/uploads/images/') && plan.coverImage.endsWith('.webp') ? uploadsLoader : undefined}
-                            unoptimized={!plan.coverImage.startsWith('/uploads/images/') && plan.coverImage.startsWith('/uploads')}
+                            onError={() => {
+                              const isLocal = plan.coverImage.startsWith('/uploads/images/') && plan.coverImage.endsWith('.webp');
+                              if (isLocal && !gridRetryWithoutLoader[plan.id]) {
+                                setGridRetryWithoutLoader(prev => ({ ...prev, [plan.id]: true }));
+                              } else {
+                                setGridImgErrors(prev => ({ ...prev, [plan.id]: true }));
+                              }
+                            }}
+                            loader={plan.coverImage.startsWith('/uploads/images/') && plan.coverImage.endsWith('.webp') && !gridRetryWithoutLoader[plan.id] ? uploadsLoader : undefined}
+                            unoptimized={(!plan.coverImage.startsWith('/uploads/images/') || gridRetryWithoutLoader[plan.id]) && plan.coverImage.startsWith('/uploads')}
                           />
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center text-[#5D4037]/30">

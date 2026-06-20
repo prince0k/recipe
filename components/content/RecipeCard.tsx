@@ -54,8 +54,18 @@ export function RecipeCard({ recipe, className = "" }: RecipeCardProps) {
 
   const badgeText = tagsList.length > 0 ? tagsList[0] : "Recipe";
 
+  const [retryWithoutLoader, setRetryWithoutLoader] = React.useState(false);
+
   const showImage = recipe.coverImage && !imgError;
   const isLocalWebP = recipe.coverImage?.startsWith('/uploads/images/') && recipe.coverImage.endsWith('.webp');
+
+  const handleImageError = () => {
+    if (isLocalWebP && !retryWithoutLoader) {
+      setRetryWithoutLoader(true);
+    } else {
+      setImgError(true);
+    }
+  };
 
   return (
     <Link href={`/recipes/${recipe.slug}`} className={`block group h-full ${className}`}>
@@ -70,9 +80,9 @@ export function RecipeCard({ recipe, className = "" }: RecipeCardProps) {
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              onError={() => setImgError(true)}
-              loader={isLocalWebP ? uploadsLoader : undefined}
-              unoptimized={!isLocalWebP && recipe.coverImage?.startsWith('/uploads')}
+              onError={handleImageError}
+              loader={isLocalWebP && !retryWithoutLoader ? uploadsLoader : undefined}
+              unoptimized={(!isLocalWebP || retryWithoutLoader) && recipe.coverImage?.startsWith('/uploads')}
             />
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-zinc-400">

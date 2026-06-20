@@ -9,6 +9,9 @@ export function RelatedContent({ items, title = "You Might Also Like" }: { items
   const [activeIndex, setActiveIndex] = useState(0);
   const [windowWidth, setWindowWidth] = useState<number | null>(null);
 
+  const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
+  const [retryWithoutLoader, setRetryWithoutLoader] = useState<Record<string, boolean>>({});
+
   useEffect(() => {
     setWindowWidth(window.innerWidth);
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -96,15 +99,23 @@ export function RelatedContent({ items, title = "You Might Also Like" }: { items
                   <div className="w-full rounded-2xl border border-border bg-surface overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
                     {/* Card Cover Image */}
                     <div className="relative aspect-[3/2] overflow-hidden bg-muted flex-shrink-0">
-                      {item.coverImage ? (
+                      {(item.coverImage && !imgErrors[item.id]) ? (
                         <Image
                           src={item.coverImage}
                           alt={item.title}
                           fill
                           sizes="(max-width: 768px) 160px, 200px"
                           className="object-cover pointer-events-none"
-                          loader={item.coverImage.startsWith('/uploads/images/') && item.coverImage.endsWith('.webp') ? uploadsLoader : undefined}
-                          unoptimized={!item.coverImage.startsWith('/uploads/images/') && item.coverImage.startsWith('/uploads')}
+                          onError={() => {
+                            const isLocal = item.coverImage.startsWith('/uploads/images/') && item.coverImage.endsWith('.webp');
+                            if (isLocal && !retryWithoutLoader[item.id]) {
+                              setRetryWithoutLoader(prev => ({ ...prev, [item.id]: true }));
+                            } else {
+                              setImgErrors(prev => ({ ...prev, [item.id]: true }));
+                            }
+                          }}
+                          loader={item.coverImage.startsWith('/uploads/images/') && item.coverImage.endsWith('.webp') && !retryWithoutLoader[item.id] ? uploadsLoader : undefined}
+                          unoptimized={(!item.coverImage.startsWith('/uploads/images/') || retryWithoutLoader[item.id]) && item.coverImage.startsWith('/uploads')}
                         />
                       ) : (
                         <div className="flex h-full items-center justify-center bg-primary/10">

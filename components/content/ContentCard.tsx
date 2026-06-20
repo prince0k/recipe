@@ -64,8 +64,18 @@ export function ContentCard({
 
   const badgeText = tags.length > 0 ? tags[0] : typeLabels[type];
 
+  const [retryWithoutLoader, setRetryWithoutLoader] = React.useState(false);
+
   const showImage = coverImage && !imgError;
   const isLocalWebP = coverImage?.startsWith('/uploads/images/') && coverImage.endsWith('.webp');
+
+  const handleImageError = () => {
+    if (isLocalWebP && !retryWithoutLoader) {
+      setRetryWithoutLoader(true);
+    } else {
+      setImgError(true);
+    }
+  };
 
   return (
     <Link href={`/${hrefPrefix}/${slug}`} className="block group h-full">
@@ -80,9 +90,9 @@ export function ContentCard({
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              onError={() => setImgError(true)}
-              loader={isLocalWebP ? uploadsLoader : undefined}
-              unoptimized={!isLocalWebP && coverImage?.startsWith('/uploads')}
+              onError={handleImageError}
+              loader={isLocalWebP && !retryWithoutLoader ? uploadsLoader : undefined}
+              unoptimized={(!isLocalWebP || retryWithoutLoader) && coverImage?.startsWith('/uploads')}
             />
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-white/20">

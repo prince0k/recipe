@@ -26,6 +26,9 @@ export function ContentDetailView({
   adComponent?: React.ReactNode,
   breadcrumbs?: BreadcrumbItem[]
 }) {
+  const [retryWithoutLoader, setRetryWithoutLoader] = React.useState(false);
+  const [imgError, setImgError] = React.useState(false);
+
   if (!content) return null;
 
   let tags: string[] = [];
@@ -107,7 +110,7 @@ export function ContentDetailView({
         </div>
 
         {/* Fallback actions if no cover media exists */}
-        {!content.coverImage && !content.coverVideo && (
+        {(!content.coverImage || imgError) && !content.coverVideo && (
           <div className="mb-8 flex justify-center border-y border-border/60 py-4 max-w-md mx-auto">
             {mediaOverlay}
           </div>
@@ -126,7 +129,7 @@ export function ContentDetailView({
             />
             {mediaOverlay}
           </div>
-        ) : content.coverImage ? (
+        ) : (content.coverImage && !imgError) ? (
           <div className="relative mb-12 aspect-[2/1] overflow-hidden rounded-lg border border-border">
             <Image
               src={content.coverImage}
@@ -136,8 +139,16 @@ export function ContentDetailView({
               className="object-cover"
               priority
               fetchPriority="high"
-              loader={content.coverImage.startsWith('/uploads/images/') && content.coverImage.endsWith('.webp') ? uploadsLoader : undefined}
-              unoptimized={!content.coverImage.startsWith('/uploads/images/') && content.coverImage.startsWith('/uploads')}
+              onError={() => {
+                const isLocal = content.coverImage?.startsWith('/uploads/images/') && content.coverImage.endsWith('.webp');
+                if (isLocal && !retryWithoutLoader) {
+                  setRetryWithoutLoader(true);
+                } else {
+                  setImgError(true);
+                }
+              }}
+              loader={content.coverImage.startsWith('/uploads/images/') && content.coverImage.endsWith('.webp') && !retryWithoutLoader ? uploadsLoader : undefined}
+              unoptimized={(!content.coverImage.startsWith('/uploads/images/') || retryWithoutLoader) && content.coverImage.startsWith('/uploads')}
             />
             {mediaOverlay}
           </div>
