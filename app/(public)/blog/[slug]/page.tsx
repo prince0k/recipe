@@ -9,6 +9,8 @@ import { buildImageObject } from "@/lib/schema/buildImageObject";
 import { parseFaqs } from "@/lib/schema/parseFaqs";
 import { formatPageTitle } from "@/lib/seo";
 
+export const revalidate = 86400; // Cache page for 24 hours (ISR)
+
 export async function generateMetadata(
   props: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {

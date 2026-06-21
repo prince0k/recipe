@@ -7,6 +7,8 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { formatPageTitle } from "@/lib/seo";
 import { parseFaqs } from "@/lib/schema/parseFaqs";
 
+export const revalidate = 86400; // Cache page for 24 hours (ISR)
+
 export async function generateMetadata(
   props: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
